@@ -30,7 +30,15 @@ jobs:
           cd build
           cmake --build .
 
-      - name: Run Tests
+      - name: Run Tests (Unix-like)
+        if: matrix.os != 'windows-latest'
         run: |
           cd build
           ./test_main
+
+      - name: Run Tests (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          cd build
+          test_main.exe
