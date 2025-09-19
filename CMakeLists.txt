@@ -1,7 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
 project(Main)
 
+include(FetchContent)
+
+# SDL3 setup
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+FetchContent_Declare(
+	SDL3
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+	GIT_TAG release-3.2.22
+)
+FetchContent_MakeAvailable(SDL3)
+
 add_executable(main src/main.cc)
+target_link_libraries(main PRIVATE SDL3::SDL3)
 
 # GoogleTest setup
 include(FetchContent)
