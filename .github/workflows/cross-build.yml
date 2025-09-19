@@ -2,9 +2,9 @@ name: Cross-Platform Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop/* ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop/* ]
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        arch: [x64, arm64]
+        arch: [x86_64, arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,10 +32,10 @@ jobs:
           cd build
           if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "${{ matrix.arch }}" == "arm64" ]; then
             cmake .. -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++
-          elif [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "${{ matrix.arch }}" == "x64" ]; then
+          elif [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "${{ matrix.arch }}" == "x86_64" ]; then
             cmake ..
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            cmake .. -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
+          cmake .. -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
           elif [ "${{ matrix.os }}" == "windows-latest" ]; then
             cmake ..
           fi
