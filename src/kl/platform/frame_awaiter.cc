@@ -5,7 +5,13 @@
 #endif
 
 namespace kl::platform {
-bool FrameAwaiter::await_ready() const noexcept { return false; }
+bool FrameAwaiter::await_ready() const noexcept {
+#ifdef __EMSCRIPTEN__
+  return false;
+#else
+  return true;
+#endif
+}
 
 void FrameAwaiter::await_suspend(std::coroutine_handle<> handle) noexcept {
   m_handle = handle;
@@ -19,9 +25,6 @@ void FrameAwaiter::await_suspend(std::coroutine_handle<> handle) noexcept {
       },
       this);
 #else
-  // FIXME:
-  m_time = 0.0;
-  handle.resume();
 #endif
 }
 
