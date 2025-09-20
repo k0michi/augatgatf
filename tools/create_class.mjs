@@ -98,14 +98,19 @@ function generateHeader({
     }
 
     if (type === 'struct') {
+        // Value-semantic type
         content += `struct ${basename} final {\n`;
         content += `};\n\n`;
     } else {
+        // Reference-semantic type
         content += `class ${basename} {\n`;
         content += `public:\n`;
         content += `    explicit ${basename}() noexcept = default;\n`;
         content += `    virtual ~${basename}() noexcept = default;\n`;
-        content += `};\n\n`;
+        content += `\n`;
+        content += `    ${basename}(const ${basename}&) = delete;\n`;
+        content += `    ${basename}& operator=(const ${basename}&) = delete;\n`;
+        content += `};\n`;
     }
 
     if (namespace.length > 0) {
@@ -119,7 +124,8 @@ function generateSource({ name, type }) {
     const { namespace, basename } = splitNamespace(name);
     let content = '';
     const headerPath = getHeaderPath(name, { includeDir: false });
-    content += `#include "${headerPath}"\n\n`;
+    content += `#include "${headerPath}"\n`;
+    content += `\n`;
     if (namespace.length > 0) {
         content += `namespace ${namespace.join('::')} {\n`;
     }
