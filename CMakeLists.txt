@@ -26,6 +26,7 @@ add_executable(main
     src/kl/platform/window.cc
 	src/kl/platform/instance.cc
 	src/kl/platform/frame_awaiter.cc
+	src/kl/graphics/instance.cc
 )
 target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE SDL3::SDL3)
