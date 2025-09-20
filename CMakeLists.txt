@@ -19,6 +19,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3)
 
+# main
+
 add_executable(main
     src/main.cc
     src/kl/platform/window.cc
@@ -26,6 +28,10 @@ add_executable(main
 )
 target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE SDL3::SDL3)
+
+if(EMSCRIPTEN)
+  set(CMAKE_EXECUTABLE_SUFFIX .html)
+endif()
 
 # GoogleTest setup
 include(FetchContent)
