@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
-# SDL3 setup
+# SDL3
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
@@ -18,6 +18,9 @@ FetchContent_Declare(
 	GIT_TAG release-3.2.22
 )
 FetchContent_MakeAvailable(SDL3)
+
+# glad
+add_subdirectory(external/glad)
 
 # main
 
@@ -30,12 +33,13 @@ add_executable(main
 )
 target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE SDL3::SDL3)
+target_link_libraries(main PRIVATE glad)
 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
 endif()
 
-# GoogleTest setup
+# GoogleTest
 include(FetchContent)
 FetchContent_Declare(
 	googletest
