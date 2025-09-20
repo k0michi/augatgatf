@@ -4,6 +4,10 @@
 #include "kl/platform/instance.hh"
 #include "kl/platform/window.hh"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 int main() {
   std::cout << "Hello, World!" << std::endl;
   auto instanceResult =
@@ -25,9 +29,22 @@ int main() {
 
   auto window = windowResult.value();
 
+#ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop_arg(
+      [](void *arg) {
+        auto instance = static_cast<kl::platform::Instance *>(arg);
+        if (instance->shouldQuit()) {
+          emscripten_cancel_main_loop();
+          return;
+        }
+        instance->pollEvents();
+      },
+      instance.get(), 0, true);
+#else
   while (!instance->shouldQuit()) {
     instance->pollEvents();
   }
+#endif
 
   return 0;
 }
