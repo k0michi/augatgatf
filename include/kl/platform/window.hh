@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KL_PLATFORM_WINDOW_HH
+#define KL_PLATFORM_WINDOW_HH
 
 #include <cstdint>
 #include <expected>
@@ -27,3 +28,4 @@ public:
   create(const WindowDescriptor &descriptor) noexcept;
 };
 } // namespace kl::platform
+#endif // KL_PLATFORM_WINDOW_HH

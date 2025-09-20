@@ -1,5 +1,5 @@
-#ifndef KL_PLATFORM_PLATFORM_INSTANCE_HH
-#define KL_PLATFORM_PLATFORM_INSTANCE_HH
+#ifndef KL_PLATFORM_INSTANCE_HH
+#define KL_PLATFORM_INSTANCE_HH
 
 #include <expected>
 #include <memory>
@@ -37,4 +37,4 @@ protected:
   explicit Instance() noexcept = default;
 };
 } // namespace kl::platform
-#endif // KL_PLATFORM_PLATFORM_INSTANCE_HH
+#endif // KL_PLATFORM_INSTANCE_HH

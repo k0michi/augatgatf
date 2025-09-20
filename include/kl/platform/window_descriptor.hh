@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KL_PLATFORM_WINDOW_DESCRIPTOR_HH
+#define KL_PLATFORM_WINDOW_DESCRIPTOR_HH
 
 #include <cstdint>
 #include <string_view>
@@ -10,3 +11,4 @@ struct WindowDescriptor {
   int32_t height;
 };
 } // namespace kl::platform
+#endif // KL_PLATFORM_WINDOW_DESCRIPTOR_HH
