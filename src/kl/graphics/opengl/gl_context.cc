@@ -26,6 +26,12 @@ GLContext &GLContext::operator=(GLContext &&other) {
   return *this;
 }
 
+SDL_Window *GLContext::sdlWindow() const noexcept { return mWindow; }
+
+SDL_GLContext GLContext::sdlContext() const noexcept { return mContext; }
+
+std::recursive_mutex &GLContext::mutex() noexcept { return mMutex; }
+
 std::expected<std::shared_ptr<GLContext>, std::runtime_error>
 GLContext::create(SDL_Window *window) noexcept {
   auto sdlContext = SDL_GL_CreateContext(window);
