@@ -57,6 +57,34 @@ function getIncludeGuard(typeName) {
     ].join('_');
 }
 
+function getHeaderPath(name, {
+    includeDir
+} = {}) {
+    includeDir ??= true;
+
+    const { namespace, basename } = splitNamespace(name);
+    const snakeCaseName = toSnakeCase(basename);
+    if (includeDir) {
+        return path.join(headerDir, ...namespace, `${snakeCaseName}.hh`);
+    } else {
+        return path.join(...namespace, `${snakeCaseName}.hh`);
+    }
+}
+
+function getSourcePath(name, {
+    includeDir
+} = {}) {
+    includeDir ??= true;
+
+    const { namespace, basename } = splitNamespace(name);
+    const snakeCaseName = toSnakeCase(basename);
+    if (includeDir) {
+        return path.join(srcDir, ...namespace, `${snakeCaseName}.cc`);
+    } else {
+        return path.join(...namespace, `${snakeCaseName}.cc`);
+    }
+}
+
 function generateHeader({
     name, type
 }) {
@@ -90,6 +118,8 @@ function generateHeader({
 function generateSource({ name, type }) {
     const { namespace, basename } = splitNamespace(name);
     let content = '';
+    const headerPath = getHeaderPath(name, { includeDir: false });
+    content += `#include "${headerPath}"\n\n`;
     if (namespace.length > 0) {
         content += `namespace ${namespace.join('::')} {\n`;
     }
@@ -104,18 +134,6 @@ const className = parsedArgs.positionals[0];
 const type = parsedArgs.values.type;
 const srcDir = parsedArgs.values.srcDir;
 const headerDir = parsedArgs.values.headerDir;
-
-function getHeaderPath(name) {
-    const { namespace, basename } = splitNamespace(name);
-    const snakeCaseName = toSnakeCase(basename);
-    return path.join(headerDir, ...namespace, `${snakeCaseName}.hh`);
-}
-
-function getSourcePath(name) {
-    const { namespace, basename } = splitNamespace(name);
-    const snakeCaseName = toSnakeCase(basename);
-    return path.join(srcDir, ...namespace, `${snakeCaseName}.cc`);
-}
 
 const headerPath = getHeaderPath(className);
 const sourcePath = getSourcePath(className);
