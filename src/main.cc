@@ -2,20 +2,16 @@
 #include <iostream>
 
 #include "kl/platform/instance.hh"
+#include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
-
-int main() {
-  std::cout << "Hello, World!" << std::endl;
+kl::platform::Task<void> main_async() {
   auto instanceResult =
       kl::platform::Instance::create(kl::InstanceDescriptor{});
   if (!instanceResult) {
     std::cerr << "Failed to create Instance: " << instanceResult.error().what()
               << std::endl;
-    return 1;
+    co_return;
   }
 
   auto instance = instanceResult.value();
@@ -24,27 +20,21 @@ int main() {
   if (!windowResult) {
     std::cerr << "Failed to create Window: " << windowResult.error().what()
               << std::endl;
-    return 1;
+    co_return;
   }
 
   auto window = windowResult.value();
+  int32_t count = 0;
 
-#ifdef __EMSCRIPTEN__
-  emscripten_set_main_loop_arg(
-      [](void *arg) {
-        auto instance = static_cast<kl::platform::Instance *>(arg);
-        if (instance->shouldQuit()) {
-          emscripten_cancel_main_loop();
-          return;
-        }
-        instance->pollEvents();
-      },
-      instance.get(), 0, true);
-#else
   while (!instance->shouldQuit()) {
+    auto elapsed = co_await instance->waitFrame();
     instance->pollEvents();
+    std::cout << elapsed << std::endl;
+    count++;
   }
-#endif
+}
 
+int main() {
+  main_async();
   return 0;
 }

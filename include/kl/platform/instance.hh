@@ -6,6 +6,8 @@
 #include <stdexcept>
 
 #include "kl/instance_descriptor.hh"
+#include "kl/platform/frame_awaiter.hh"
+#include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
 namespace kl::platform {
@@ -22,6 +24,7 @@ public:
 
   void pollEvents() noexcept;
   bool shouldQuit() const noexcept;
+  FrameAwaiter waitFrame() noexcept;
 
   std::expected<std::shared_ptr<Window>, std::runtime_error>
   createWindow(const WindowDescriptor &descriptor) noexcept;

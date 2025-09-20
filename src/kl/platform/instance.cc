@@ -40,4 +40,6 @@ std::expected<std::shared_ptr<Window>, std::runtime_error>
 Instance::createWindow(const WindowDescriptor &descriptor) noexcept {
   return Window::create(descriptor);
 }
+
+FrameAwaiter Instance::waitFrame() noexcept { return FrameAwaiter(); }
 } // namespace kl::platform
