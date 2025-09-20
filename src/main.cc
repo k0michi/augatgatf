@@ -1,37 +1,33 @@
-#include <iostream>
 #include <SDL3/SDL.h>
+#include <iostream>
 
-int main()
-{
-    auto result = SDL_Init(SDL_INIT_VIDEO);
+#include "kl/platform/instance.hh"
+#include "kl/platform/window.hh"
 
-    if (!result)
-    {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
+int main() {
+  std::cout << "Hello, World!" << std::endl;
+  auto instanceResult =
+      kl::platform::Instance::create(kl::InstanceDescriptor{});
+  if (!instanceResult) {
+    std::cerr << "Failed to create Instance: " << instanceResult.error().what()
+              << std::endl;
+    return 1;
+  }
 
-    auto window = SDL_CreateWindow("Hello SDL3", 640, 480, 0);
+  auto instance = instanceResult.value();
+  auto windowResult = instance->createWindow(
+      kl::platform::WindowDescriptor{"My Window", 800, 600});
+  if (!windowResult) {
+    std::cerr << "Failed to create Window: " << windowResult.error().what()
+              << std::endl;
+    return 1;
+  }
 
-    if (!window)
-    {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
+  auto window = windowResult.value();
 
-    while (true)
-    {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_EVENT_QUIT)
-            {
-                break;
-            }
-        }
-    }
+  while (!instance->shouldQuit()) {
+    instance->pollEvents();
+  }
 
-    SDL_Quit();
-    return 0;
+  return 0;
 }
