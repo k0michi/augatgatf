@@ -7,11 +7,11 @@ const parsedArgs = util.parseArgs({
     args,
     allowPositionals: true,
     options: {
-        name: {
-            type: 'string',
-            short: 'n',
-            default: 'MyClass'
-        },
+        // name: {
+        //     type: 'string',
+        //     short: 'n',
+        //     default: 'MyClass'
+        // },
         type: {
             type: 'string',
             short: 't',
@@ -98,7 +98,7 @@ function generateSource({ name, type }) {
     return content;
 }
 
-const className = parsedArgs.values.name;
+const className = parsedArgs.positionals[0];
 const type = parsedArgs.values.type;
 const srcDir = parsedArgs.values.srcDir;
 const headerDir = parsedArgs.values.headerDir;
