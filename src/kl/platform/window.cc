@@ -1,7 +1,12 @@
 #include "kl/platform/window.hh"
 
 namespace kl::platform {
-Window::~Window() {}
+Window::~Window() {
+  if (mWindow) {
+    SDL_DestroyWindow(mWindow);
+    mWindow = nullptr;
+  }
+}
 
 SDL_Window *Window::sdlWindow() const noexcept { return mWindow; }
 
@@ -17,5 +22,29 @@ Window::create(const WindowDescriptor &descriptor) noexcept {
   auto window = std::shared_ptr<Window>(new Window());
   window->mWindow = sdlWindow;
   return window;
+}
+
+std::expected<void, std::runtime_error> Window::show() noexcept {
+  if (!SDL_ShowWindow(mWindow)) {
+    return std::unexpected(std::runtime_error(SDL_GetError()));
+  }
+
+  return {};
+}
+
+std::expected<void, std::runtime_error> Window::hide() noexcept {
+  if (!SDL_HideWindow(mWindow)) {
+    return std::unexpected(std::runtime_error(SDL_GetError()));
+  }
+
+  return {};
+}
+
+std::expected<void, std::runtime_error> Window::focus() noexcept {
+  if (!SDL_RaiseWindow(mWindow)) {
+    return std::unexpected(std::runtime_error(SDL_GetError()));
+  }
+
+  return {};
 }
 } // namespace kl::platform
