@@ -69,15 +69,19 @@ function generateHeader({
         content += `namespace ${namespace.join('::')} {\n`;
     }
 
-    content += `${type} ${basename} {\n`;
-    content += `public:\n`;
-    content += `    ${basename}() = default;\n`;
-    content += `    ~${basename}() = default;\n\n`;
-    content += `private:\n\n`;
-    content += `};\n\n`;
+    if (type === 'struct') {
+        content += `struct ${basename} final {\n`;
+        content += `};\n\n`;
+    } else {
+        content += `class ${basename} {\n`;
+        content += `public:\n`;
+        content += `    explicit ${basename}() noexcept = default;\n`;
+        content += `    virtual ~${basename}() noexcept = default;\n`;
+        content += `};\n\n`;
+    }
 
     if (namespace.length > 0) {
-        content += `} // namespace ${namespace.join('::')}\n\n`;
+        content += `} // namespace ${namespace.join('::')}\n`;
     }
     content += `#endif // ${includeGuard}\n`;
     return content;
@@ -89,8 +93,6 @@ function generateSource({ name, type }) {
     if (namespace.length > 0) {
         content += `namespace ${namespace.join('::')} {\n`;
     }
-
-    content += `// Implement ${basename} methods here\n\n`;
 
     if (namespace.length > 0) {
         content += `} // namespace ${namespace.join('::')}\n`;
