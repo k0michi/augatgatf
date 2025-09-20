@@ -1,5 +1,4 @@
 import fsPromise from 'fs/promises';
-import { type } from 'os';
 import path from 'path';
 import util from 'util';
 
@@ -41,29 +40,83 @@ function toSnakeCase(str) {
         .toLowerCase();
 }
 
-function splitNamespace(className) {
-    const parts = className.split('::');
-    const name = parts.pop();
+function splitNamespace(typeName) {
+    const parts = typeName.split('::');
+    const basename = parts.pop();
     const namespace = parts;
-    return { name, namespace };
+    return { basename, namespace };
+}
+
+function getIncludeGuard(typeName) {
+    const { basename, namespace } = splitNamespace(typeName);
+    const snakeCaseName = toSnakeCase(basename);
+    return [
+        ...namespace.map(ns => ns.toUpperCase()),
+        snakeCaseName.toUpperCase(),
+        'HH'
+    ].join('_');
+}
+
+function generateHeader({
+    name, type
+}) {
+    const { namespace, basename } = splitNamespace(name);
+    const includeGuard = getIncludeGuard(name);
+    let content = '';
+    content += `#ifndef ${includeGuard}\n`;
+    content += `#define ${includeGuard}\n\n`;
+    if (namespace.length > 0) {
+        content += `namespace ${namespace.join('::')} {\n`;
+    }
+
+    content += `${type} ${basename} {\n`;
+    content += `public:\n`;
+    content += `    ${basename}() = default;\n`;
+    content += `    ~${basename}() = default;\n\n`;
+    content += `private:\n\n`;
+    content += `};\n\n`;
+
+    if (namespace.length > 0) {
+        content += `} // namespace ${namespace.join('::')}\n\n`;
+    }
+    content += `#endif // ${includeGuard}\n`;
+    return content;
+}
+
+function generateSource({ name, type }) {
+    const { namespace, basename } = splitNamespace(name);
+    let content = '';
+    if (namespace.length > 0) {
+        content += `namespace ${namespace.join('::')} {\n`;
+    }
+
+    content += `// Implement ${basename} methods here\n\n`;
+
+    if (namespace.length > 0) {
+        content += `} // namespace ${namespace.join('::')}\n`;
+    }
+    return content;
 }
 
 const className = parsedArgs.values.name;
-const classType = parsedArgs.values.type;
+const type = parsedArgs.values.type;
 const srcDir = parsedArgs.values.srcDir;
 const headerDir = parsedArgs.values.headerDir;
 
-const { name, namespace } = splitNamespace(className);
-const snakeCaseName = toSnakeCase(name);
+function getHeaderPath(name) {
+    const { namespace, basename } = splitNamespace(name);
+    const snakeCaseName = toSnakeCase(basename);
+    return path.join(headerDir, ...namespace, `${snakeCaseName}.hh`);
+}
 
-const headerPath = path.join(headerDir, ...namespace, `${snakeCaseName}.hh`);
-const sourcePath = path.join(srcDir, ...namespace, `${snakeCaseName}.cc`);
+function getSourcePath(name) {
+    const { namespace, basename } = splitNamespace(name);
+    const snakeCaseName = toSnakeCase(basename);
+    return path.join(srcDir, ...namespace, `${snakeCaseName}.cc`);
+}
 
-const headerGuard = [
-    ...namespace.map(ns => ns.toUpperCase()),
-    snakeCaseName.toUpperCase(),
-    'HH'
-].join('_');
+const headerPath = getHeaderPath(className);
+const sourcePath = getSourcePath(className);
 
 const headerDirPath = path.dirname(headerPath);
 const sourceDirPath = path.dirname(sourcePath);
@@ -71,31 +124,10 @@ const sourceDirPath = path.dirname(sourcePath);
 await fsPromise.mkdir(headerDirPath, { recursive: true });
 await fsPromise.mkdir(sourceDirPath, { recursive: true });
 
-const headerContent = `#ifndef ${headerGuard}
-#define ${headerGuard}
-
-${namespace.length > 0 ? `namespace ${namespace.join(' {\nnamespace ')} {\n` : ''}${classType} ${name} {
-public:
-    ${name}() = default;
-    ~${name}() = default;
-
-private:
-
-};${namespace.length > 0 ? '\n' + '}'.repeat(namespace.length) + '\n' : ''}
-
-#endif // ${headerGuard}
-`;
-
-const sourceContent = `#include "${path.posix.relative(sourceDirPath, headerPath)}"
-
-${namespace.length > 0 ? `namespace ${namespace.join(' {\nnamespace ')} {\n` : ''}
-
-// Implement ${name} methods here
-
-${namespace.length > 0 ? '\n' + '}'.repeat(namespace.length) + '\n' : ''}
-`;
+const headerContent = generateHeader({ name: className, type: type });
+const sourceContent = generateSource({ name: className, type: type });
 
 await fsPromise.writeFile(headerPath, headerContent, 'utf-8');
 await fsPromise.writeFile(sourcePath, sourceContent, 'utf-8');
 
-console.log(`Created ${headerPath} and ${sourcePath}`);
+console.log(`Created ${headerPath} and ${sourcePath} `);
