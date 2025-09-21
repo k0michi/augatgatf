@@ -1,6 +1,7 @@
 #ifndef KL_GRAPHICS_BLEND_STATE_DESCRIPTOR_HH
 #define KL_GRAPHICS_BLEND_STATE_DESCRIPTOR_HH
 
+#include <variant>
 #include <vector>
 
 namespace kl::graphics {
@@ -47,25 +48,68 @@ enum class ColorComponentFlagBits : uint32_t {
   eA = 0x8,
 };
 
+inline ColorComponentFlagBits operator|(ColorComponentFlagBits lhs,
+                                        ColorComponentFlagBits rhs) {
+  return static_cast<ColorComponentFlagBits>(static_cast<uint32_t>(lhs) |
+                                             static_cast<uint32_t>(rhs));
+}
+
+inline ColorComponentFlagBits operator&(ColorComponentFlagBits lhs,
+                                        ColorComponentFlagBits rhs) {
+  return static_cast<ColorComponentFlagBits>(static_cast<uint32_t>(lhs) &
+                                             static_cast<uint32_t>(rhs));
+}
+
+inline ColorComponentFlagBits operator^(ColorComponentFlagBits lhs,
+                                        ColorComponentFlagBits rhs) {
+  return static_cast<ColorComponentFlagBits>(static_cast<uint32_t>(lhs) ^
+                                             static_cast<uint32_t>(rhs));
+}
+
+inline ColorComponentFlagBits operator~(ColorComponentFlagBits val) {
+  return static_cast<ColorComponentFlagBits>(~static_cast<uint32_t>(val));
+}
+
+inline ColorComponentFlagBits &operator|=(ColorComponentFlagBits &lhs,
+                                          ColorComponentFlagBits rhs) {
+  lhs = lhs | rhs;
+  return lhs;
+}
+
+inline ColorComponentFlagBits &operator&=(ColorComponentFlagBits &lhs,
+                                          ColorComponentFlagBits rhs) {
+  lhs = lhs & rhs;
+  return lhs;
+}
+
+inline ColorComponentFlagBits &operator^=(ColorComponentFlagBits &lhs,
+                                          ColorComponentFlagBits rhs) {
+  lhs = lhs ^ rhs;
+  return lhs;
+}
+
 /**
  * https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineColorBlendAttachmentState.html
  */
 struct ColorBlendAttachmentStateDescriptor final {
-  bool blendEnable;
-  BlendFactor srcColorBlendFactor;
-  BlendFactor dstColorBlendFactor;
-  BlendOp colorBlendOp;
-  BlendFactor srcAlphaBlendFactor;
-  BlendFactor dstAlphaBlendFactor;
-  BlendOp alphaBlendOp;
-  ColorComponentFlagBits colorWriteMask;
+  bool blendEnable = false;
+  BlendFactor srcColorBlendFactor = BlendFactor::eOne;
+  BlendFactor dstColorBlendFactor = BlendFactor::eZero;
+  BlendOp colorBlendOp = BlendOp::eAdd;
+  BlendFactor srcAlphaBlendFactor = BlendFactor::eOne;
+  BlendFactor dstAlphaBlendFactor = BlendFactor::eZero;
+  BlendOp alphaBlendOp = BlendOp::eAdd;
+  ColorComponentFlagBits colorWriteMask =
+      ColorComponentFlagBits::eR | ColorComponentFlagBits::eG |
+      ColorComponentFlagBits::eB | ColorComponentFlagBits::eA;
 };
 
 /**
  * https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineColorBlendStateCreateInfo.html
  */
 struct ColorBlendStateDescriptor final {
-  std::vector<ColorBlendAttachmentStateDescriptor> attachments;
+  bool independentBlendEnable = false;
+  std::vector<ColorBlendAttachmentStateDescriptor> attachments = {{}};
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_BLEND_STATE_DESCRIPTOR_HH
