@@ -59,6 +59,7 @@ std::expected<std::shared_ptr<Device>, std::runtime_error>
 Device::create(std::shared_ptr<Instance> instance,
                const DeviceDescriptor &descriptor) noexcept {
   auto device = std::shared_ptr<Device>(new Device());
+  device->mInstance = instance;
   return device;
 }
 } // namespace kl::graphics

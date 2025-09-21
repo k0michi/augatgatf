@@ -19,6 +19,7 @@ namespace kl::graphics {
  */
 class Device {
 private:
+  std::weak_ptr<Instance> mInstance;
   std::unordered_set<std::shared_ptr<opengl::GLContext>> mContexts;
   std::unordered_map<std::shared_ptr<Surface>,
                      std::shared_ptr<opengl::GLContext>>
