@@ -5,6 +5,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "device.hh"
 #include "kl/graphics/instance_descriptor.hh"
 #include "surface.hh"
 
@@ -21,6 +22,8 @@ public:
 
   std::expected<std::shared_ptr<Surface>, std::runtime_error>
   createSurface(const SurfaceDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Device>, std::runtime_error>
+  createDevice(const DeviceDescriptor &descriptor) noexcept;
 
   static std::expected<std::shared_ptr<Instance>, std::runtime_error>
   create(const InstanceDescriptor &descriptor) noexcept;

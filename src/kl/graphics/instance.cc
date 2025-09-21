@@ -8,6 +8,11 @@ Instance::createSurface(const SurfaceDescriptor &descriptor) noexcept {
   return Surface::create(descriptor);
 }
 
+std::expected<std::shared_ptr<Device>, std::runtime_error>
+Instance::createDevice(const DeviceDescriptor &descriptor) noexcept {
+  return Device::create(descriptor);
+}
+
 std::expected<std::shared_ptr<Instance>, std::runtime_error>
 Instance::create(const InstanceDescriptor &descriptor) noexcept {
   if (!sInstance.expired()) {
