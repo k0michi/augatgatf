@@ -33,16 +33,16 @@ enum class FrontFace {
  * https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineRasterizationStateCreateInfo.html
  */
 struct RasterizationStateDescriptor final {
-  bool depthClampEnable;
-  bool rasterizerDiscardEnable;
-  PolygonMode polygonMode;
-  CullMode cullMode;
-  FrontFace frontFace;
-  bool depthBiasEnable;
-  float depthBiasConstantFactor;
-  float depthBiasClamp;
-  float depthBiasSlopeFactor;
-  float lineWidth;
+  bool depthClampEnable = false;
+  bool rasterizerDiscardEnable = false;
+  PolygonMode polygonMode = PolygonMode::eFill;
+  CullMode cullMode = CullMode::eBack;
+  FrontFace frontFace = FrontFace::eCounterClockwise;
+  bool depthBiasEnable = false;
+  float depthBiasConstantFactor = 0.0f;
+  float depthBiasClamp = 0.0f;
+  float depthBiasSlopeFactor = 0.0f;
+  float lineWidth = 1.0f;
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_RASTERIZATION_STATE_DESCRIPTOR_HH
