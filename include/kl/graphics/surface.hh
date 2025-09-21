@@ -23,6 +23,8 @@ public:
   Surface &operator=(const Surface &) = delete;
   Surface &operator=(Surface &&) noexcept = default;
 
+  std::shared_ptr<platform::Window> window() const noexcept;
+
   static std::expected<std::shared_ptr<Surface>, std::runtime_error>
   create(const SurfaceDescriptor &descriptor) noexcept;
   // TODO: Add framebuffer acquisition

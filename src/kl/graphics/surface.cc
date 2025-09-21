@@ -1,6 +1,10 @@
 #include "kl/graphics/surface.hh"
 
 namespace kl::graphics {
+std::shared_ptr<platform::Window> Surface::window() const noexcept {
+  return mWindow;
+}
+
 std::expected<std::shared_ptr<Surface>, std::runtime_error>
 Surface::create(const SurfaceDescriptor &descriptor) noexcept {
   if (!descriptor.window) {

@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "device_descriptor.hh"
 #include "opengl/gl_context.hh"
@@ -17,7 +18,7 @@ namespace kl::graphics {
  */
 class Device {
 private:
-  std::unordered_map<uint32_t, std::shared_ptr<opengl::GLContext>> mContexts;
+  std::unordered_set<std::shared_ptr<opengl::GLContext>> mContexts;
   std::unordered_map<std::shared_ptr<Surface>,
                      std::shared_ptr<opengl::GLContext>>
       mSurfaceContexts;
@@ -30,10 +31,20 @@ public:
   Device &operator=(const Device &) = delete;
   Device &operator=(Device &&) noexcept = delete;
 
+  std::optional<std::shared_ptr<opengl::GLContext>>
+  getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept;
+  std::expected<std::shared_ptr<opengl::GLContext>, std::runtime_error>
+  getOrCreateContextForSurface(
+      const std::shared_ptr<Surface> &surface) noexcept;
+  bool
+  hasContext(const std::shared_ptr<opengl::GLContext> &context) const noexcept;
+  bool
+  hasContextForSurface(const std::shared_ptr<Surface> &surface) const noexcept;
+
   static std::expected<std::shared_ptr<Device>, std::runtime_error>
   create(const DeviceDescriptor &descriptor) noexcept;
 
-private:
+protected:
   explicit Device() noexcept = default;
 };
 } // namespace kl::graphics
