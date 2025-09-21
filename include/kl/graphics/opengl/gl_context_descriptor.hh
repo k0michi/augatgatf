@@ -11,7 +11,7 @@ class GLContext;
 struct GLContextDescriptor final {
   SDL_Window *window;
   std::shared_ptr<GLContext> shareContext = nullptr;
-  SDL_GLProfile profile = SDL_GL_PROFILE_CORE;
+  SDL_GLProfile profile = SDL_GL_CONTEXT_PROFILE_CORE;
   uint32_t majorVersion = 3;
   uint32_t minorVersion = 3;
 };

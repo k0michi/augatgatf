@@ -18,8 +18,23 @@ Device::getOrCreateContextForSurface(
     return existingContext.value();
   }
 
-  auto glContextResult =
-      opengl::GLContext::create(surface->window()->sdlWindow());
+#ifndef __EMSCRIPTEN__
+  auto glContextResult = opengl::GLContext::create({
+      .window = surface->window()->sdlWindow(),
+      .shareContext = nullptr,
+      .profile = SDL_GL_CONTEXT_PROFILE_CORE,
+      .majorVersion = 3,
+      .minorVersion = 3,
+  });
+#else
+  auto glContextResult = opengl::GLContext::create({
+      .window = surface->window()->sdlWindow(),
+      .shareContext = nullptr,
+      .profile = SDL_GL_CONTEXT_PROFILE_ES,
+      .majorVersion = 3,
+      .minorVersion = 0,
+  });
+#endif
   if (!glContextResult) {
     return std::unexpected(glContextResult.error());
   }
