@@ -2,11 +2,11 @@
 #define KL_PLATFORM_WINDOW_DESCRIPTOR_HH
 
 #include <cstdint>
-#include <string_view>
+#include <string>
 
 namespace kl::platform {
-struct WindowDescriptor {
-  std::string_view title;
+struct WindowDescriptor final {
+  std::string title;
   int32_t width;
   int32_t height;
 };
