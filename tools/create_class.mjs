@@ -109,9 +109,9 @@ function generateHeader({
         content += `    virtual ~${basename}() noexcept = default;\n`;
         content += `\n`;
         content += `    ${basename}(const ${basename}&) = delete;\n`;
-        content += `    ${basename}(${basename}&&) noexcept = default;\n`;
+        content += `    ${basename}(${basename}&&) noexcept = delete;\n`;
         content += `    ${basename}& operator=(const ${basename}&) = delete;\n`;
-        content += `    ${basename}& operator=(${basename}&&) noexcept = default;\n`;
+        content += `    ${basename}& operator=(${basename}&&) noexcept = delete;\n`;
         content += `};\n`;
     }
 
