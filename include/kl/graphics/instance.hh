@@ -10,7 +10,7 @@
 #include "surface.hh"
 
 namespace kl::graphics {
-class Instance {
+class Instance : public std::enable_shared_from_this<Instance> {
 private:
   static std::weak_ptr<Instance> sInstance;
 

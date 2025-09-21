@@ -8,6 +8,8 @@
 #include "surface_descriptor.hh"
 
 namespace kl::graphics {
+class Instance;
+
 /**
  * @brief A class holding a window.
  */
@@ -26,7 +28,8 @@ public:
   std::shared_ptr<platform::Window> window() const noexcept;
 
   static std::expected<std::shared_ptr<Surface>, std::runtime_error>
-  create(const SurfaceDescriptor &descriptor) noexcept;
+  create(std::shared_ptr<Instance> instance,
+         const SurfaceDescriptor &descriptor) noexcept;
   // TODO: Add framebuffer acquisition
 
 protected:

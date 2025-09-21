@@ -42,7 +42,8 @@ public:
   hasContextForSurface(const std::shared_ptr<Surface> &surface) const noexcept;
 
   static std::expected<std::shared_ptr<Device>, std::runtime_error>
-  create(const DeviceDescriptor &descriptor) noexcept;
+  create(std::shared_ptr<Instance> instance,
+         const DeviceDescriptor &descriptor) noexcept;
 
 protected:
   explicit Device() noexcept = default;
