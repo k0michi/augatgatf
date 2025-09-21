@@ -16,9 +16,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 FetchContent_Declare(
-	SDL3
-	GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-	GIT_TAG release-3.2.22
+  SDL3
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+  GIT_TAG release-3.2.22
 )
 FetchContent_MakeAvailable(SDL3)
 
@@ -28,15 +28,15 @@ add_subdirectory(external/glad)
 # main
 
 add_executable(main
-    src/main.cc
-    src/kl/platform/window.cc
-	src/kl/platform/instance.cc
-	src/kl/platform/frame_awaiter.cc
-	src/kl/graphics/instance.cc
-	src/kl/graphics/surface.cc
-	src/kl/graphics/device.cc
-	src/kl/graphics/opengl/gl_context.cc
-	src/kl/graphics/context.cc
+  src/main.cc
+  src/kl/platform/window.cc
+  src/kl/platform/instance.cc
+  src/kl/platform/frame_awaiter.cc
+  src/kl/graphics/instance.cc
+  src/kl/graphics/surface.cc
+  src/kl/graphics/device.cc
+  src/kl/graphics/opengl/gl_context.cc
+  src/kl/graphics/context.cc
 )
 target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE SDL3::SDL3)
@@ -49,9 +49,9 @@ endif()
 # GoogleTest
 include(FetchContent)
 FetchContent_Declare(
-	googletest
-	GIT_REPOSITORY https://github.com/google/googletest.git
-	GIT_TAG v1.17.0
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.17.0
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
