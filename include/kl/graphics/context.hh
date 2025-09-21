@@ -11,6 +11,9 @@ namespace kl::graphics {
 class Device;
 
 class Context {
+private:
+  std::weak_ptr<Device> mDevice;
+
 public:
   virtual ~Context() noexcept = default;
 
