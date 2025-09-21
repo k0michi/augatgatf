@@ -32,25 +32,50 @@ SDL_GLContext GLContext::sdlContext() const noexcept { return mContext; }
 
 std::recursive_mutex &GLContext::mutex() noexcept { return mMutex; }
 
+GladGLContext *GLContext::gladGLContext() const noexcept {
+  return mGladGLContext.get();
+}
+
+void GLContext::lock() noexcept {
+  mMutex.lock();
+  SDL_GL_MakeCurrent(mWindow, mContext);
+  gladSetGLContext(mGladGLContext.get());
+}
+
+void GLContext::unlock() noexcept {
+  gladSetGLContext(nullptr);
+  SDL_GL_MakeCurrent(nullptr, nullptr);
+  mMutex.unlock();
+}
+
 std::expected<std::shared_ptr<GLContext>, std::runtime_error>
-GLContext::create(SDL_Window *window,
-                  std::shared_ptr<GLContext> shareContext) noexcept {
-  if (shareContext) {
-    SDL_GL_MakeCurrent(shareContext->sdlWindow(), shareContext->sdlContext());
+GLContext::create(const GLContextDescriptor &descriptor) noexcept {
+  auto context = std::shared_ptr<GLContext>(new GLContext());
+
+  if (descriptor.shareContext) {
+    SDL_GL_MakeCurrent(descriptor.shareContext->sdlWindow(),
+                       descriptor.shareContext->sdlContext());
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
   } else {
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 0);
   }
 
-  auto sdlContext = SDL_GL_CreateContext(window);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, descriptor.majorVersion);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, descriptor.minorVersion);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, descriptor.profile);
+
+  auto sdlContext = SDL_GL_CreateContext(descriptor.window);
+
+  context->mGladGLContext = std::make_unique<GladGLContext>();
+  gladLoadGLContext(context->mGladGLContext.get(), nullptr);
+
   SDL_GL_MakeCurrent(nullptr, nullptr);
 
   if (!sdlContext) {
     return std::unexpected(std::runtime_error(SDL_GetError()));
   }
 
-  auto context = std::shared_ptr<GLContext>(new GLContext());
-  context->mWindow = window;
+  context->mWindow = descriptor.window;
   context->mContext = sdlContext;
   return context;
 }
