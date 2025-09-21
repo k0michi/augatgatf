@@ -16,7 +16,7 @@ private:
   std::recursive_mutex mMutex;
 
 public:
-  virtual ~GLContext() noexcept = default;
+  virtual ~GLContext() noexcept;
 
   GLContext(const GLContext &) = delete;
   GLContext(GLContext &&);
@@ -28,7 +28,8 @@ public:
   std::recursive_mutex &mutex() noexcept;
 
   static std::expected<std::shared_ptr<GLContext>, std::runtime_error>
-  create(SDL_Window *window) noexcept;
+  create(SDL_Window *window,
+         std::shared_ptr<GLContext> shareContext = nullptr) noexcept;
 
 private:
   explicit GLContext() noexcept = default;

@@ -10,7 +10,7 @@ private:
 
 public:
   explicit GLContextLock(std::shared_ptr<GLContext> context) noexcept;
-  virtual ~GLContextLock() noexcept = default;
+  virtual ~GLContextLock() noexcept;
 
   GLContextLock(const GLContextLock &) = delete;
   GLContextLock(GLContextLock &&) noexcept = delete;

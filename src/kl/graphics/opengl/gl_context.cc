@@ -1,7 +1,7 @@
 #include "kl/graphics/opengl/gl_context.hh"
 
 namespace kl::graphics::opengl {
-GLContext::~GLContext() {
+GLContext::~GLContext() noexcept {
   if (mContext) {
     SDL_GL_DestroyContext(mContext);
     mContext = nullptr;
