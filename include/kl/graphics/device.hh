@@ -11,6 +11,7 @@
 
 #include "device_descriptor.hh"
 #include "opengl/gl_context.hh"
+#include "rasterization_state.hh"
 #include "surface.hh"
 
 namespace kl::graphics {
@@ -32,6 +33,10 @@ public:
   Device(Device &&) noexcept = delete;
   Device &operator=(const Device &) = delete;
   Device &operator=(Device &&) noexcept = delete;
+
+  std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
+  createRasterizationState(
+      const RasterizationStateDescriptor &descriptor) const noexcept;
 
   std::optional<std::shared_ptr<opengl::GLContext>>
   getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept;

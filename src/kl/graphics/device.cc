@@ -10,6 +10,12 @@ Device::getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept {
   return std::nullopt;
 }
 
+std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
+Device::createRasterizationState(
+    const RasterizationStateDescriptor &descriptor) const noexcept {
+  return RasterizationState::create(descriptor);
+}
+
 std::expected<std::shared_ptr<opengl::GLContext>, std::runtime_error>
 Device::getOrCreateContextForSurface(
     const std::shared_ptr<Surface> &surface) noexcept {

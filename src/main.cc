@@ -33,6 +33,8 @@ kl::platform::Task<void> main_async() {
   auto device =
       graphicsInstance->createDevice(kl::graphics::DeviceDescriptor{});
 
+  auto rasterizationState = device.value()->createRasterizationState({});
+
   auto window = windowResult.value();
   int32_t count = 0;
 

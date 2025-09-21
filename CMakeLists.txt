@@ -28,15 +28,19 @@ add_subdirectory(external/glad)
 # main
 
 add_executable(main
-  src/main.cc
-  src/kl/platform/window.cc
-  src/kl/platform/instance.cc
-  src/kl/platform/frame_awaiter.cc
-  src/kl/graphics/instance.cc
-  src/kl/graphics/surface.cc
-  src/kl/graphics/device.cc
-  src/kl/graphics/opengl/gl_context.cc
+# begin
   src/kl/graphics/context.cc
+  src/kl/graphics/device.cc
+  src/kl/graphics/instance.cc
+  src/kl/graphics/opengl/gl_context.cc
+  src/kl/graphics/opengl/gl_context_descriptor.cc
+  src/kl/graphics/rasterization_state.cc
+  src/kl/graphics/surface.cc
+  src/kl/platform/frame_awaiter.cc
+  src/kl/platform/instance.cc
+  src/kl/platform/window.cc
+  src/main.cc
+# end
 )
 target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE SDL3::SDL3)
