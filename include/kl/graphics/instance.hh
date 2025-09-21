@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "kl/graphics/instance_descriptor.hh"
+#include "surface.hh"
 
 namespace kl::graphics {
 class Instance {
@@ -17,6 +18,9 @@ public:
 
   Instance(const Instance &) = delete;
   Instance &operator=(const Instance &) = delete;
+
+  std::expected<std::shared_ptr<Surface>, std::runtime_error>
+  createSurface(const SurfaceDescriptor &descriptor) noexcept;
 
   static std::expected<std::shared_ptr<Instance>, std::runtime_error>
   create(const InstanceDescriptor &descriptor) noexcept;

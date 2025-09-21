@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include <iostream>
 
+#include "kl/graphics/instance.hh"
 #include "kl/platform/instance.hh"
 #include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
@@ -23,13 +24,20 @@ kl::platform::Task<void> main_async() {
     co_return;
   }
 
+  auto graphicsInstance =
+      kl::graphics::Instance::create(kl::graphics::InstanceDescriptor{})
+          .value();
+  kl::graphics::SurfaceDescriptor surfaceDesc;
+  surfaceDesc.window = windowResult.value();
+  auto surface = kl::graphics::Surface::create(surfaceDesc).value();
+
   auto window = windowResult.value();
   int32_t count = 0;
 
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
     instance->pollEvents();
-    std::cout << elapsed << std::endl;
+    // std::cout << elapsed << std::endl;
     count++;
   }
 }
