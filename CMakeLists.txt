@@ -33,6 +33,7 @@ add_executable(main
 	src/kl/graphics/surface.cc
 	src/kl/graphics/device.cc
 	src/kl/graphics/opengl/gl_context.cc
+	src/kl/graphics/context.cc
 )
 target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE SDL3::SDL3)
