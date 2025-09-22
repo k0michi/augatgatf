@@ -3,27 +3,35 @@ import fsPromises from "fs/promises";
 const args = process.argv.slice(2);
 const outputPath = args[0] || "CMakeLists.txt";
 
-const sources = await Array.fromAsync(fsPromises.glob("src/**/*.cc"));
-sources.sort();
-
 let content = await fsPromises.readFile(outputPath, "utf-8");
 
-const beginMarker = "# begin";
-const endMarker = "# end";
+let index = 0;
 
-const beginIndex = content.indexOf(beginMarker);
-const endIndex = content.indexOf(endMarker, beginIndex + beginMarker.length);
+while (index < content.length) {
+    const beginMarker = /# include (.*)\n/;
+    const endMarker = "# end";
 
-if (beginIndex === -1 || endIndex === -1) {
-    console.error(`Markers "${beginMarker}" and "${endMarker}" not found in ${outputPath}`);
-    process.exit(1);
+    const beginMatch = beginMarker.exec(content.slice(index));
+    if (!beginMatch) break;
+
+    const beginIndex = index + beginMatch.index;
+    const pattern = beginMatch[1].trim();
+    const endIndex = content.indexOf(endMarker, beginIndex);
+    if (endIndex === -1) {
+        console.error(`End marker not found after begin marker at index ${beginIndex}`);
+        process.exit(1);
+    }
+
+    const sources = await Array.fromAsync(fsPromises.glob(pattern));
+    sources.sort();
+
+    const before = content.slice(0, beginIndex + beginMatch[0].length).trimEnd();
+    const after = content.slice(endIndex).trimStart();
+
+    const sourceLines = sources.map(src => `  ${src}`);
+    content = `${before}\n${sourceLines.join("\n")}\n${after}`;
+
+    index = endIndex + endMarker.length;
 }
 
-const before = content.slice(0, beginIndex + beginMarker.length).trimEnd();
-const after = content.slice(endIndex).trimStart();
-
-const sourceLines = sources.map(src => `  ${src}`);
-const newContent = `${before}\n${sourceLines.join("\n")}\n${after}`;
-
-await fsPromises.writeFile(outputPath, newContent, "utf-8");
-console.log(`Updated ${outputPath} with ${sources.length} source files.`);
+await fsPromises.writeFile(outputPath, content, "utf-8");
