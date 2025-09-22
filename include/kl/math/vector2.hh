@@ -5,17 +5,33 @@
 #include <stdexcept>
 
 namespace kl::math {
-struct Vector2 final {
+template <typename T, std::size_t N> struct Vector;
+
+constexpr Vector<float, 2> operator+(Vector<float, 2> lhs,
+                                     const Vector<float, 2> &rhs) noexcept;
+constexpr Vector<float, 2> operator-(Vector<float, 2> lhs,
+                                     const Vector<float, 2> &rhs) noexcept;
+constexpr Vector<float, 2> operator*(float lhs, Vector<float, 2> rhs) noexcept;
+
+template <> struct Vector<float, 2> final {
   float x;
   float y;
 
-  static constexpr Vector2 zero() noexcept { return Vector2{0.0f, 0.0f}; }
+  static constexpr Vector<float, 2> zero() noexcept {
+    return Vector<float, 2>{0.0f, 0.0f};
+  }
 
-  static constexpr Vector2 one() noexcept { return Vector2{1.0f, 1.0f}; }
+  static constexpr Vector<float, 2> one() noexcept {
+    return Vector<float, 2>{1.0f, 1.0f};
+  }
 
-  static constexpr Vector2 unitX() noexcept { return Vector2{1.0f, 0.0f}; }
+  static constexpr Vector<float, 2> unitX() noexcept {
+    return Vector<float, 2>{1.0f, 0.0f};
+  }
 
-  static constexpr Vector2 unitY() noexcept { return Vector2{0.0f, 1.0f}; }
+  static constexpr Vector<float, 2> unitY() noexcept {
+    return Vector<float, 2>{0.0f, 1.0f};
+  }
 
   constexpr float lengthSquared() const noexcept { return x * x + y * y; }
 
@@ -32,31 +48,35 @@ struct Vector2 final {
     (*this) /= len;
   }
 
-  static constexpr Vector2 normalize(const Vector2 &v) noexcept {
-    Vector2 result = v;
+  static constexpr Vector<float, 2>
+  normalize(const Vector<float, 2> &v) noexcept {
+    Vector<float, 2> result = v;
     result.normalize();
     return result;
   }
 
-  static constexpr float dot(const Vector2 &a, const Vector2 &b) noexcept {
+  static constexpr float dot(const Vector<float, 2> &a,
+                             const Vector<float, 2> &b) noexcept {
     return a.x * b.x + a.y * b.y;
   }
 
-  static constexpr float cross(const Vector2 &a, const Vector2 &b) noexcept {
+  static constexpr float cross(const Vector<float, 2> &a,
+                               const Vector<float, 2> &b) noexcept {
     return a.x * b.y - a.y * b.x;
   }
 
-  static constexpr float distance(const Vector2 &a, const Vector2 &b) noexcept {
+  static constexpr float distance(const Vector<float, 2> &a,
+                                  const Vector<float, 2> &b) noexcept {
     return (a - b).length();
   }
 
-  static constexpr float distanceSquared(const Vector2 &a,
-                                         const Vector2 &b) noexcept {
+  static constexpr float distanceSquared(const Vector<float, 2> &a,
+                                         const Vector<float, 2> &b) noexcept {
     return (a - b).lengthSquared();
   }
 
-  static constexpr Vector2 lerp(const Vector2 &a, const Vector2 &b,
-                                float t) noexcept {
+  static constexpr Vector<float, 2>
+  lerp(const Vector<float, 2> &a, const Vector<float, 2> &b, float t) noexcept {
     return a + t * (b - a);
   }
 
@@ -71,91 +91,107 @@ struct Vector2 final {
     }
   }
 
-  constexpr Vector2 &operator+=(const Vector2 &other) noexcept {
+  constexpr Vector<float, 2> &
+  operator+=(const Vector<float, 2> &other) noexcept {
     x += other.x;
     y += other.y;
     return *this;
   }
 
-  constexpr Vector2 &operator-=(const Vector2 &other) noexcept {
+  constexpr Vector<float, 2> &
+  operator-=(const Vector<float, 2> &other) noexcept {
     x -= other.x;
     y -= other.y;
     return *this;
   }
 
-  constexpr Vector2 &operator*=(float other) noexcept {
+  constexpr Vector<float, 2> &operator*=(float other) noexcept {
     x *= other;
     y *= other;
     return *this;
   }
 
-  constexpr Vector2 &operator*=(const Vector2 &other) noexcept {
+  constexpr Vector<float, 2> &
+  operator*=(const Vector<float, 2> &other) noexcept {
     x *= other.x;
     y *= other.y;
     return *this;
   }
 
-  constexpr Vector2 &operator/=(float other) noexcept {
+  constexpr Vector<float, 2> &operator/=(float other) noexcept {
     x /= other;
     y /= other;
     return *this;
   }
 
-  constexpr Vector2 &operator/=(const Vector2 &other) noexcept {
+  constexpr Vector<float, 2> &
+  operator/=(const Vector<float, 2> &other) noexcept {
     x /= other.x;
     y /= other.y;
     return *this;
   }
 
-  constexpr Vector2 operator-() const noexcept { return Vector2{-x, -y}; }
+  constexpr Vector<float, 2> operator-() const noexcept {
+    return Vector<float, 2>{-x, -y};
+  }
 };
 
-constexpr Vector2 operator+(Vector2 lhs, const Vector2 &rhs) noexcept {
+constexpr Vector<float, 2> operator+(Vector<float, 2> lhs,
+                                     const Vector<float, 2> &rhs) noexcept {
   lhs += rhs;
   return lhs;
 }
 
-constexpr Vector2 operator-(Vector2 lhs, const Vector2 &rhs) noexcept {
+constexpr Vector<float, 2> operator-(Vector<float, 2> lhs,
+                                     const Vector<float, 2> &rhs) noexcept {
   lhs -= rhs;
   return lhs;
 }
 
-constexpr Vector2 operator*(Vector2 lhs, float rhs) noexcept {
+constexpr Vector<float, 2> operator*(Vector<float, 2> lhs, float rhs) noexcept {
   lhs *= rhs;
   return lhs;
 }
 
-constexpr Vector2 operator*(float lhs, Vector2 rhs) noexcept {
+constexpr Vector<float, 2> operator*(float lhs, Vector<float, 2> rhs) noexcept {
   rhs *= lhs;
   return rhs;
 }
-constexpr Vector2 operator*(Vector2 lhs, const Vector2 &rhs) noexcept {
+
+constexpr Vector<float, 2> operator*(Vector<float, 2> lhs,
+                                     const Vector<float, 2> &rhs) noexcept {
   lhs *= rhs;
   return lhs;
 }
 
-constexpr Vector2 operator/(Vector2 lhs, float rhs) noexcept {
+constexpr Vector<float, 2> operator/(Vector<float, 2> lhs, float rhs) noexcept {
   lhs /= rhs;
   return lhs;
 }
 
-constexpr Vector2 operator/(Vector2 lhs, const Vector2 &rhs) noexcept {
+constexpr Vector<float, 2> operator/(Vector<float, 2> lhs,
+                                     const Vector<float, 2> &rhs) noexcept {
   lhs /= rhs;
   return lhs;
 }
 
-constexpr Vector2 operator/(float lhs, const Vector2 &rhs) noexcept {
-  Vector2 result{lhs, lhs};
+constexpr Vector<float, 2> operator/(float lhs,
+                                     const Vector<float, 2> &rhs) noexcept {
+  Vector<float, 2> result{lhs, lhs};
   result /= rhs;
   return result;
 }
 
-constexpr bool operator==(const Vector2 &lhs, const Vector2 &rhs) noexcept {
+constexpr bool operator==(const Vector<float, 2> &lhs,
+                          const Vector<float, 2> &rhs) noexcept {
   return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
-constexpr bool operator!=(const Vector2 &lhs, const Vector2 &rhs) noexcept {
+constexpr bool operator!=(const Vector<float, 2> &lhs,
+                          const Vector<float, 2> &rhs) noexcept {
   return !(lhs == rhs);
 }
+
+using Vector2 = Vector<float, 2>;
 } // namespace kl::math
-#endif // KL_MATH_VECTOR2_HH
+#endif // KL_MATH_VECTOR<FLOAT, 2>_HH
