@@ -56,7 +56,7 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
                            m00 * invDet};
   }
 
-  constexpr Matrix<T, 2, 2> transpose() noexcept {
+  constexpr Matrix<T, 2, 2> transpose() const noexcept {
     return Matrix<T, 2, 2>{m00, m10, m01, m11};
   };
 

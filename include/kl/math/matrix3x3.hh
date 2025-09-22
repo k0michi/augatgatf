@@ -73,7 +73,7 @@ template <std::floating_point T> struct Matrix<T, 3, 3> final {
         (m00 * m11 - m01 * m10) * invDet};
   }
 
-  constexpr Matrix<T, 3, 3> transpose() noexcept {
+  constexpr Matrix<T, 3, 3> transpose() const noexcept {
     return Matrix<T, 3, 3>{m00, m10, m20, m01, m11, m21, m02, m12, m22};
   };
 
