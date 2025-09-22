@@ -36,29 +36,29 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Debug
           
       - name: Configure CMake (Visual Studio)
         if: matrix.os == 'windows-latest'
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A x64 .. -DCMAKE_BUILD_TYPE=Release
+          cmake -G "Visual Studio 17 2022" -A x64 .. -DCMAKE_BUILD_TYPE=Debug
 
       - name: Build
         run: |
           cd build
-          cmake --build . --config Release
+          cmake --build . --config Debug
 
       - name: Run Tests (Unix-like)
         if: matrix.os != 'windows-latest'
         run: |
-          cd build/Release
+          cd build/Debug
           ./test_main
 
       - name: Run Tests (Windows)
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          cd build\Release
+          cd build\Debug
           test_main.exe
