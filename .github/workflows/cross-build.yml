@@ -22,7 +22,7 @@ jobs:
       - name: Set up dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         # https://github.com/libsdl-org/SDL/blob/main/docs/README-linux.md
-        # lcov for code coverage
+        # gcovr for code coverage
         run: |
           sudo apt-get update
           sudo apt-get install build-essential git make \
