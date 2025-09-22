@@ -23,6 +23,9 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
   static constexpr std::size_t kRowSize = 2;
   static constexpr std::size_t kColumnSize = 2;
 
+  constexpr Matrix<T, 2, 2>(T diagonal) noexcept
+      : col0(Vector<T, 2>{diagonal, static_cast<T>(0)}),
+        col1(Vector<T, 2>{static_cast<T>(0), diagonal}) {}
   constexpr Matrix<T, 2, 2>(const Vector<T, 2> &col0,
                             const Vector<T, 2> &col1) noexcept
       : col0(col0), col1(col1) {}

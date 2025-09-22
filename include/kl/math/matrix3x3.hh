@@ -25,6 +25,10 @@ template <std::floating_point T> struct Matrix<T, 3, 3> final {
   static constexpr std::size_t kRowSize = 3;
   static constexpr std::size_t kColumnSize = 3;
 
+  constexpr Matrix<T, 3, 3>(T diagonal) noexcept
+      : col0(Vector<T, 3>{diagonal, static_cast<T>(0), static_cast<T>(0)}),
+        col1(Vector<T, 3>{static_cast<T>(0), diagonal, static_cast<T>(0)}),
+        col2(Vector<T, 3>{static_cast<T>(0), static_cast<T>(0), diagonal}) {}
   constexpr Matrix<T, 3, 3>(const Vector<T, 3> &col0, const Vector<T, 3> &col1,
                             const Vector<T, 3> &col2) noexcept
       : col0(col0), col1(col1), col2(col2) {}
