@@ -23,16 +23,16 @@ TEST(Matrix2x2, AccessColumns) {
 TEST(Matrix2x2, IndexOperator) {
   kl::math::Matrix2x2 mat{1.0f, 2.0f, 3.0f, 4.0f};
   EXPECT_FLOAT_EQ(mat[0][0], 1.0f);
-  EXPECT_FLOAT_EQ(mat[0][1], 3.0f);
-  EXPECT_FLOAT_EQ(mat[1][0], 2.0f);
+  EXPECT_FLOAT_EQ(mat[0][1], 2.0f);
+  EXPECT_FLOAT_EQ(mat[1][0], 3.0f);
   EXPECT_FLOAT_EQ(mat[1][1], 4.0f);
 }
 
 TEST(Matrix2x2, IndexOperatorConst) {
   const kl::math::Matrix2x2 mat{1.0f, 2.0f, 3.0f, 4.0f};
   EXPECT_FLOAT_EQ(mat[0][0], 1.0f);
-  EXPECT_FLOAT_EQ(mat[0][1], 3.0f);
-  EXPECT_FLOAT_EQ(mat[1][0], 2.0f);
+  EXPECT_FLOAT_EQ(mat[0][1], 2.0f);
+  EXPECT_FLOAT_EQ(mat[1][0], 3.0f);
   EXPECT_FLOAT_EQ(mat[1][1], 4.0f);
 }
 
