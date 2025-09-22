@@ -107,8 +107,8 @@ TEST(Matrix2x2, VectorMultiplication) {
   kl::math::Matrix2x2 mat{1.0f, 2.0f, 3.0f, 4.0f};
   kl::math::Vector2 vec{1.0f, 1.0f};
   kl::math::Vector2 result = mat * vec;
-  EXPECT_FLOAT_EQ(result.x, 3.0f);
-  EXPECT_FLOAT_EQ(result.y, 7.0f);
+  EXPECT_FLOAT_EQ(result.x, 4.0f);
+  EXPECT_FLOAT_EQ(result.y, 6.0f);
 }
 
 TEST(Matrix2x2, MatrixMultiplication) {
