@@ -106,6 +106,12 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
     return *this;
   }
 
+  constexpr Matrix<T, 2, 2> &operator/=(const Matrix<T, 2, 2> &other) noexcept {
+    col0 /= other.col0;
+    col1 /= other.col1;
+    return *this;
+  }
+
   constexpr Matrix<T, 2, 2> operator-() const noexcept {
     return Matrix<T, 2, 2>{-col0, -col1};
   }
@@ -153,6 +159,13 @@ constexpr Matrix<T, 2, 2> operator*(Matrix<T, 2, 2> lhs,
 
 template <std::floating_point T>
 constexpr Matrix<T, 2, 2> operator/(Matrix<T, 2, 2> lhs, T rhs) noexcept {
+  lhs /= rhs;
+  return lhs;
+}
+
+template <std::floating_point T>
+constexpr Matrix<T, 2, 2> operator/(Matrix<T, 2, 2> lhs,
+                                    const Matrix<T, 2, 2> &rhs) noexcept {
   lhs /= rhs;
   return lhs;
 }

@@ -233,6 +233,14 @@ inline constexpr bool operator!=(const Vector<T, 4> &lhs,
   return !(lhs == rhs);
 }
 
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &os, const Vector<T, 4> &vec) {
+  auto name = typeid(T).name();
+  os << "Vector<" << name << ", 4>{" << vec.x << ", " << vec.y << ", " << vec.z
+     << ", " << vec.w << "}";
+  return os;
+}
+
 using Vector4 = Vector<float, 4>;
 using DVector4 = Vector<double, 4>;
 } // namespace kl::math

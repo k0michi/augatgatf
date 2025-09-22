@@ -222,5 +222,16 @@ inline constexpr bool operator!=(const Vector<T, 3> &lhs,
                                  const Vector<T, 3> &rhs) noexcept {
   return !(lhs == rhs);
 }
+
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &os, const Vector<T, 3> &vec) {
+  auto name = typeid(T).name();
+  os << "Vector<" << name << ", 3>{" << vec.x << ", " << vec.y << ", " << vec.z
+     << "}";
+  return os;
+}
+
+using Vector3 = Vector<float, 3>;
+using DVector3 = Vector<double, 3>;
 } // namespace kl::math
 #endif // KL_MATH_VECTOR3_HH
