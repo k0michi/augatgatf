@@ -48,7 +48,7 @@ Shader::create(std::shared_ptr<Device> device,
 #ifdef __EMSCRIPTEN__
                                300
 #else
-                               450
+                               330
 #endif
                            ,
                            .es =
