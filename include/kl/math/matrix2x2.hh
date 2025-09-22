@@ -111,10 +111,6 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
     return *this;
   }
 
-  constexpr Vector<T, 2> operator*(const Vector<T, 2> &vec) const noexcept {
-    return Vector<T, 2>{m00 * vec.x + m01 * vec.y, m10 * vec.x + m11 * vec.y};
-  }
-
   constexpr Matrix<T, 2, 2> &operator*=(const Matrix<T, 2, 2> &other) noexcept {
     *this = Matrix<T, 2, 2>{
         m00 * other.m00 + m01 * other.m10, m00 * other.m01 + m01 * other.m11,
@@ -170,6 +166,20 @@ template <std::floating_point T>
 constexpr Matrix<T, 2, 2> operator*(T lhs, Matrix<T, 2, 2> rhs) noexcept {
   rhs *= lhs;
   return rhs;
+}
+
+template <std::floating_point T>
+constexpr Vector<T, 2> operator*(const Matrix<T, 2, 2> &lhs,
+                                 const Vector<T, 2> &rhs) noexcept {
+  return Vector<T, 2>{lhs.m00 * rhs.x + lhs.m10 * rhs.y,
+                      lhs.m01 * rhs.x + lhs.m11 * rhs.y};
+}
+
+template <std::floating_point T>
+constexpr Vector<T, 2> operator*(const Vector<T, 2> &lhs,
+                                 const Matrix<T, 2, 2> &rhs) noexcept {
+  return Vector<T, 2>{lhs.x * rhs.m00 + lhs.y * rhs.m01,
+                      lhs.x * rhs.m10 + lhs.y * rhs.m11};
 }
 
 template <std::floating_point T>
