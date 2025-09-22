@@ -4,7 +4,6 @@
 #include <cmath>
 #include <concepts>
 #include <ostream>
-#include <stdexcept>
 #include <typeinfo>
 
 namespace kl::math {
