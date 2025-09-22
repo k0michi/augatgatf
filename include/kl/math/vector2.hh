@@ -99,7 +99,7 @@ template <std::floating_point T> struct Vector<T, 2> final {
     }
   }
 
-  constexpr Vector<T, 2> &operator[](std::size_t index) const & {
+  constexpr const T &operator[](std::size_t index) const & {
     switch (index) {
     case 0:
       return x;
@@ -110,7 +110,7 @@ template <std::floating_point T> struct Vector<T, 2> final {
     }
   }
 
-  constexpr Vector<T, 2> &&operator[](std::size_t index) && {
+  constexpr T &&operator[](std::size_t index) && {
     switch (index) {
     case 0:
       return std::move(x);
