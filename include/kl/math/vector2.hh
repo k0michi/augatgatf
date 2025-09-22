@@ -25,19 +25,19 @@ template <std::floating_point T> struct Vector<T, 2> final {
   static constexpr std::size_t kSize = 2;
 
   static constexpr Vector<T, 2> zero() noexcept {
-    return Vector<T, 2>{0.0f, 0.0f};
+    return Vector<T, 2>{static_cast<T>(0), static_cast<T>(0)};
   }
 
   static constexpr Vector<T, 2> one() noexcept {
-    return Vector<T, 2>{1.0f, 1.0f};
+    return Vector<T, 2>{static_cast<T>(1), static_cast<T>(1)};
   }
 
   static constexpr Vector<T, 2> unitX() noexcept {
-    return Vector<T, 2>{1.0f, 0.0f};
+    return Vector<T, 2>{static_cast<T>(1), static_cast<T>(0)};
   }
 
   static constexpr Vector<T, 2> unitY() noexcept {
-    return Vector<T, 2>{0.0f, 1.0f};
+    return Vector<T, 2>{static_cast<T>(0), static_cast<T>(1)};
   }
 
   constexpr std::size_t size() const noexcept { return kSize; }

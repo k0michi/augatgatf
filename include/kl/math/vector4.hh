@@ -19,27 +19,33 @@ template <std::floating_point T> struct Vector<T, 4> final {
   static constexpr std::size_t kSize = 4;
 
   static constexpr Vector<T, 4> zero() noexcept {
-    return Vector<T, 4>{T(0), T(0), T(0), T(0)};
+    return Vector<T, 4>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(0)};
   }
 
   static constexpr Vector<T, 4> one() noexcept {
-    return Vector<T, 4>{T(1), T(1), T(1), T(1)};
+    return Vector<T, 4>{static_cast<T>(1), static_cast<T>(1), static_cast<T>(1),
+                        static_cast<T>(1)};
   }
 
   static constexpr Vector<T, 4> unitX() noexcept {
-    return Vector<T, 4>{T(1), T(0), T(0), T(0)};
+    return Vector<T, 4>{static_cast<T>(1), static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(0)};
   }
 
   static constexpr Vector<T, 4> unitY() noexcept {
-    return Vector<T, 4>{T(0), T(1), T(0), T(0)};
+    return Vector<T, 4>{static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
+                        static_cast<T>(0)};
   }
 
   static constexpr Vector<T, 4> unitZ() noexcept {
-    return Vector<T, 4>{T(0), T(0), T(1), T(0)};
+    return Vector<T, 4>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(1),
+                        static_cast<T>(0)};
   }
 
   static constexpr Vector<T, 4> unitW() noexcept {
-    return Vector<T, 4>{T(0), T(0), T(0), T(1)};
+    return Vector<T, 4>{static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
+                        static_cast<T>(1)};
   }
 
   constexpr std::size_t size() const noexcept { return kSize; }
@@ -51,10 +57,12 @@ template <std::floating_point T> struct Vector<T, 4> final {
 
   constexpr void normalize() noexcept {
     T len = length();
-    if (len == T(0)) {
+
+    if (len == static_cast<T>(0)) {
       (*this) = zero();
       return;
     }
+
     (*this) /= len;
   }
 
