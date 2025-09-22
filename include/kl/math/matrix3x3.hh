@@ -77,7 +77,7 @@ template <std::floating_point T> struct Matrix<T, 3, 3> final {
     return Matrix<T, 3, 3>{m00, m10, m20, m01, m11, m21, m02, m12, m22};
   };
 
-  constexpr Vector<T, 3> &operator[](std::size_t index) {
+  constexpr Vector<T, 3> &operator[](std::size_t index) & {
     switch (index) {
     case 0:
       return col0;
@@ -85,6 +85,32 @@ template <std::floating_point T> struct Matrix<T, 3, 3> final {
       return col1;
     case 2:
       return col2;
+    default:
+      throw std::out_of_range("Index out of range");
+    }
+  }
+
+  constexpr const Vector<T, 3> &operator[](std::size_t index) const & {
+    switch (index) {
+    case 0:
+      return col0;
+    case 1:
+      return col1;
+    case 2:
+      return col2;
+    default:
+      throw std::out_of_range("Index out of range");
+    }
+  }
+
+  constexpr Vector<T, 3> &&operator[](std::size_t index) && {
+    switch (index) {
+    case 0:
+      return std::move(col0);
+    case 1:
+      return std::move(col1);
+    case 2:
+      return std::move(col2);
     default:
       throw std::out_of_range("Index out of range");
     }

@@ -88,12 +88,35 @@ template <std::floating_point T> struct Vector<T, 2> final {
     return a + t * (b - a);
   }
 
-  constexpr T &operator[](std::size_t index) {
+  constexpr T &operator[](std::size_t index) & {
+    switch (index)
+      &{
+      case 0:
+        return x;
+      case 1:
+        return y;
+      default:
+        throw std::out_of_range("Index out of range");
+      }
+  }
+
+  constexpr Vector<T, 2> &operator[](std::size_t index) const & {
     switch (index) {
     case 0:
       return x;
     case 1:
       return y;
+    default:
+      throw std::out_of_range("Index out of range");
+    }
+  }
+
+  constexpr Vector<T, 2> &&operator[](std::size_t index) && {
+    switch (index) {
+    case 0:
+      return std::move(x);
+    case 1:
+      return std::move(y);
     default:
       throw std::out_of_range("Index out of range");
     }
