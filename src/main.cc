@@ -1,12 +1,17 @@
-#include <SDL3/SDL.h>
 #include <iostream>
 
 #include "kl/graphics/instance.hh"
 #include "kl/math/matrix2x2.hh"
+#include "kl/math/matrix3x3.hh"
 #include "kl/math/vector2.hh"
+#include "kl/math/vector3.hh"
+#include "kl/math/vector4.hh"
 #include "kl/platform/instance.hh"
 #include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
+
+#include <fstream>
+#include <spirv_glsl.hpp>
 
 kl::platform::Task<void> main_async() {
   kl::math::Vector2 a{3.0f, 4.0f};
@@ -25,7 +30,7 @@ kl::platform::Task<void> main_async() {
   }
 
   auto instanceResult =
-      kl::platform::Instance::create(kl::InstanceDescriptor{});
+      kl::platform::Instance::create(kl::platform::InstanceDescriptor{});
   if (!instanceResult) {
     std::cerr << "Failed to create Instance: " << instanceResult.error().what()
               << std::endl;
@@ -51,6 +56,52 @@ kl::platform::Task<void> main_async() {
       graphicsInstance->createDevice(kl::graphics::DeviceDescriptor{});
 
   auto rasterizationState = device.value()->createRasterizationState({});
+
+  {
+    auto file = "../../vert.spv";
+    std::ifstream fs(file, std::ios::binary | std::ios::ate);
+    if (!fs.is_open()) {
+      std::cerr << "Failed to open file: " << file << std::endl;
+      co_return;
+    }
+    auto size = fs.tellg();
+    fs.seekg(0, std::ios::beg);
+    std::vector<std::byte> spirv_binary(size / sizeof(std::byte));
+    fs.read(reinterpret_cast<char *>(spirv_binary.data()), size);
+    fs.close();
+    auto shader = device.value()->createShader({
+        .stage = kl::graphics::ShaderStage::eVertex,
+        .code = spirv_binary,
+        .entryPoint = "a",
+    });
+
+    if (!shader) {
+      std::cerr << "Failed to create shader: " << shader.error().what()
+                << std::endl;
+      co_return;
+    }
+
+    *shader;
+
+    auto program = device.value()->createProgram({
+        .shaders =
+            {
+                device.value()
+                    ->createShader({
+                        .stage = kl::graphics::ShaderStage::eVertex,
+                        .code = spirv_binary,
+                        .entryPoint = "a",
+                    })
+                    .value(),
+            },
+    });
+
+    if (!program) {
+      std::cerr << "Failed to create program: " << program.error().what()
+                << std::endl;
+      co_return;
+    }
+  }
 
   auto window = windowResult.value();
   int32_t count = 0;
