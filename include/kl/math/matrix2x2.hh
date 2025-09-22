@@ -20,9 +20,10 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
     };
   };
 
-  Matrix<T, 2, 2>(const Vector<T, 2> &col0, const Vector<T, 2> &col1)
+  constexpr Matrix<T, 2, 2>(const Vector<T, 2> &col0,
+                            const Vector<T, 2> &col1) noexcept
       : col0(col0), col1(col1) {}
-  Matrix<T, 2, 2>(T m00, T m01, T m10, T m11)
+  constexpr Matrix<T, 2, 2>(T m00, T m01, T m10, T m11) noexcept
       : m00(m00), m01(m01), m10(m10), m11(m11) {}
 
   static constexpr Matrix<T, 2, 2> zero() noexcept {
