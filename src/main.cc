@@ -2,11 +2,28 @@
 #include <iostream>
 
 #include "kl/graphics/instance.hh"
+#include "kl/math/matrix2x2.hh"
+#include "kl/math/vector2.hh"
 #include "kl/platform/instance.hh"
 #include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
 kl::platform::Task<void> main_async() {
+  kl::math::Vector2 a{3.0f, 4.0f};
+  kl::math::Vector2 b{1.0f, 2.0f};
+  kl::math::DVector2 d = a;
+  long long x = 1;
+  char i = x;
+  kl::math::Vector2 c = d;
+  std::cout << c << std::endl;
+  kl::math::Matrix2x2 m{1.0f, 2.0f, 3.0f, 4.0f};
+  auto inv = m.inverse();
+  if (inv) {
+    std::cout << *inv << std::endl;
+  } else {
+    std::cout << "Matrix is not invertible" << std::endl;
+  }
+
   auto instanceResult =
       kl::platform::Instance::create(kl::InstanceDescriptor{});
   if (!instanceResult) {
