@@ -23,6 +23,8 @@ template <std::floating_point T> struct Vector<T, 2> final {
   T x;
   T y;
 
+  static constexpr std::size_t kSize = 2;
+
   static constexpr Vector<T, 2> zero() noexcept {
     return Vector<T, 2>{0.0f, 0.0f};
   }
@@ -38,6 +40,8 @@ template <std::floating_point T> struct Vector<T, 2> final {
   static constexpr Vector<T, 2> unitY() noexcept {
     return Vector<T, 2>{0.0f, 1.0f};
   }
+
+  constexpr std::size_t size() const noexcept { return kSize; }
 
   constexpr T lengthSquared() const noexcept { return x * x + y * y; }
 
