@@ -2,8 +2,6 @@
 
 #include <spirv_glsl.hpp>
 
-#include <iostream>
-
 #include "kl/graphics/device.hh"
 
 namespace kl::graphics {
@@ -93,7 +91,6 @@ Shader::create(std::shared_ptr<Device> device,
 
   try {
     source = glsl.compile();
-    std::cout << source << std::endl;
   } catch (const std::exception &e) {
     return std::unexpected(std::runtime_error("Failed to compile shader: " +
                                               std::string(e.what())));
