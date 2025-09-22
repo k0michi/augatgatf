@@ -50,7 +50,7 @@ template <std::floating_point T> struct Vector<T, 2> final {
   constexpr void normalize() noexcept {
     T len = length();
 
-    if (len == 0.0f) {
+    if (len == static_cast<T>(0)) {
       (*this) = zero();
       return;
     }
