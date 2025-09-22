@@ -26,6 +26,8 @@ public:
   Shader &operator=(const Shader &) = delete;
   Shader &operator=(Shader &&) noexcept = delete;
 
+  inline GLuint glShader() const noexcept { return mShader; }
+
   static std::expected<std::shared_ptr<Shader>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const ShaderDescriptor &descriptor) noexcept;

@@ -62,6 +62,7 @@ add_library(kl STATIC
   src/kl/graphics/instance.cc
   src/kl/graphics/opengl/gl_context.cc
   src/kl/graphics/opengl/gl_context_descriptor.cc
+  src/kl/graphics/program.cc
   src/kl/graphics/rasterization_state.cc
   src/kl/graphics/shader.cc
   src/kl/graphics/surface.cc

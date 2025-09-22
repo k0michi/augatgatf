@@ -83,6 +83,11 @@ Device::createShader(const ShaderDescriptor &descriptor) noexcept {
   return Shader::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<Program>, std::runtime_error>
+Device::createProgram(const ProgramDescriptor &descriptor) noexcept {
+  return Program::create(shared_from_this(), descriptor);
+}
+
 std::expected<std::shared_ptr<Device>, std::runtime_error>
 Device::create(std::shared_ptr<Instance> instance,
                const DeviceDescriptor &descriptor) noexcept {

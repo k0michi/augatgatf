@@ -12,6 +12,7 @@
 
 #include "device_descriptor.hh"
 #include "opengl/gl_context.hh"
+#include "program.hh"
 #include "rasterization_state.hh"
 #include "shader.hh"
 #include "surface.hh"
@@ -59,6 +60,8 @@ public:
 
   std::expected<std::shared_ptr<Shader>, std::runtime_error>
   createShader(const ShaderDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Program>, std::runtime_error>
+  createProgram(const ProgramDescriptor &descriptor) noexcept;
 
   static std::expected<std::shared_ptr<Device>, std::runtime_error>
   create(std::shared_ptr<Instance> instance,
