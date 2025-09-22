@@ -66,6 +66,10 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
-add_executable(test_main test/test_main.cc)
+add_executable(test_main
+# include test/**/*.cc
+  test/test_vector2.cc
+# end
+)
 target_link_libraries(test_main gtest_main kl)
-add_test(NAME SimpleTests COMMAND test_main)
+add_test(NAME Tests COMMAND test_main)
