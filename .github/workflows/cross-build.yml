@@ -22,6 +22,7 @@ jobs:
       - name: Set up dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         # https://github.com/libsdl-org/SDL/blob/main/docs/README-linux.md
+        # lcov for code coverage
         run: |
           sudo apt-get update
           sudo apt-get install build-essential git make \
@@ -29,7 +30,8 @@ jobs:
           libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
           libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
           libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
+          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev \
+          lcov
 
       - name: Configure CMake (Ninja)
         if: matrix.os != 'windows-latest'
@@ -54,3 +56,17 @@ jobs:
         run: |
           cd build
           ctest --output-on-failure -C Debug
+
+      - name: Generate coverage report (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd build
+          lcov --capture --directory . --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/external/*' --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
+        with:
+          files: build/coverage.info
