@@ -135,6 +135,12 @@ template <std::floating_point T> struct Vector<T, 2> final {
   constexpr Vector<T, 2> operator-() const noexcept {
     return Vector<T, 2>{-x, -y};
   }
+
+  template <typename U>
+    requires(std::is_convertible_v<T, U>)
+  constexpr operator Vector<U, 2>() const noexcept {
+    return Vector<U, 2>{static_cast<U>(x), static_cast<U>(y)};
+  }
 };
 
 template <std::floating_point T>
