@@ -21,7 +21,7 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
   };
 
   static constexpr std::size_t kRowSize = 2;
-  static constexpr std::size_t kColmunSize = 2;
+  static constexpr std::size_t kColumnSize = 2;
 
   constexpr Matrix<T, 2, 2>(const Vector<T, 2> &col0,
                             const Vector<T, 2> &col1) noexcept
@@ -39,7 +39,7 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
 
   constexpr std::size_t rowSize() const noexcept { return kRowSize; }
 
-  constexpr std::size_t columnSize() const noexcept { return kColmunSize; }
+  constexpr std::size_t columnSize() const noexcept { return kColumnSize; }
 
   constexpr T determinant() const noexcept { return m00 * m11 - m01 * m10; }
 
