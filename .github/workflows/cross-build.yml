@@ -61,7 +61,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           cd build
-          lcov --capture --directory . --output-file coverage.info
+          lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch
           lcov --remove coverage.info '/usr/*' '*/external/*' --output-file coverage.info
           lcov --list coverage.info
 
