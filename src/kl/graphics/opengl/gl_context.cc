@@ -39,11 +39,9 @@ GladGLContext *GLContext::gladGLContext() const noexcept {
 void GLContext::lock() noexcept {
   mMutex.lock();
   SDL_GL_MakeCurrent(mWindow, mContext);
-  gladSetGLContext(mGladGLContext.get());
 }
 
 void GLContext::unlock() noexcept {
-  gladSetGLContext(nullptr);
   SDL_GL_MakeCurrent(nullptr, nullptr);
   mMutex.unlock();
 }
@@ -67,7 +65,7 @@ GLContext::create(const GLContextDescriptor &descriptor) noexcept {
   auto sdlContext = SDL_GL_CreateContext(descriptor.window);
 
   context->mGladGLContext = std::make_unique<GladGLContext>();
-  gladLoadGLContext(context->mGladGLContext.get(), nullptr);
+  gladLoadGLContext(context->mGladGLContext.get(), &SDL_GL_GetProcAddress);
 
   SDL_GL_MakeCurrent(nullptr, nullptr);
 

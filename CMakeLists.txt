@@ -23,7 +23,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3)
 
 # glad
+
 add_subdirectory(external/glad)
+
+# SPIRV-Cross
+
+FetchContent_Declare(
+  spirv-cross
+  GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Cross.git
+  GIT_TAG vulkan-sdk-1.4.321.0
+)
+FetchContent_MakeAvailable(spirv-cross)
 
 # main
 
@@ -53,6 +63,7 @@ add_library(kl STATIC
   src/kl/graphics/opengl/gl_context.cc
   src/kl/graphics/opengl/gl_context_descriptor.cc
   src/kl/graphics/rasterization_state.cc
+  src/kl/graphics/shader.cc
   src/kl/graphics/surface.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
@@ -63,6 +74,7 @@ add_library(kl STATIC
 target_include_directories(kl PUBLIC include)
 target_link_libraries(kl PUBLIC SDL3::SDL3)
 target_link_libraries(kl PUBLIC glad)
+target_link_libraries(kl PUBLIC spirv-cross-core spirv-cross-glsl)
 target_link_libraries(kl PUBLIC coverage_config)
 
 add_executable(main

@@ -8,26 +8,33 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include "device_descriptor.hh"
 #include "opengl/gl_context.hh"
 #include "rasterization_state.hh"
+#include "shader.hh"
 #include "surface.hh"
 
 namespace kl::graphics {
 /**
  * @brief GL context manager.
  */
-class Device {
+class Device : public std::enable_shared_from_this<Device> {
 private:
   std::weak_ptr<Instance> mInstance;
-  std::unordered_set<std::shared_ptr<opengl::GLContext>> mContexts;
+  SDL_Window *mDefaultWindow = nullptr;
+  /**
+   * @details mContexts[0] is the default context. Every GL object is created in
+   * the default context.
+   */
+  std::vector<std::shared_ptr<opengl::GLContext>> mContexts;
   std::unordered_map<std::shared_ptr<Surface>,
                      std::shared_ptr<opengl::GLContext>>
       mSurfaceContexts;
 
 public:
-  virtual ~Device() noexcept = default;
+  virtual ~Device() noexcept;
 
   Device(const Device &) = delete;
   Device(Device &&) noexcept = delete;
@@ -47,6 +54,11 @@ public:
   hasContext(const std::shared_ptr<opengl::GLContext> &context) const noexcept;
   bool
   hasContextForSurface(const std::shared_ptr<Surface> &surface) const noexcept;
+  std::optional<std::shared_ptr<opengl::GLContext>>
+  defaultContext() const noexcept;
+
+  std::expected<std::shared_ptr<Shader>, std::runtime_error>
+  createShader(const ShaderDescriptor &descriptor) noexcept;
 
   static std::expected<std::shared_ptr<Device>, std::runtime_error>
   create(std::shared_ptr<Instance> instance,
