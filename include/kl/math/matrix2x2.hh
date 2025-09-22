@@ -46,11 +46,11 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
   constexpr std::optional<Matrix<T, 2, 2>> inverse() const noexcept {
     T det = determinant();
 
-    if (det == T(0)) {
+    if (det == static_cast<T>(0)) {
       return std::nullopt;
     }
 
-    T invDet = T(1) / det;
+    T invDet = static_cast<T>(1) / det;
 
     return Matrix<T, 2, 2>{m11 * invDet, -m01 * invDet, -m10 * invDet,
                            m00 * invDet};
@@ -83,7 +83,7 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
     return *this;
   }
 
-  constexpr Matrix<T, 2, 2> &operator*=(float other) noexcept {
+  constexpr Matrix<T, 2, 2> &operator*=(T other) noexcept {
     col0 *= other;
     col1 *= other;
     return *this;
@@ -100,7 +100,7 @@ template <std::floating_point T> struct Matrix<T, 2, 2> final {
     return *this;
   }
 
-  constexpr Matrix<T, 2, 2> &operator/=(float other) noexcept {
+  constexpr Matrix<T, 2, 2> &operator/=(T other) noexcept {
     col0 /= other;
     col1 /= other;
     return *this;
@@ -133,13 +133,13 @@ constexpr Matrix<T, 2, 2> operator-(Matrix<T, 2, 2> lhs,
 }
 
 template <std::floating_point T>
-constexpr Matrix<T, 2, 2> operator*(Matrix<T, 2, 2> lhs, float rhs) noexcept {
+constexpr Matrix<T, 2, 2> operator*(Matrix<T, 2, 2> lhs, T rhs) noexcept {
   lhs *= rhs;
   return lhs;
 }
 
 template <std::floating_point T>
-constexpr Matrix<T, 2, 2> operator*(float lhs, Matrix<T, 2, 2> rhs) noexcept {
+constexpr Matrix<T, 2, 2> operator*(T lhs, Matrix<T, 2, 2> rhs) noexcept {
   rhs *= lhs;
   return rhs;
 }
@@ -152,7 +152,7 @@ constexpr Matrix<T, 2, 2> operator*(Matrix<T, 2, 2> lhs,
 }
 
 template <std::floating_point T>
-constexpr Matrix<T, 2, 2> operator/(Matrix<T, 2, 2> lhs, float rhs) noexcept {
+constexpr Matrix<T, 2, 2> operator/(Matrix<T, 2, 2> lhs, T rhs) noexcept {
   lhs /= rhs;
   return lhs;
 }
