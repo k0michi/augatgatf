@@ -27,8 +27,8 @@ add_subdirectory(external/glad)
 
 # main
 
-add_executable(main
-# begin
+add_library(kl STATIC
+# include src/kl/**/*.cc
   src/kl/graphics/context.cc
   src/kl/graphics/device.cc
   src/kl/graphics/instance.cc
@@ -39,12 +39,17 @@ add_executable(main
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/window.cc
-  src/main.cc
 # end
 )
-target_include_directories(main PRIVATE include)
-target_link_libraries(main PRIVATE SDL3::SDL3)
-target_link_libraries(main PRIVATE glad)
+
+target_include_directories(kl PUBLIC include)
+target_link_libraries(kl PUBLIC SDL3::SDL3)
+target_link_libraries(kl PUBLIC glad)
+
+add_executable(main
+  src/main.cc
+)
+target_link_libraries(main PRIVATE kl)
 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
@@ -62,5 +67,5 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 add_executable(test_main test/test_main.cc)
-target_link_libraries(test_main gtest_main)
+target_link_libraries(test_main gtest_main kl)
 add_test(NAME SimpleTests COMMAND test_main)
