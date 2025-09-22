@@ -21,12 +21,6 @@
 extern "C" {
 #endif
 
-#ifdef __cplusplus
-GladGLContext glad_gl_context_static = {};
-#else
-GladGLContext glad_gl_context_static = { 0 };
-#endif
-_Thread_local GladGLContext* glad_gl_context = &glad_gl_context_static;
 
 
 
@@ -6108,23 +6102,16 @@ int gladLoadGLContextUserPtr(GladGLContext *context, GLADuserptrloadfunc load, v
     glad_gl_load_GL_SUN_triangle_list(context, load, userptr);
     glad_gl_load_GL_SUN_vertex(context, load, userptr);
 
-    gladSetGLContext(context);
 
 
     return version;
 }
 
-int gladLoadGLUserPtr(GLADuserptrloadfunc load, void *userptr) {
-    return gladLoadGLContextUserPtr(gladGetGLContext(), load, userptr);
-}
 
 int gladLoadGLContext(GladGLContext *context, GLADloadfunc load) {
     return gladLoadGLContextUserPtr(context, glad_gl_get_proc_from_userptr, GLAD_GNUC_EXTENSION (void*) load);
 }
 
-int gladLoadGL(GLADloadfunc load) {
-    return gladLoadGLContext(gladGetGLContext(), load);
-}
 static int glad_gl_find_extensions_gles2(GladGLContext *context) {
     const char *exts = NULL;
     char **exts_i = NULL;
@@ -6641,31 +6628,17 @@ int gladLoadGLES2ContextUserPtr(GladGLContext *context, GLADuserptrloadfunc load
     glad_gl_load_GL_QCOM_texture_foveated(context, load, userptr);
     glad_gl_load_GL_QCOM_tiled_rendering(context, load, userptr);
 
-    gladSetGLContext(context);
 
 
     return version;
 }
 
-int gladLoadGLES2UserPtr(GLADuserptrloadfunc load, void *userptr) {
-    return gladLoadGLES2ContextUserPtr(gladGetGLContext(), load, userptr);
-}
 
 int gladLoadGLES2Context(GladGLContext *context, GLADloadfunc load) {
     return gladLoadGLES2ContextUserPtr(context, glad_gl_get_proc_from_userptr, GLAD_GNUC_EXTENSION (void*) load);
 }
 
-int gladLoadGLES2(GLADloadfunc load) {
-    return gladLoadGLES2Context(gladGetGLContext(), load);
-}
 
-GladGLContext* gladGetGLContext() {
-    return glad_gl_context;
-}
-
-void gladSetGLContext(GladGLContext *context) {
-    glad_gl_context = context;
-}
 
  
 
@@ -6825,9 +6798,6 @@ int gladLoaderLoadGLContext(GladGLContext *context) {
 }
 
 
-int gladLoaderLoadGL(void) {
-    return gladLoaderLoadGLContext(gladGetGLContext());
-}
 
 void gladLoaderUnloadGLContext(GladGLContext *context) {
     if (context->glad_loader_handle != NULL) {
@@ -7013,9 +6983,6 @@ int gladLoaderLoadGLES2Context(GladGLContext *context) {
 }
 
 
-int gladLoaderLoadGLES2(void) {
-    return gladLoaderLoadGLES2Context(gladGetGLContext());
-}
 
 void gladLoaderUnloadGLES2Context(GladGLContext *context) {
     if (context->glad_loader_handle != NULL) {
