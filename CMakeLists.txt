@@ -68,13 +68,14 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(test_main
 # include test/**/*.cc
+  test/test_matrix2x2.cc
   test/test_vector2.cc
 # end
 )
 target_link_libraries(test_main gtest_main kl)
 add_test(NAME Tests COMMAND test_main)
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 endif()
