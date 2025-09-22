@@ -27,6 +27,24 @@ add_subdirectory(external/glad)
 
 # main
 
+# https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
+add_library(coverage_config INTERFACE)
+
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(coverage_config INTERFACE
+    -O0        # no optimization
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options(coverage_config INTERFACE --coverage)
+  else()
+    target_link_libraries(coverage_config INTERFACE --coverage)
+  endif()
+endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+
 add_library(kl STATIC
 # include src/kl/**/*.cc
   src/kl/graphics/context.cc
@@ -45,6 +63,7 @@ add_library(kl STATIC
 target_include_directories(kl PUBLIC include)
 target_link_libraries(kl PUBLIC SDL3::SDL3)
 target_link_libraries(kl PUBLIC glad)
+target_link_libraries(kl PUBLIC coverage_config)
 
 add_executable(main
   src/main.cc
@@ -73,23 +92,4 @@ add_executable(test_main
 # end
 )
 add_test(NAME Tests COMMAND test_main)
-
-# https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
-add_library(coverage_config INTERFACE)
-
-option(CODE_COVERAGE "Enable coverage reporting" OFF)
-if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  # Add required flags (GCC & LLVM/Clang)
-  target_compile_options(coverage_config INTERFACE
-    -O0        # no optimization
-    -g         # generate debug info
-    --coverage # sets all required flags
-  )
-  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-    target_link_options(coverage_config INTERFACE --coverage)
-  else()
-    target_link_libraries(coverage_config INTERFACE --coverage)
-  endif()
-endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-
 target_link_libraries(test_main PRIVATE coverage_config gtest_main kl)
