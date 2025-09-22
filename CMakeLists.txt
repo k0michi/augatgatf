@@ -73,3 +73,8 @@ add_executable(test_main
 )
 target_link_libraries(test_main gtest_main kl)
 add_test(NAME Tests COMMAND test_main)
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+endif()
