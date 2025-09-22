@@ -88,6 +88,7 @@ enable_testing()
 add_executable(test_main
 # include test/**/*.cc
   test/test_matrix2x2.cc
+  test/test_matrix4x4.cc
   test/test_vector2.cc
 # end
 )
