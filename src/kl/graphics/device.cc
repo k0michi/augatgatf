@@ -1,5 +1,7 @@
 #include "kl/graphics/device.hh"
 
+#include <algorithm>
+
 namespace kl::graphics {
 Device::~Device() noexcept {
   if (mDefaultWindow) {
