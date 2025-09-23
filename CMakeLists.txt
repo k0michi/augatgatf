@@ -91,6 +91,8 @@ target_link_libraries(main PRIVATE kl)
 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
+  target_compile_options(main PRIVATE -fwasm-exceptions)
+  set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fwasm-exceptions")
 endif()
 
 # GoogleTest
