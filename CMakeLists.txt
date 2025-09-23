@@ -63,6 +63,7 @@ add_library(kl STATIC
   src/kl/graphics/depth_stencil_state.cc
   src/kl/graphics/device.cc
   src/kl/graphics/device_child.cc
+  src/kl/graphics/framebuffer.cc
   src/kl/graphics/instance.cc
   src/kl/graphics/instance_child.cc
   src/kl/graphics/opengl/gl_context.cc

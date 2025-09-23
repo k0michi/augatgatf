@@ -1,6 +1,7 @@
 #ifndef KL_GRAPHICS_OPENGL_SYMBOL_CONVERTER_HH
 #define KL_GRAPHICS_OPENGL_SYMBOL_CONVERTER_HH
 
+#include <expected>
 #include <optional>
 #include <tuple>
 #include <utility>
@@ -132,7 +133,7 @@ public:
     }
   }
 
-  static constexpr std::expected<GLenum, std::runtime_error>
+  static std::expected<GLenum, std::runtime_error>
   toGLTextureType(kl::graphics::TextureType type, uint32_t samples) {
     switch (type) {
     case kl::graphics::TextureType::e1D:

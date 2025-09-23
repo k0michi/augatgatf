@@ -14,6 +14,7 @@
 #include "color_blend_state.hh"
 #include "depth_stencil_state.hh"
 #include "device_descriptor.hh"
+#include "framebuffer.hh"
 #include "kl/platform/window.hh"
 #include "opengl/gl_context.hh"
 #include "program.hh"
@@ -67,6 +68,8 @@ public:
   createTexture(const TextureDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Buffer>, std::runtime_error>
   createBuffer(const BufferDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Framebuffer>, std::runtime_error>
+  createFramebuffer(const FramebufferDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.
