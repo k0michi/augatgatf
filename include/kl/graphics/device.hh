@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "color_blend_state.hh"
 #include "device_descriptor.hh"
 #include "kl/platform/window.hh"
 #include "opengl/gl_context.hh"
@@ -54,6 +55,8 @@ public:
   createShader(const ShaderDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Program>, std::runtime_error>
   createProgram(const ProgramDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<ColorBlendState>, std::runtime_error>
+  createColorBlendState(const ColorBlendStateDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.

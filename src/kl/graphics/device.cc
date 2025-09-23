@@ -31,6 +31,12 @@ Device::createProgram(const ProgramDescriptor &descriptor) noexcept {
   return Program::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<ColorBlendState>, std::runtime_error>
+Device::createColorBlendState(
+    const ColorBlendStateDescriptor &descriptor) noexcept {
+  return ColorBlendState::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
     const std::shared_ptr<platform::Window> &window) noexcept {
   auto it = mWindowContexts.find(window);
