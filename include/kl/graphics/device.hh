@@ -46,6 +46,12 @@ public:
   std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
   createRasterizationState(
       const RasterizationStateDescriptor &descriptor) const noexcept;
+  std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
+  createSwapchain(const SwapchainDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Shader>, std::runtime_error>
+  createShader(const ShaderDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Program>, std::runtime_error>
+  createProgram(const ProgramDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.
@@ -73,13 +79,6 @@ public:
    */
   std::optional<std::shared_ptr<opengl::GLContext>>
   defaultContext() const noexcept;
-
-  std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
-  createSwapchain(const SwapchainDescriptor &descriptor) noexcept;
-  std::expected<std::shared_ptr<Shader>, std::runtime_error>
-  createShader(const ShaderDescriptor &descriptor) noexcept;
-  std::expected<std::shared_ptr<Program>, std::runtime_error>
-  createProgram(const ProgramDescriptor &descriptor) noexcept;
 
   static std::expected<std::shared_ptr<Device>, std::runtime_error>
   create(std::shared_ptr<Instance> instance,

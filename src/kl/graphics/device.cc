@@ -10,6 +10,27 @@ Device::~Device() noexcept {
   }
 }
 
+std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
+Device::createRasterizationState(
+    const RasterizationStateDescriptor &descriptor) const noexcept {
+  return RasterizationState::create(descriptor);
+}
+
+std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
+Device::createSwapchain(const SwapchainDescriptor &descriptor) noexcept {
+  return Swapchain::create(shared_from_this(), descriptor);
+}
+
+std::expected<std::shared_ptr<Shader>, std::runtime_error>
+Device::createShader(const ShaderDescriptor &descriptor) noexcept {
+  return Shader::create(shared_from_this(), descriptor);
+}
+
+std::expected<std::shared_ptr<Program>, std::runtime_error>
+Device::createProgram(const ProgramDescriptor &descriptor) noexcept {
+  return Program::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>>
 Device::getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept {
   auto it = mSurfaceContexts.find(surface);
@@ -17,12 +38,6 @@ Device::getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept {
     return it->second;
   }
   return std::nullopt;
-}
-
-std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
-Device::createRasterizationState(
-    const RasterizationStateDescriptor &descriptor) const noexcept {
-  return RasterizationState::create(descriptor);
 }
 
 std::expected<std::shared_ptr<opengl::GLContext>, std::runtime_error>
@@ -78,21 +93,6 @@ Device::defaultContext() const noexcept {
   }
 
   return *mContexts.begin();
-}
-
-std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
-Device::createSwapchain(const SwapchainDescriptor &descriptor) noexcept {
-  return Swapchain::create(shared_from_this(), descriptor);
-}
-
-std::expected<std::shared_ptr<Shader>, std::runtime_error>
-Device::createShader(const ShaderDescriptor &descriptor) noexcept {
-  return Shader::create(shared_from_this(), descriptor);
-}
-
-std::expected<std::shared_ptr<Program>, std::runtime_error>
-Device::createProgram(const ProgramDescriptor &descriptor) noexcept {
-  return Program::create(shared_from_this(), descriptor);
 }
 
 std::expected<std::shared_ptr<Device>, std::runtime_error>
