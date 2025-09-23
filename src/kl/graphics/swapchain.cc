@@ -61,8 +61,12 @@ Swapchain::create(std::shared_ptr<Device> device,
   }
 
   glSurfaceConfig.doubleBuffer = descriptor.doubleBuffered ? 1 : 0;
-  descriptor.window->setGLSurfaceConfig(glSurfaceConfig);
-  descriptor.window->recreate();
+
+  if (descriptor.window->glSurfaceConfig() != glSurfaceConfig) {
+    descriptor.window->setGLSurfaceConfig(glSurfaceConfig);
+    descriptor.window->recreate();
+  }
+
   return swapchain;
 }
 
