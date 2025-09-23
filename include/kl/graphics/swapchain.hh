@@ -5,13 +5,13 @@
 #include <memory>
 #include <stdexcept>
 
+#include "device_child.hh"
 #include "swapchain_descriptor.hh"
 
 namespace kl::graphics {
 class Device;
 
-class Swapchain {
-  std::weak_ptr<Device> mDevice;
+class Swapchain : public DeviceChild {
   SwapchainDescriptor mDescriptor;
 
 public:
@@ -29,7 +29,7 @@ public:
          const SwapchainDescriptor &descriptor) noexcept;
 
 private:
-  explicit Swapchain() noexcept = default;
+  explicit Swapchain(std::shared_ptr<Device> device) noexcept;
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_SWAPCHAIN_HH

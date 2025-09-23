@@ -12,8 +12,8 @@ Device::~Device() noexcept {
 
 std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
 Device::createRasterizationState(
-    const RasterizationStateDescriptor &descriptor) const noexcept {
-  return RasterizationState::create(descriptor);
+    const RasterizationStateDescriptor &descriptor) noexcept {
+  return RasterizationState::create(shared_from_this(), descriptor);
 }
 
 std::expected<std::shared_ptr<Swapchain>, std::runtime_error>

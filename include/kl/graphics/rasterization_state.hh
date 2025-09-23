@@ -5,10 +5,11 @@
 #include <memory>
 #include <stdexcept>
 
+#include "kl/graphics/device_child.hh"
 #include "rasterization_state_descriptor.hh"
 
 namespace kl::graphics {
-class RasterizationState {
+class RasterizationState : public DeviceChild {
 private:
   RasterizationStateDescriptor mDescriptor;
 
@@ -21,10 +22,11 @@ public:
   RasterizationState &operator=(RasterizationState &&) noexcept = delete;
 
   static std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
-  create(const RasterizationStateDescriptor &descriptor) noexcept;
+  create(std::shared_ptr<Device> device,
+         const RasterizationStateDescriptor &descriptor) noexcept;
 
 private:
-  explicit RasterizationState() noexcept = default;
+  explicit RasterizationState(std::shared_ptr<Device> device) noexcept;
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_RASTERIZATION_STATE_HH

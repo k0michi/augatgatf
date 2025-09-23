@@ -8,14 +8,14 @@
 
 #include <glad/gl.h>
 
+#include "device_child.hh"
 #include "program_descriptor.hh"
 
 namespace kl::graphics {
 class Device;
 
-class Program {
+class Program : public DeviceChild {
 private:
-  std::weak_ptr<Device> mDevice;
   GLuint mProgram = 0;
 
 public:
@@ -31,7 +31,7 @@ public:
          const ProgramDescriptor &descriptor) noexcept;
 
 private:
-  explicit Program() noexcept = default;
+  explicit Program(std::shared_ptr<Device> device) noexcept;
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_PROGRAM_HH

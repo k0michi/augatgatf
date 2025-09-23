@@ -21,7 +21,7 @@ Shader::~Shader() noexcept {
 std::expected<std::shared_ptr<Shader>, std::runtime_error>
 Shader::create(std::shared_ptr<Device> device,
                const ShaderDescriptor &descriptor) noexcept {
-  auto shader = std::shared_ptr<Shader>(new Shader());
+  auto shader = std::shared_ptr<Shader>(new Shader(device));
 
   if (descriptor.code.size() % 4 != 0) {
     return std::unexpected(
@@ -147,4 +147,7 @@ Shader::create(std::shared_ptr<Device> device,
   shader->mDevice = device;
   return shader;
 }
+
+Shader::Shader(std::shared_ptr<Device> device) noexcept
+    : DeviceChild(std::move(device)) {}
 } // namespace kl::graphics

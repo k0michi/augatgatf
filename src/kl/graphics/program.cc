@@ -6,11 +6,10 @@ namespace kl::graphics {
 std::expected<std::shared_ptr<Program>, std::runtime_error>
 Program::create(std::shared_ptr<Device> device,
                 const ProgramDescriptor &descriptor) noexcept {
-  auto program = std::shared_ptr<Program>(new Program());
+  auto program = std::shared_ptr<Program>(new Program(device));
   auto context = device->defaultContext();
 
   std::scoped_lock lock(**context);
-  program->mDevice = device;
   program->mProgram = (*context)->gladGLContext()->CreateProgram();
 
   for (const auto &shader : descriptor.shaders) {
@@ -26,4 +25,7 @@ Program::create(std::shared_ptr<Device> device,
   (*context)->gladGLContext()->LinkProgram(program->mProgram);
   return program;
 }
+
+Program::Program(std::shared_ptr<Device> device) noexcept
+    : DeviceChild(std::move(device)) {}
 } // namespace kl::graphics

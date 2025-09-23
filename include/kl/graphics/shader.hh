@@ -8,12 +8,13 @@
 
 #include <glad/gl.h>
 
+#include "device_child.hh"
 #include "shader_descriptor.hh"
 
 namespace kl::graphics {
 class Device;
 
-class Shader {
+class Shader : public DeviceChild {
 private:
   std::weak_ptr<Device> mDevice;
   GLuint mShader = 0;
@@ -33,7 +34,7 @@ public:
          const ShaderDescriptor &descriptor) noexcept;
 
 private:
-  explicit Shader() noexcept = default;
+  explicit Shader(std::shared_ptr<Device> device) noexcept;
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_SHADER_HH

@@ -47,7 +47,7 @@ public:
 
   std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
   createRasterizationState(
-      const RasterizationStateDescriptor &descriptor) const noexcept;
+      const RasterizationStateDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
   createSwapchain(const SwapchainDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Shader>, std::runtime_error>

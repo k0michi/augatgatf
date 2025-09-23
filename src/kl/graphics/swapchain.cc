@@ -7,8 +7,7 @@ namespace kl::graphics {
 std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
 Swapchain::create(std::shared_ptr<Device> device,
                   const SwapchainDescriptor &descriptor) noexcept {
-  auto swapchain = std::shared_ptr<Swapchain>(new Swapchain());
-  swapchain->mDevice = device;
+  auto swapchain = std::shared_ptr<Swapchain>(new Swapchain(device));
   swapchain->mDescriptor = descriptor;
 
   // SDL has no way to change GL attributes afterwards, so we recreate the
@@ -38,4 +37,7 @@ Swapchain::create(std::shared_ptr<Device> device,
   descriptor.window->recreate();
   return swapchain;
 }
+
+Swapchain::Swapchain(std::shared_ptr<Device> device) noexcept
+    : DeviceChild(std::move(device)) {}
 } // namespace kl::graphics
