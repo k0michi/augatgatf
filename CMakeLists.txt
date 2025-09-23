@@ -118,7 +118,7 @@ target_link_libraries(test_main PRIVATE coverage_config gtest_main kl)
 find_program(GLSLANG_VALIDATOR glslangValidator)
 
 set(GLSL_FILES
-  test.vert
+  shaders/test.vert
 )
 
 set(SPIRV_OUTPUTS "")
