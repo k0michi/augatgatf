@@ -6,13 +6,14 @@
 #include <stdexcept>
 
 #include "context_descriptor.hh"
+#include "device_child.hh"
 
 namespace kl::graphics {
 class Device;
 
-class Context {
+class Context : public DeviceChild {
 private:
-  std::weak_ptr<Device> mDevice;
+  ContextDescriptor mDescriptor;
 
 public:
   virtual ~Context() noexcept = default;
@@ -22,12 +23,16 @@ public:
   Context &operator=(const Context &) = delete;
   Context &operator=(Context &&) noexcept = delete;
 
+  inline const ContextDescriptor &descriptor() const noexcept {
+    return mDescriptor;
+  }
+
   static std::expected<std::shared_ptr<Context>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const ContextDescriptor &descriptor) noexcept;
 
 private:
-  explicit Context() noexcept = default;
+  explicit Context(std::shared_ptr<Device> device) noexcept;
 };
 } // namespace kl::graphics
 #endif // KL_GRAPHICS_CONTEXT_HH
