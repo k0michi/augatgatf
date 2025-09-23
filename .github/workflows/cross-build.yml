@@ -26,9 +26,9 @@ jobs:
 
       - name: Install glslangValidator (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install glslang
+        run: choco install vulkan-sdk
         shell: powershell
-        
+
       - name: Set up CMake
         uses: lukka/get-cmake@v3.27.0
 
