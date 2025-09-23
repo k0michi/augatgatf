@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <expected>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -12,12 +13,14 @@
 
 #include "kl/common/extent2.hh"
 #include "kl/common/point2.hh"
+#include "kl/graphics/opengl/surface_config.hh"
 #include "window_descriptor.hh"
 
 namespace kl::platform {
 class Window final {
 private:
   SDL_Window *mWindow;
+  kl::graphics::opengl::SurfaceConfig mGLSurfaceConfig;
 
 private:
   Window() = default;
@@ -60,6 +63,23 @@ public:
 
   bool isResizable() const noexcept;
   std::expected<void, std::runtime_error> setResizable(bool resizable) noexcept;
+
+  /**
+   * @brief Internal.
+   */
+  void setSDLGLAttributes() const noexcept;
+  /**
+   * @brief Internal.
+   */
+  const kl::graphics::opengl::SurfaceConfig &glSurfaceConfig() const noexcept;
+  /**
+   * @brief Internal.
+   */
+  void setGLSurfaceConfig(const kl::graphics::opengl::SurfaceConfig &config);
+  /**
+   * @brief Internal.
+   */
+  std::expected<void, std::runtime_error> recreate() noexcept;
 
   static std::expected<std::shared_ptr<Window>, std::runtime_error>
   create(const WindowDescriptor &descriptor) noexcept;

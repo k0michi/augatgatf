@@ -12,14 +12,17 @@ SDL_Window *Window::sdlWindow() const noexcept { return mWindow; }
 
 std::expected<std::shared_ptr<Window>, std::runtime_error>
 Window::create(const WindowDescriptor &descriptor) noexcept {
+  auto window = std::shared_ptr<Window>(new Window());
+
+  window->setSDLGLAttributes();
+
   auto sdlWindow = SDL_CreateWindow(descriptor.title.data(), descriptor.width,
-                                    descriptor.height, 0);
+                                    descriptor.height, SDL_WINDOW_OPENGL);
 
   if (!sdlWindow) {
     return std::unexpected(std::runtime_error(SDL_GetError()));
   }
 
-  auto window = std::shared_ptr<Window>(new Window());
   window->mWindow = sdlWindow;
   return window;
 }
@@ -180,6 +183,47 @@ Window::setResizable(bool resizable) noexcept {
 std::expected<void, std::runtime_error>
 Window::setTitle(std::string_view title) noexcept {
   if (!SDL_SetWindowTitle(mWindow, title.data())) {
+    return std::unexpected(std::runtime_error(SDL_GetError()));
+  }
+
+  return {};
+}
+
+void Window::setSDLGLAttributes() const noexcept {
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, mGLSurfaceConfig.redSize);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, mGLSurfaceConfig.greenSize);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, mGLSurfaceConfig.blueSize);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, mGLSurfaceConfig.alphaSize);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, mGLSurfaceConfig.depthSize);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, mGLSurfaceConfig.stencilSize);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, mGLSurfaceConfig.doubleBuffer);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,
+                      mGLSurfaceConfig.multiSampleBuffers);
+  SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,
+                      mGLSurfaceConfig.multiSampleSamples);
+}
+
+const kl::graphics::opengl::SurfaceConfig &
+Window::glSurfaceConfig() const noexcept {
+  return mGLSurfaceConfig;
+}
+
+void Window::setGLSurfaceConfig(
+    const kl::graphics::opengl::SurfaceConfig &config) {
+  mGLSurfaceConfig = config;
+}
+
+std::expected<void, std::runtime_error> Window::recreate() noexcept {
+  setSDLGLAttributes();
+
+  auto title = SDL_GetWindowTitle(mWindow);
+  int w, h;
+  SDL_GetWindowSize(mWindow, &w, &h);
+  SDL_WindowFlags flags = SDL_GetWindowFlags(mWindow);
+  SDL_DestroyWindow(mWindow);
+  mWindow = SDL_CreateWindow(title, w, h, flags);
+
+  if (!mWindow) {
     return std::unexpected(std::runtime_error(SDL_GetError()));
   }
 

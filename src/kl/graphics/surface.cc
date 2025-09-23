@@ -1,6 +1,10 @@
 #include "kl/graphics/surface.hh"
 
 namespace kl::graphics {
+const SurfaceDescriptor &Surface::descriptor() const noexcept {
+  return mDescriptor;
+}
+
 std::shared_ptr<platform::Window> Surface::window() const noexcept {
   return mWindow;
 }
@@ -15,6 +19,7 @@ Surface::create(std::shared_ptr<Instance> instance,
 
   auto surface = std::shared_ptr<Surface>(new Surface());
   surface->mWindow = descriptor.window;
+  surface->mDescriptor = descriptor;
   return surface;
 }
 } // namespace kl::graphics

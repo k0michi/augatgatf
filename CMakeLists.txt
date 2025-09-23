@@ -66,6 +66,7 @@ add_library(kl STATIC
   src/kl/graphics/rasterization_state.cc
   src/kl/graphics/shader.cc
   src/kl/graphics/surface.cc
+  src/kl/graphics/swapchain.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/window.cc
@@ -107,3 +108,7 @@ add_executable(test_main
 )
 add_test(NAME Tests COMMAND test_main)
 target_link_libraries(test_main PRIVATE coverage_config gtest_main kl)
+
+if(APPLE)
+  target_link_libraries(main PRIVATE "-framework OpenGL")
+endif()

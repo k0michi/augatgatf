@@ -15,6 +15,7 @@ class Instance;
  */
 class Surface {
 private:
+  SurfaceDescriptor mDescriptor;
   std::shared_ptr<platform::Window> mWindow;
 
 public:
@@ -24,6 +25,8 @@ public:
   Surface(Surface &&) noexcept = default;
   Surface &operator=(const Surface &) = delete;
   Surface &operator=(Surface &&) noexcept = default;
+
+  const SurfaceDescriptor &descriptor() const noexcept;
 
   std::shared_ptr<platform::Window> window() const noexcept;
 
