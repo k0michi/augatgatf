@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "buffer.hh"
 #include "color_blend_state.hh"
 #include "depth_stencil_state.hh"
 #include "device_descriptor.hh"
@@ -64,6 +65,8 @@ public:
       const DepthStencilStateDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Texture>, std::runtime_error>
   createTexture(const TextureDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Buffer>, std::runtime_error>
+  createBuffer(const BufferDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.
