@@ -69,12 +69,15 @@ add_library(kl STATIC
   src/kl/graphics/opengl/gl_context.cc
   src/kl/graphics/program.cc
   src/kl/graphics/rasterization_state.cc
+  src/kl/graphics/sampler.cc
+  src/kl/graphics/sampler_descriptor.cc
   src/kl/graphics/shader.cc
   src/kl/graphics/swapchain.cc
   src/kl/graphics/texture.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/window.cc
+  src/kl/text/encoding.cc
 # end
 )
 
@@ -108,6 +111,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(test_main
 # include test/**/*.cc
+  test/test_encoding.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
   test/test_vector2.cc
