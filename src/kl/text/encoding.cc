@@ -1,6 +1,17 @@
 #include "kl/text/encoding.hh"
 
 namespace kl::text {
+std::expected<std::u16string, std::runtime_error>
+Encoding::encodeUTF8ToUTF16(std::u8string_view str) noexcept {
+  auto utf32Result = encodeUTF8ToUTF32(str);
+
+  if (!utf32Result) {
+    return std::unexpected(utf32Result.error());
+  }
+
+  return encodeUTF32ToUTF16(utf32Result.value());
+}
+
 std::expected<std::u32string, std::runtime_error>
 Encoding::encodeUTF8ToUTF32(std::u8string_view str) noexcept {
   std::vector<char32_t> result;
@@ -93,14 +104,16 @@ Encoding::encodeUTF32ToUTF16(std::u32string_view str) noexcept {
       // Encode as a surrogate pair
       codepoint -= 0x10000;
       char16_t highSurrogate =
-          static_cast<char16_t>((codepoint >> 10) | 0b1101'1100'0000'0000);
-      char16_t lowSurrogate = static_cast<char16_t>(
-          (codepoint & 0b0000'0011'1111'1111) | 0b1101'1100'0000'0000);
+          static_cast<char16_t>((codepoint >> 10) | 0xD800);
+      char16_t lowSurrogate =
+          static_cast<char16_t>((codepoint & 0x3FF) | 0xDC00);
       result.push_back(highSurrogate);
       result.push_back(lowSurrogate);
     } else {
       return std::unexpected(std::runtime_error("Invalid UTF-32 code point"));
     }
   }
+
+  return result;
 }
 } // namespace kl::text
