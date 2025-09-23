@@ -29,8 +29,14 @@ Texture::create(std::shared_ptr<Device> device,
   }
 #endif
 
-  auto type =
-      opengl::SymbolConverter::toGLTextureType(texture->mDescriptor.type);
+  auto typeResult = opengl::SymbolConverter::toGLTextureType(
+      texture->mDescriptor.type, texture->mDescriptor.samples);
+
+  if (!typeResult) {
+    return std::unexpected(typeResult.error());
+  }
+
+  auto type = typeResult.value();
   context->gladGLContext()->BindTexture(type, texture->mTexture);
   auto format =
       opengl::SymbolConverter::toGLFormat(texture->mDescriptor.format);
@@ -49,29 +55,58 @@ Texture::create(std::shared_ptr<Device> device,
   uint32_t height = texture->mDescriptor.extent.height;
   uint32_t depth = texture->mDescriptor.extent.depth;
 
-  if (type == GL_TEXTURE_1D) {
+  // TODO: Support arrayLayers
+  if (texture->mDescriptor.type == TextureType::e1D) {
+    if (texture->mDescriptor.samples > 1) {
+      return std::unexpected(
+          std::runtime_error("1D textures cannot be multisampled"));
+    }
+
     for (uint32_t i = 0; i < texture->mDescriptor.mipLevels.value(); ++i) {
-      context->gladGLContext()->TexImage1D(
-          GL_TEXTURE_1D, i, std::get<0>(format), width, 0, std::get<1>(format),
-          std::get<2>(format), nullptr);
+      context->gladGLContext()->TexImage1D(type, i, std::get<0>(format), width,
+                                           0, std::get<1>(format),
+                                           std::get<2>(format), nullptr);
       width = std::max(1u, width / 2);
     }
-  } else if (type == GL_TEXTURE_2D) {
-    for (uint32_t i = 0; i < texture->mDescriptor.mipLevels.value(); ++i) {
-      context->gladGLContext()->TexImage2D(
-          GL_TEXTURE_2D, i, std::get<0>(format), width, height, 0,
-          std::get<1>(format), std::get<2>(format), nullptr);
-      width = std::max(1u, width / 2);
-      height = std::max(1u, height / 2);
+  } else if (texture->mDescriptor.type == TextureType::e2D) {
+    if (texture->mDescriptor.samples > 1) {
+      // Multisampled textures cannot have mipmaps.
+      if (texture->mDescriptor.mipLevels.value() != 1) {
+        return std::unexpected(
+            std::runtime_error("Multisampled textures cannot have mipmaps"));
+      }
+
+      context->gladGLContext()->TexImage2DMultisample(
+          type, texture->mDescriptor.samples, std::get<0>(format), width,
+          height, GL_TRUE);
+    } else {
+      for (uint32_t i = 0; i < texture->mDescriptor.mipLevels.value(); ++i) {
+        context->gladGLContext()->TexImage2D(
+            type, i, std::get<0>(format), width, height, 0, std::get<1>(format),
+            std::get<2>(format), nullptr);
+        width = std::max(1u, width / 2);
+        height = std::max(1u, height / 2);
+      }
     }
-  } else if (type == GL_TEXTURE_3D) {
-    for (uint32_t i = 0; i < texture->mDescriptor.mipLevels.value(); ++i) {
-      context->gladGLContext()->TexImage3D(
-          GL_TEXTURE_3D, i, std::get<0>(format), width, height, depth, 0,
-          std::get<1>(format), std::get<2>(format), nullptr);
-      width = std::max(1u, width / 2);
-      height = std::max(1u, height / 2);
-      depth = std::max(1u, depth / 2);
+  } else if (texture->mDescriptor.type == TextureType::e3D) {
+    if (texture->mDescriptor.samples > 1) {
+      if (texture->mDescriptor.mipLevels.value() != 1) {
+        return std::unexpected(
+            std::runtime_error("Multisampled textures cannot have mipmaps"));
+      }
+
+      context->gladGLContext()->TexImage3DMultisample(
+          type, texture->mDescriptor.samples, std::get<0>(format), width,
+          height, depth, GL_TRUE);
+    } else {
+      for (uint32_t i = 0; i < texture->mDescriptor.mipLevels.value(); ++i) {
+        context->gladGLContext()->TexImage3D(
+            type, i, std::get<0>(format), width, height, depth, 0,
+            std::get<1>(format), std::get<2>(format), nullptr);
+        width = std::max(1u, width / 2);
+        height = std::max(1u, height / 2);
+        depth = std::max(1u, depth / 2);
+      }
     }
   }
 

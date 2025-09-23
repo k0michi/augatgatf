@@ -132,15 +132,20 @@ public:
     }
   }
 
-  static constexpr GLenum toGLTextureType(kl::graphics::TextureType type) {
+  static constexpr std::expected<GLenum, std::runtime_error>
+  toGLTextureType(kl::graphics::TextureType type, uint32_t samples) {
     switch (type) {
     case kl::graphics::TextureType::e1D:
+      if (samples > 1) {
+        return std::unexpected(
+            std::runtime_error("1D textures cannot be multisampled"));
+      }
       return GL_TEXTURE_1D;
     case kl::graphics::TextureType::e2D:
-      return GL_TEXTURE_2D;
+      return samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
     case kl::graphics::TextureType::e3D:
-      return GL_TEXTURE_3D;
-    }
+      return samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE_ARRAY : GL_TEXTURE_3D;
+    };
 
     std::unreachable();
   }

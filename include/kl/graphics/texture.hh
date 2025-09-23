@@ -24,6 +24,12 @@ public:
   Texture &operator=(const Texture &) = delete;
   Texture &operator=(Texture &&) noexcept = delete;
 
+  inline const TextureDescriptor &descriptor() const noexcept {
+    return mDescriptor;
+  }
+
+  inline GLuint glTexture() const noexcept { return mTexture; }
+
   static std::expected<std::shared_ptr<Texture>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const TextureDescriptor &descriptor) noexcept;
