@@ -49,9 +49,6 @@ kl::platform::Task<void> main_async() {
   auto graphicsInstance =
       kl::graphics::Instance::create(kl::graphics::InstanceDescriptor{})
           .value();
-  kl::graphics::SurfaceDescriptor surfaceDesc;
-  surfaceDesc.window = windowResult.value();
-  auto surface = graphicsInstance->createSurface(surfaceDesc);
   auto device =
       graphicsInstance->createDevice(kl::graphics::DeviceDescriptor{});
 

@@ -34,8 +34,8 @@ Swapchain::create(std::shared_ptr<Device> device,
   }
 
   glSurfaceConfig.doubleBuffer = descriptor.doubleBuffered ? 1 : 0;
-  descriptor.surface->window()->setGLSurfaceConfig(glSurfaceConfig);
-  descriptor.surface->window()->recreate();
+  descriptor.window->setGLSurfaceConfig(glSurfaceConfig);
+  descriptor.window->recreate();
   return swapchain;
 }
 } // namespace kl::graphics

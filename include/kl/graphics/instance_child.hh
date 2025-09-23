@@ -11,8 +11,7 @@ private:
   std::weak_ptr<Instance> mInstance;
 
 public:
-  explicit InstanceChild(std::shared_ptr<Instance> instance) noexcept
-      : mInstance(instance) {}
+  explicit InstanceChild(std::shared_ptr<Instance> instance) noexcept;
   virtual ~InstanceChild() noexcept = default;
 
   InstanceChild(const InstanceChild &) = delete;

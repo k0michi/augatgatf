@@ -7,7 +7,6 @@
 
 #include "device.hh"
 #include "kl/graphics/instance_descriptor.hh"
-#include "surface.hh"
 
 namespace kl::graphics {
 class Instance : public std::enable_shared_from_this<Instance> {
@@ -20,8 +19,6 @@ public:
   Instance(const Instance &) = delete;
   Instance &operator=(const Instance &) = delete;
 
-  std::expected<std::shared_ptr<Surface>, std::runtime_error>
-  createSurface(const SurfaceDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Device>, std::runtime_error>
   createDevice(const DeviceDescriptor &descriptor) noexcept;
 

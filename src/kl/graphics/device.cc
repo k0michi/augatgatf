@@ -31,26 +31,26 @@ Device::createProgram(const ProgramDescriptor &descriptor) noexcept {
   return Program::create(shared_from_this(), descriptor);
 }
 
-std::optional<std::shared_ptr<opengl::GLContext>>
-Device::getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept {
-  auto it = mSurfaceContexts.find(surface);
-  if (it != mSurfaceContexts.end()) {
+std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
+    const std::shared_ptr<platform::Window> &window) noexcept {
+  auto it = mWindowContexts.find(window);
+  if (it != mWindowContexts.end()) {
     return it->second;
   }
   return std::nullopt;
 }
 
 std::expected<std::shared_ptr<opengl::GLContext>, std::runtime_error>
-Device::getOrCreateContextForSurface(
-    const std::shared_ptr<Surface> &surface) noexcept {
-  auto existingContext = getContextForSurface(surface);
+Device::getOrCreateContextForWindow(
+    const std::shared_ptr<platform::Window> &window) noexcept {
+  auto existingContext = getContextForWindow(window);
   if (existingContext) {
     return existingContext.value();
   }
 
 #ifndef __EMSCRIPTEN__
   auto glContextResult = opengl::GLContext::create({
-      .window = surface->window()->sdlWindow(),
+      .window = window->sdlWindow(),
       .shareContext = nullptr,
       .profile = SDL_GL_CONTEXT_PROFILE_CORE,
       .majorVersion = 3,
@@ -58,7 +58,7 @@ Device::getOrCreateContextForSurface(
   });
 #else
   auto glContextResult = opengl::GLContext::create({
-      .window = surface->window()->sdlWindow(),
+      .window = window->sdlWindow(),
       .shareContext = nullptr,
       .profile = SDL_GL_CONTEXT_PROFILE_ES,
       .majorVersion = 3,
@@ -71,7 +71,7 @@ Device::getOrCreateContextForSurface(
 
   auto glContext = glContextResult.value();
   mContexts.push_back(glContext);
-  mSurfaceContexts[surface] = glContext;
+  mWindowContexts[window] = glContext;
   return glContext;
 }
 
@@ -81,9 +81,9 @@ bool Device::hasContext(
          mContexts.end();
 }
 
-bool Device::hasContextForSurface(
-    const std::shared_ptr<Surface> &surface) const noexcept {
-  return mSurfaceContexts.find(surface) != mSurfaceContexts.end();
+bool Device::hasContextForWindow(
+    const std::shared_ptr<platform::Window> &window) const noexcept {
+  return mWindowContexts.find(window) != mWindowContexts.end();
 }
 
 std::optional<std::shared_ptr<opengl::GLContext>>

@@ -11,14 +11,16 @@
 #include <vector>
 
 #include "device_descriptor.hh"
+#include "kl/platform/window.hh"
 #include "opengl/gl_context.hh"
 #include "program.hh"
 #include "rasterization_state.hh"
 #include "shader.hh"
-#include "surface.hh"
 #include "swapchain.hh"
 
 namespace kl::graphics {
+class Instance;
+
 /**
  * @brief GL context manager.
  */
@@ -31,9 +33,9 @@ private:
    * the default context.
    */
   std::vector<std::shared_ptr<opengl::GLContext>> mContexts;
-  std::unordered_map<std::shared_ptr<Surface>,
+  std::unordered_map<std::shared_ptr<platform::Window>,
                      std::shared_ptr<opengl::GLContext>>
-      mSurfaceContexts;
+      mWindowContexts;
 
 public:
   virtual ~Device() noexcept;
@@ -57,13 +59,13 @@ public:
    * @brief Internal.
    */
   std::optional<std::shared_ptr<opengl::GLContext>>
-  getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept;
+  getContextForWindow(const std::shared_ptr<platform::Window> &window) noexcept;
   /**
    * @brief Internal.
    */
   std::expected<std::shared_ptr<opengl::GLContext>, std::runtime_error>
-  getOrCreateContextForSurface(
-      const std::shared_ptr<Surface> &surface) noexcept;
+  getOrCreateContextForWindow(
+      const std::shared_ptr<platform::Window> &window) noexcept;
   /**
    * @brief Internal.
    */
@@ -72,8 +74,8 @@ public:
   /**
    * @brief Internal.
    */
-  bool
-  hasContextForSurface(const std::shared_ptr<Surface> &surface) const noexcept;
+  bool hasContextForWindow(
+      const std::shared_ptr<platform::Window> &window) const noexcept;
   /**
    * @brief Internal.
    */

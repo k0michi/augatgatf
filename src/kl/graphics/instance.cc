@@ -3,11 +3,6 @@
 namespace kl::graphics {
 std::weak_ptr<Instance> Instance::sInstance;
 
-std::expected<std::shared_ptr<Surface>, std::runtime_error>
-Instance::createSurface(const SurfaceDescriptor &descriptor) noexcept {
-  return Surface::create(shared_from_this(), descriptor);
-}
-
 std::expected<std::shared_ptr<Device>, std::runtime_error>
 Instance::createDevice(const DeviceDescriptor &descriptor) noexcept {
   return Device::create(shared_from_this(), descriptor);
