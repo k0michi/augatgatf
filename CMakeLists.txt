@@ -112,3 +112,34 @@ add_executable(test_main
 )
 add_test(NAME Tests COMMAND test_main)
 target_link_libraries(test_main PRIVATE coverage_config gtest_main kl)
+
+# GLSL compilation
+
+find_program(GLSLANG_VALIDATOR glslangValidator)
+
+set(GLSL_FILES
+  test.vert
+)
+
+set(SPIRV_OUTPUTS "")
+foreach(GLSL_FILE ${GLSL_FILES})
+  get_filename_component(GLSL_BASENAME ${GLSL_FILE} NAME)
+  get_filename_component(GLSL_DIR ${GLSL_FILE} DIRECTORY)
+  set(GLSL_ABS "${CMAKE_SOURCE_DIR}/${GLSL_FILE}")
+  set(SPIRV_OUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${GLSL_DIR}/${GLSL_BASENAME}.spv")
+  file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${GLSL_DIR}")
+
+  add_custom_command(
+    OUTPUT ${SPIRV_OUT}
+    COMMAND ${GLSLANG_VALIDATOR} -V ${GLSL_ABS} -o ${SPIRV_OUT}
+    DEPENDS ${GLSL_ABS}
+    COMMENT "Compiling GLSL to SPIR-V: ${GLSL_FILE}"
+  )
+
+  list(APPEND SPIRV_OUTPUTS ${SPIRV_OUT})
+endforeach()
+
+add_custom_target(
+  shaders ALL
+  DEPENDS ${SPIRV_OUTPUTS}
+)
