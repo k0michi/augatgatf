@@ -21,6 +21,9 @@ struct Encoding final {
    */
   static std::expected<std::u32string, std::runtime_error>
   encodeUTF8ToUTF32(std::u8string_view str) noexcept;
+
+  static std::expected<std::u16string, std::runtime_error>
+  encodeUTF32ToUTF16(std::u32string_view str) noexcept;
 };
 } // namespace kl::text
 #endif // KL_TEXT_ENCODING_HH

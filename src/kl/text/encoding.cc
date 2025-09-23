@@ -80,4 +80,27 @@ Encoding::encodeUTF8ToUTF32(std::u8string_view str) noexcept {
 
   return std::u32string(result.begin(), result.end());
 }
+
+std::expected<std::u16string, std::runtime_error>
+Encoding::encodeUTF32ToUTF16(std::u32string_view str) noexcept {
+  std::u16string result;
+
+  for (char32_t codepoint : str) {
+    if (codepoint <= 0xFFFF) {
+      // Directly encode as a single UTF-16 code unit
+      result.push_back(static_cast<char16_t>(codepoint));
+    } else if (codepoint <= 0x10FFFF) {
+      // Encode as a surrogate pair
+      codepoint -= 0x10000;
+      char16_t highSurrogate =
+          static_cast<char16_t>((codepoint >> 10) | 0b1101'1100'0000'0000);
+      char16_t lowSurrogate = static_cast<char16_t>(
+          (codepoint & 0b0000'0011'1111'1111) | 0b1101'1100'0000'0000);
+      result.push_back(highSurrogate);
+      result.push_back(lowSurrogate);
+    } else {
+      return std::unexpected(std::runtime_error("Invalid UTF-32 code point"));
+    }
+  }
+}
 } // namespace kl::text
