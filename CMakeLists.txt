@@ -69,8 +69,6 @@ add_library(kl STATIC
   src/kl/graphics/opengl/gl_context.cc
   src/kl/graphics/program.cc
   src/kl/graphics/rasterization_state.cc
-  src/kl/graphics/sampler.cc
-  src/kl/graphics/sampler_descriptor.cc
   src/kl/graphics/shader.cc
   src/kl/graphics/swapchain.cc
   src/kl/graphics/texture.cc
