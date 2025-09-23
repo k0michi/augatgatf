@@ -80,6 +80,11 @@ Device::defaultContext() const noexcept {
   return *mContexts.begin();
 }
 
+std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
+Device::createSwapchain(const SwapchainDescriptor &descriptor) noexcept {
+  return Swapchain::create(shared_from_this(), descriptor);
+}
+
 std::expected<std::shared_ptr<Shader>, std::runtime_error>
 Device::createShader(const ShaderDescriptor &descriptor) noexcept {
   return Shader::create(shared_from_this(), descriptor);

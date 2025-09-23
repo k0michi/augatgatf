@@ -16,6 +16,7 @@
 #include "rasterization_state.hh"
 #include "shader.hh"
 #include "surface.hh"
+#include "swapchain.hh"
 
 namespace kl::graphics {
 /**
@@ -46,18 +47,35 @@ public:
   createRasterizationState(
       const RasterizationStateDescriptor &descriptor) const noexcept;
 
+  /**
+   * @brief Internal.
+   */
   std::optional<std::shared_ptr<opengl::GLContext>>
   getContextForSurface(const std::shared_ptr<Surface> &surface) noexcept;
+  /**
+   * @brief Internal.
+   */
   std::expected<std::shared_ptr<opengl::GLContext>, std::runtime_error>
   getOrCreateContextForSurface(
       const std::shared_ptr<Surface> &surface) noexcept;
+  /**
+   * @brief Internal.
+   */
   bool
   hasContext(const std::shared_ptr<opengl::GLContext> &context) const noexcept;
+  /**
+   * @brief Internal.
+   */
   bool
   hasContextForSurface(const std::shared_ptr<Surface> &surface) const noexcept;
+  /**
+   * @brief Internal.
+   */
   std::optional<std::shared_ptr<opengl::GLContext>>
   defaultContext() const noexcept;
 
+  std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
+  createSwapchain(const SwapchainDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Shader>, std::runtime_error>
   createShader(const ShaderDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Program>, std::runtime_error>
