@@ -16,6 +16,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install glslangValidator (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install glslang
+
+      - name: Install glslangValidator (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y glslang-tools
+
+      - name: Install glslangValidator (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install glslang
+        shell: powershell
+        
       - name: Set up CMake
         uses: lukka/get-cmake@v3.27.0
 
