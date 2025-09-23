@@ -11,6 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install glslangValidator
+        run: sudo apt-get install -y glslang-tools
+
       - name: Set up Emscripten
         uses: mymindstorm/setup-emsdk@v13
         with:
