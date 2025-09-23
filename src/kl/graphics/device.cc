@@ -102,8 +102,8 @@ Device::create(std::shared_ptr<Instance> instance,
   device->mInstance = instance;
 
 #ifndef __EMSCRIPTEN__
-  device->mDefaultWindow =
-      SDL_CreateWindow("Default Window", 1, 1, SDL_WINDOW_OPENGL);
+  device->mDefaultWindow = SDL_CreateWindow(
+      "Default Window", 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
 
   if (!device->mDefaultWindow) {
     return std::unexpected(
