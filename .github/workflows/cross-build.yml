@@ -26,7 +26,7 @@ jobs:
 
       - name: Install glslangValidator (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install vulkan-sdk
+        run: winget install --id=KhronosGroup.VulkanSDK -e --accept-source-agreements --accept-package-agreements
         shell: powershell
 
       - name: Set up CMake
