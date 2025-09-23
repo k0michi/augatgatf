@@ -3,6 +3,9 @@
 #include "kl/graphics/device.hh"
 #include "kl/graphics/opengl/symbol_converter.hh"
 
+#include <algorithm>
+#include <cmath>
+
 namespace kl::graphics {
 std::expected<std::shared_ptr<Texture>, std::runtime_error>
 Texture::create(std::shared_ptr<Device> device,
