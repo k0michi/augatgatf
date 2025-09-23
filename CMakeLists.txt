@@ -59,6 +59,7 @@ add_library(kl STATIC
 # include src/kl/**/*.cc
   src/kl/graphics/color_blend_state.cc
   src/kl/graphics/context.cc
+  src/kl/graphics/depth_stencil_state.cc
   src/kl/graphics/device.cc
   src/kl/graphics/device_child.cc
   src/kl/graphics/instance.cc

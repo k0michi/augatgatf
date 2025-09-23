@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "color_blend_state.hh"
+#include "depth_stencil_state.hh"
 #include "device_descriptor.hh"
 #include "kl/platform/window.hh"
 #include "opengl/gl_context.hh"
@@ -57,6 +58,9 @@ public:
   createProgram(const ProgramDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<ColorBlendState>, std::runtime_error>
   createColorBlendState(const ColorBlendStateDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<DepthStencilState>, std::runtime_error>
+  createDepthStencilState(
+      const DepthStencilStateDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.

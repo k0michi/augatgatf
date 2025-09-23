@@ -37,6 +37,12 @@ Device::createColorBlendState(
   return ColorBlendState::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<DepthStencilState>, std::runtime_error>
+Device::createDepthStencilState(
+    const DepthStencilStateDescriptor &descriptor) noexcept {
+  return DepthStencilState::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
     const std::shared_ptr<platform::Window> &window) noexcept {
   auto it = mWindowContexts.find(window);
