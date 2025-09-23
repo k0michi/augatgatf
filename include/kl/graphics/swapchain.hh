@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "device_child.hh"
+#include "framebuffer.hh"
 #include "swapchain_descriptor.hh"
 
 namespace kl::graphics {
@@ -13,6 +14,7 @@ class Device;
 
 class Swapchain : public DeviceChild {
   SwapchainDescriptor mDescriptor;
+  std::shared_ptr<Framebuffer> mFramebuffer;
 
 public:
   virtual ~Swapchain() noexcept = default;
@@ -23,6 +25,10 @@ public:
   Swapchain &operator=(Swapchain &&) noexcept = delete;
 
   const SwapchainDescriptor &descriptor() const noexcept { return mDescriptor; }
+
+  std::shared_ptr<Framebuffer> framebuffer() const noexcept {
+    return mFramebuffer;
+  }
 
   static std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
   create(std::shared_ptr<Device> device,

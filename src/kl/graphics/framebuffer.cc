@@ -73,6 +73,15 @@ Framebuffer::create(std::shared_ptr<Device> device,
   return framebuffer;
 }
 
+std::expected<std::shared_ptr<Framebuffer>, std::runtime_error>
+Framebuffer::createDefault(std::shared_ptr<Device> device,
+                           std::shared_ptr<platform::Window> window) noexcept {
+  auto framebuffer = std::shared_ptr<Framebuffer>(new Framebuffer(device));
+  framebuffer->mAssociatedWindow = window;
+  framebuffer->mFramebuffer = 0;
+  return framebuffer;
+}
+
 Framebuffer::Framebuffer(std::shared_ptr<Device> device) noexcept
     : DeviceChild(std::move(device)) {}
 } // namespace kl::graphics

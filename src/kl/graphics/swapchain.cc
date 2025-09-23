@@ -9,6 +9,15 @@ Swapchain::create(std::shared_ptr<Device> device,
                   const SwapchainDescriptor &descriptor) noexcept {
   auto swapchain = std::shared_ptr<Swapchain>(new Swapchain(device));
   swapchain->mDescriptor = descriptor;
+  auto framebufferResult =
+      Framebuffer::createDefault(device, descriptor.window);
+
+  if (!framebufferResult) {
+    // createDefault never fails.
+    return std::unexpected(framebufferResult.error());
+  }
+
+  swapchain->mFramebuffer = framebufferResult.value();
 
   // SDL has no way to change GL attributes afterwards, so we recreate the
   // window
