@@ -30,6 +30,8 @@ public:
     return mFramebuffer;
   }
 
+  void present(int32_t interval) noexcept;
+
   static std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const SwapchainDescriptor &descriptor) noexcept;

@@ -216,12 +216,12 @@ void Window::setGLSurfaceConfig(
 std::expected<void, std::runtime_error> Window::recreate() noexcept {
   setSDLGLAttributes();
 
-  auto title = SDL_GetWindowTitle(mWindow);
+  std::string title = SDL_GetWindowTitle(mWindow);
   int w, h;
   SDL_GetWindowSize(mWindow, &w, &h);
   SDL_WindowFlags flags = SDL_GetWindowFlags(mWindow);
   SDL_DestroyWindow(mWindow);
-  mWindow = SDL_CreateWindow(title, w, h, flags);
+  mWindow = SDL_CreateWindow(title.data(), w, h, flags);
 
   if (!mWindow) {
     return std::unexpected(std::runtime_error(SDL_GetError()));

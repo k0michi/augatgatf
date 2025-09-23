@@ -58,6 +58,11 @@ Device::createFramebuffer(const FramebufferDescriptor &descriptor) noexcept {
   return Framebuffer::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<Context>, std::runtime_error>
+Device::createContext(const ContextDescriptor &descriptor) noexcept {
+  return Context::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
     const std::shared_ptr<platform::Window> &window) noexcept {
   auto it = mWindowContexts.find(window);

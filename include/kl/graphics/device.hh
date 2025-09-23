@@ -12,6 +12,7 @@
 
 #include "buffer.hh"
 #include "color_blend_state.hh"
+#include "context.hh"
 #include "depth_stencil_state.hh"
 #include "device_descriptor.hh"
 #include "framebuffer.hh"
@@ -70,6 +71,8 @@ public:
   createBuffer(const BufferDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Framebuffer>, std::runtime_error>
   createFramebuffer(const FramebufferDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Context>, std::runtime_error>
+  createContext(const ContextDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.

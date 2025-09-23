@@ -38,21 +38,28 @@ kl::platform::Task<void> main_async() {
   }
 
   auto instance = instanceResult.value();
-  auto windowResult = instance->createWindow(
-      kl::platform::WindowDescriptor{"My Window", 800, 600});
-  if (!windowResult) {
-    std::cerr << "Failed to create Window: " << windowResult.error().what()
-              << std::endl;
-    co_return;
-  }
+  auto window =
+      instance
+          ->createWindow(kl::platform::WindowDescriptor{"My Window", 800, 600})
+          .value();
 
   auto graphicsInstance =
       kl::graphics::Instance::create(kl::graphics::InstanceDescriptor{})
           .value();
   auto device =
-      graphicsInstance->createDevice(kl::graphics::DeviceDescriptor{});
+      graphicsInstance->createDevice(kl::graphics::DeviceDescriptor{}).value();
+  auto swapchain =
+      device
+          ->createSwapchain({
+              .window = window,
+              .colorFormat = kl::graphics::Format::eR8G8B8A8Unorm,
+              .depthStencilFormat = kl::graphics::Format::eD24UnormS8Uint,
+              .doubleBuffered = true,
+          })
+          .value();
+  auto context = device->createContext({}).value();
 
-  auto rasterizationState = device.value()->createRasterizationState({});
+  auto rasterizationState = device->createRasterizationState({});
 
   {
     auto file = "shaders/test.vert.spv";
@@ -66,7 +73,7 @@ kl::platform::Task<void> main_async() {
     std::vector<std::byte> spirv_binary(size / sizeof(std::byte));
     fs.read(reinterpret_cast<char *>(spirv_binary.data()), size);
     fs.close();
-    auto shader = device.value()->createShader({
+    auto shader = device->createShader({
         .stage = kl::graphics::ShaderStage::eVertex,
         .code = spirv_binary,
         .entryPoint = "main",
@@ -80,10 +87,10 @@ kl::platform::Task<void> main_async() {
 
     *shader;
 
-    auto program = device.value()->createProgram({
+    auto program = device->createProgram({
         .shaders =
             {
-                device.value()
+                device
                     ->createShader({
                         .stage = kl::graphics::ShaderStage::eVertex,
                         .code = spirv_binary,
@@ -99,7 +106,7 @@ kl::platform::Task<void> main_async() {
       co_return;
     }
 
-    auto texture = device.value()->createTexture({
+    auto texture = device->createTexture({
         .type = kl::graphics::TextureType::e2D,
         .format = kl::graphics::Format::eR8G8B8A8Unorm,
         .extent = {512, 512, 1},
@@ -107,14 +114,29 @@ kl::platform::Task<void> main_async() {
     });
 
     *texture;
+
+    auto buffer = device->createBuffer({
+        .size = 1024,
+    });
+
+    *buffer;
   }
 
-  auto window = windowResult.value();
   int32_t count = 0;
 
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
+    context->setFramebuffer(swapchain->framebuffer());
+    context->clearColor({1.0f, 1.0f, 0.0f, 1.0f});
+    swapchain->present(1);
     instance->pollEvents();
+
+    auto error = SDL_GetError();
+    if (error[0] != '\0') {
+      std::cerr << "SDL Error: " << error << std::endl;
+      SDL_ClearError();
+    }
+
     // std::cout << elapsed << std::endl;
     count++;
   }

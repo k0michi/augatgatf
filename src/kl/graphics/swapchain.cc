@@ -1,9 +1,28 @@
 #include "kl/graphics/swapchain.hh"
 
+#include "kl/graphics/device.hh"
 #include "kl/graphics/opengl/surface_config.hh"
 #include "kl/graphics/opengl/symbol_converter.hh"
 
 namespace kl::graphics {
+void Swapchain::present(int32_t interval) noexcept {
+  auto device = this->device().lock();
+
+  if (!device) {
+    return;
+  }
+
+  auto context = device->getContextForWindow(mDescriptor.window);
+
+  if (!context) {
+    return;
+  }
+
+  std::scoped_lock lock(**context);
+  SDL_GL_SetSwapInterval(interval);
+  SDL_GL_SwapWindow(mDescriptor.window->sdlWindow());
+}
+
 std::expected<std::shared_ptr<Swapchain>, std::runtime_error>
 Swapchain::create(std::shared_ptr<Device> device,
                   const SwapchainDescriptor &descriptor) noexcept {
