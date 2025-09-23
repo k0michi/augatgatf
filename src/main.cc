@@ -55,7 +55,7 @@ kl::platform::Task<void> main_async() {
   auto rasterizationState = device.value()->createRasterizationState({});
 
   {
-    auto file = "../../vert.spv";
+    auto file = "shaders/test.vert.spv";
     std::ifstream fs(file, std::ios::binary | std::ios::ate);
     if (!fs.is_open()) {
       std::cerr << "Failed to open file: " << file << std::endl;
@@ -69,7 +69,7 @@ kl::platform::Task<void> main_async() {
     auto shader = device.value()->createShader({
         .stage = kl::graphics::ShaderStage::eVertex,
         .code = spirv_binary,
-        .entryPoint = "a",
+        .entryPoint = "main",
     });
 
     if (!shader) {
@@ -87,7 +87,7 @@ kl::platform::Task<void> main_async() {
                     ->createShader({
                         .stage = kl::graphics::ShaderStage::eVertex,
                         .code = spirv_binary,
-                        .entryPoint = "a",
+                        .entryPoint = "main",
                     })
                     .value(),
             },
@@ -98,6 +98,15 @@ kl::platform::Task<void> main_async() {
                 << std::endl;
       co_return;
     }
+
+    auto texture = device.value()->createTexture({
+        .type = kl::graphics::TextureType::e2D,
+        .format = kl::graphics::Format::eR8G8B8A8Unorm,
+        .extent = {512, 512, 1},
+        .mipLevels = 4,
+    });
+
+    *texture;
   }
 
   auto window = windowResult.value();
