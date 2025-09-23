@@ -70,6 +70,7 @@ add_library(kl STATIC
   src/kl/graphics/rasterization_state.cc
   src/kl/graphics/shader.cc
   src/kl/graphics/swapchain.cc
+  src/kl/graphics/texture.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/window.cc

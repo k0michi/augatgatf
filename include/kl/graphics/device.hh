@@ -19,6 +19,7 @@
 #include "rasterization_state.hh"
 #include "shader.hh"
 #include "swapchain.hh"
+#include "texture.hh"
 
 namespace kl::graphics {
 class Instance;
@@ -61,6 +62,8 @@ public:
   std::expected<std::shared_ptr<DepthStencilState>, std::runtime_error>
   createDepthStencilState(
       const DepthStencilStateDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Texture>, std::runtime_error>
+  createTexture(const TextureDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.

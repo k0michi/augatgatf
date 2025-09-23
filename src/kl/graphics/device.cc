@@ -43,6 +43,11 @@ Device::createDepthStencilState(
   return DepthStencilState::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<Texture>, std::runtime_error>
+Device::createTexture(const TextureDescriptor &descriptor) noexcept {
+  return Texture::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
     const std::shared_ptr<platform::Window> &window) noexcept {
   auto it = mWindowContexts.find(window);

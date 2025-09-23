@@ -3,8 +3,12 @@
 
 #include <optional>
 #include <tuple>
+#include <utility>
+
+#include <glad/gl.h>
 
 #include "../format.hh"
+#include "../texture_descriptor.hh"
 
 namespace kl::graphics::opengl {
 class SymbolConverter {
@@ -126,7 +130,51 @@ public:
     default:
       return std::nullopt;
     }
-  };
+  }
+
+  static constexpr GLenum toGLTextureType(kl::graphics::TextureType type) {
+    switch (type) {
+    case kl::graphics::TextureType::e1D:
+      return GL_TEXTURE_1D;
+    case kl::graphics::TextureType::e2D:
+      return GL_TEXTURE_2D;
+    case kl::graphics::TextureType::e3D:
+      return GL_TEXTURE_3D;
+    }
+
+    std::unreachable();
+  }
+
+  /**
+   * @brief Returns internalformat, format, type.
+   */
+  static constexpr std::tuple<GLenum, GLenum, GLenum>
+  toGLFormat(kl::graphics::Format format) {
+    switch (format) {
+    case kl::graphics::Format::eR8Unorm:
+      return {GL_R8, GL_RED, GL_UNSIGNED_BYTE};
+    case kl::graphics::Format::eR8G8Unorm:
+      return {GL_RG8, GL_RG, GL_UNSIGNED_BYTE};
+    case kl::graphics::Format::eR8G8B8Unorm:
+      return {GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE};
+    case kl::graphics::Format::eR8G8B8A8Unorm:
+      return {GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE};
+    case kl::graphics::Format::eB8G8R8A8Unorm:
+      return {GL_RGBA8, GL_BGRA, GL_UNSIGNED_BYTE};
+    case kl::graphics::Format::eD16Unorm:
+      return {GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT};
+    case kl::graphics::Format::eD32Sfloat:
+      return {GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT};
+    case kl::graphics::Format::eD24UnormS8Uint:
+      return {GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8};
+    case kl::graphics::Format::eD32SfloatS8Uint:
+      return {GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL,
+              GL_FLOAT_32_UNSIGNED_INT_24_8_REV};
+    default:
+      // TODO: Handle other formats.
+      throw std::runtime_error("Unsupported format");
+    }
+  }
 };
 } // namespace kl::graphics::opengl
 #endif // KL_GRAPHICS_OPENGL_SYMBOL_CONVERTER_HH
