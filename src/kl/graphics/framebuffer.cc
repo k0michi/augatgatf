@@ -10,6 +10,8 @@ Framebuffer::create(std::shared_ptr<Device> device,
   framebuffer->mDescriptor = descriptor;
   auto context = *(device->defaultContext());
   std::scoped_lock lock(*context);
+  framebuffer->mExtent = {std::numeric_limits<uint32_t>::max(),
+                          std::numeric_limits<uint32_t>::max()};
 
   context->gladGLContext()->GenFramebuffers(1, &framebuffer->mFramebuffer);
 
@@ -34,6 +36,13 @@ Framebuffer::create(std::shared_ptr<Device> device,
       context->gladGLContext()->FramebufferTexture2D(
           GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(i),
           GL_TEXTURE_2D, attachment.texture->glTexture(), attachment.level);
+
+      framebuffer->mExtent.width = std::min(
+          framebuffer->mExtent.width,
+          attachment.texture->descriptor().extent.width >> attachment.level);
+      framebuffer->mExtent.height = std::min(
+          framebuffer->mExtent.height,
+          attachment.texture->descriptor().extent.height >> attachment.level);
     } else {
       return std::unexpected(
           std::runtime_error("Unsupported texture type for color attachment"));
@@ -52,6 +61,12 @@ Framebuffer::create(std::shared_ptr<Device> device,
       context->gladGLContext()->FramebufferTexture2D(
           GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
           attachment.texture->glTexture(), attachment.level);
+      framebuffer->mExtent.width = std::min(
+          framebuffer->mExtent.width,
+          attachment.texture->descriptor().extent.width >> attachment.level);
+      framebuffer->mExtent.height = std::min(
+          framebuffer->mExtent.height,
+          attachment.texture->descriptor().extent.height >> attachment.level);
     }
   }
 
@@ -67,6 +82,12 @@ Framebuffer::create(std::shared_ptr<Device> device,
       context->gladGLContext()->FramebufferTexture2D(
           GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
           attachment.texture->glTexture(), attachment.level);
+      framebuffer->mExtent.width = std::min(
+          framebuffer->mExtent.width,
+          attachment.texture->descriptor().extent.width >> attachment.level);
+      framebuffer->mExtent.height = std::min(
+          framebuffer->mExtent.height,
+          attachment.texture->descriptor().extent.height >> attachment.level);
     }
   }
 
@@ -77,8 +98,18 @@ std::expected<std::shared_ptr<Framebuffer>, std::runtime_error>
 Framebuffer::createDefault(std::shared_ptr<Device> device,
                            std::shared_ptr<platform::Window> window) noexcept {
   auto framebuffer = std::shared_ptr<Framebuffer>(new Framebuffer(device));
+  // NOTE: mDescriptor is empty
+  framebuffer->mDescriptor = {};
   framebuffer->mAssociatedWindow = window;
   framebuffer->mFramebuffer = 0;
+  auto sizeResult = window->sizeInPixels();
+  if (!sizeResult) {
+    return std::unexpected(std::runtime_error("Failed to get window size"));
+  }
+  framebuffer->mExtent = {
+      static_cast<uint32_t>(sizeResult->width),
+      static_cast<uint32_t>(sizeResult->height),
+  };
   return framebuffer;
 }
 

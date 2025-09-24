@@ -8,11 +8,20 @@ void Context::setFramebuffer(
   mState.framebuffer = std::move(framebuffer);
 }
 
+void Context::setViewport(const std::optional<Viewport> &viewport) noexcept {
+  mState.viewport = viewport;
+}
+
+const std::optional<Viewport> &Context::getViewport() const noexcept {
+  return mState.viewport;
+}
+
 void Context::clearColor(
     std::tuple<float, float, float, float> color) noexcept {
   applyState();
   auto devicePtr = device().lock();
 
+  // FIXME: Error handling
   if (!devicePtr) {
     return;
   }
@@ -82,6 +91,28 @@ void Context::applyState() noexcept {
   glContext->gladGLContext()->BindFramebuffer(
       GL_DRAW_FRAMEBUFFER,
       (mState.framebuffer ? mState.framebuffer->glFramebuffer() : 0));
+
+  Viewport viewport;
+
+  if (mState.viewport) {
+    viewport = *(mState.viewport);
+  } else if (mState.framebuffer) {
+    auto extent = mState.framebuffer->extent();
+    viewport.x = 0;
+    viewport.y = 0;
+    viewport.width = static_cast<float>(extent.width);
+    viewport.height = static_cast<float>(extent.height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+  }
+
+  glContext->gladGLContext()->Viewport(static_cast<GLint>(viewport.x),
+                                       static_cast<GLint>(viewport.y),
+                                       static_cast<GLsizei>(viewport.width),
+                                       static_cast<GLsizei>(viewport.height));
+  glContext->gladGLContext()->DepthRange(
+      static_cast<GLclampd>(viewport.minDepth),
+      static_cast<GLclampd>(viewport.maxDepth));
 }
 
 std::optional<std::shared_ptr<opengl::GLContext>>

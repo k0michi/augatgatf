@@ -7,6 +7,7 @@
 
 #include "device_child.hh"
 #include "framebuffer_descriptor.hh"
+#include "kl/common/extent2.hh"
 
 namespace kl::platform {
 class Window;
@@ -29,6 +30,7 @@ private:
    * default framebuffer.
    */
   GLuint mFramebuffer = 0;
+  kl::common::Extent2<uint32_t> mExtent;
 
 public:
   virtual ~Framebuffer() noexcept = default;
@@ -50,6 +52,10 @@ public:
 
   inline std::shared_ptr<platform::Window> associatedWindow() const noexcept {
     return mAssociatedWindow;
+  }
+
+  const kl::common::Extent2<uint32_t> &extent() const noexcept {
+    return mExtent;
   }
 
   static std::expected<std::shared_ptr<Framebuffer>, std::runtime_error>

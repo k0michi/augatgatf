@@ -3,18 +3,21 @@
 
 #include <expected>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 
 #include "context_descriptor.hh"
 #include "device_child.hh"
 #include "framebuffer.hh"
-#include "kl/graphics/opengl/gl_context.hh"
+#include "opengl/gl_context.hh"
+#include "viewport.hh"
 
 namespace kl::graphics {
 class Device;
 
 struct ContextState final {
   std::shared_ptr<Framebuffer> framebuffer;
+  std::optional<Viewport> viewport;
 };
 
 class Context : public DeviceChild {
@@ -35,6 +38,9 @@ public:
   }
 
   void setFramebuffer(std::shared_ptr<Framebuffer> framebuffer) noexcept;
+  void setViewport(const std::optional<Viewport> &viewport) noexcept;
+  const std::optional<Viewport> &getViewport() const noexcept;
+
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;
 
