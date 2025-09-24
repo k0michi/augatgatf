@@ -63,6 +63,11 @@ Device::createContext(const ContextDescriptor &descriptor) noexcept {
   return Context::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<Sampler>, std::runtime_error>
+Device::createSampler(const SamplerDescriptor &descriptor) noexcept {
+  return Sampler::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
     const std::shared_ptr<platform::Window> &window) noexcept {
   auto it = mWindowContexts.find(window);

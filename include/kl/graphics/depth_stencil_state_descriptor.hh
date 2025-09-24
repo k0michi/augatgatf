@@ -3,21 +3,9 @@
 
 #include <cstdint>
 
-namespace kl::graphics {
-/**
- * https://registry.khronos.org/vulkan/specs/latest/man/html/VkCompareOp.html
- */
-enum class CompareOp {
-  eNever,
-  eLess,
-  eEqual,
-  eLessOrEqual,
-  eGreater,
-  eNotEqual,
-  eGreaterOrEqual,
-  eAlways,
-};
+#include "kl/graphics/compare_op.hh"
 
+namespace kl::graphics {
 /**
  * https://registry.khronos.org/vulkan/specs/latest/man/html/VkStencilOp.html
  */

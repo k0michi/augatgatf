@@ -1,6 +1,8 @@
 #ifndef KL_GRAPHICS_SAMPLER_DESCRIPTOR_HH
 #define KL_GRAPHICS_SAMPLER_DESCRIPTOR_HH
 
+#include "kl/graphics/compare_op.hh"
+
 namespace kl::graphics {
 /**
  * https://registry.khronos.org/vulkan/specs/latest/man/html/VkFilter.html
@@ -26,21 +28,7 @@ enum class SamplerAddressMode {
   eMirroredRepeat,
   eClampToEdge,
   eClampToBorder,
-  // eMirrorClampToEdge,
-};
-
-/**
- * https://registry.khronos.org/vulkan/specs/latest/man/html/VkCompareOp.html
- */
-enum class CompareOp {
-  eNever,
-  eLess,
-  eEqual,
-  eLessOrEqual,
-  eGreater,
-  eNotEqual,
-  eGreaterOrEqual,
-  eAlways,
+  eMirrorClampToEdge,
 };
 
 /**

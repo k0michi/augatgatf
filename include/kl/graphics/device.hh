@@ -20,6 +20,7 @@
 #include "opengl/gl_context.hh"
 #include "program.hh"
 #include "rasterization_state.hh"
+#include "sampler.hh"
 #include "shader.hh"
 #include "swapchain.hh"
 #include "texture.hh"
@@ -73,6 +74,8 @@ public:
   createFramebuffer(const FramebufferDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Context>, std::runtime_error>
   createContext(const ContextDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<Sampler>, std::runtime_error>
+  createSampler(const SamplerDescriptor &descriptor) noexcept;
 
   /**
    * @brief Internal.

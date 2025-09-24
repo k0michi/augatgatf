@@ -9,6 +9,7 @@
 #include <glad/gl.h>
 
 #include "../format.hh"
+#include "../sampler_descriptor.hh"
 #include "../texture_descriptor.hh"
 
 namespace kl::graphics::opengl {
@@ -180,6 +181,97 @@ public:
       // TODO: Handle other formats.
       throw std::runtime_error("Unsupported format");
     }
+  }
+
+  static constexpr GLenum toGLCompareFunc(kl::graphics::CompareOp op) {
+    switch (op) {
+    case kl::graphics::CompareOp::eNever:
+      return GL_NEVER;
+    case kl::graphics::CompareOp::eLess:
+      return GL_LESS;
+    case kl::graphics::CompareOp::eEqual:
+      return GL_EQUAL;
+    case kl::graphics::CompareOp::eLessOrEqual:
+      return GL_LEQUAL;
+    case kl::graphics::CompareOp::eGreater:
+      return GL_GREATER;
+    case kl::graphics::CompareOp::eNotEqual:
+      return GL_NOTEQUAL;
+    case kl::graphics::CompareOp::eGreaterOrEqual:
+      return GL_GEQUAL;
+    case kl::graphics::CompareOp::eAlways:
+      return GL_ALWAYS;
+    }
+
+    std::unreachable();
+  }
+
+  static constexpr GLenum
+  toGLSamplerWrap(kl::graphics::SamplerAddressMode mode) {
+    switch (mode) {
+    case kl::graphics::SamplerAddressMode::eRepeat:
+      return GL_REPEAT;
+    case kl::graphics::SamplerAddressMode::eMirroredRepeat:
+      return GL_MIRRORED_REPEAT;
+    case kl::graphics::SamplerAddressMode::eClampToEdge:
+      return GL_CLAMP_TO_EDGE;
+    case kl::graphics::SamplerAddressMode::eClampToBorder:
+      return GL_CLAMP_TO_BORDER;
+      // OpenGL 4.4 or GL_ARB_texture_mirror_clamp_to_edge
+    case kl::graphics::SamplerAddressMode::eMirrorClampToEdge:
+      return GL_MIRROR_CLAMP_TO_EDGE;
+    }
+
+    std::unreachable();
+  }
+
+  static constexpr GLenum toGLFilter(kl::graphics::Filter filter,
+                                     kl::graphics::SamplerMipmapMode mipmap) {
+    switch (filter) {
+    case kl::graphics::Filter::eNearest:
+      switch (mipmap) {
+      case kl::graphics::SamplerMipmapMode::eNearest:
+        return GL_NEAREST_MIPMAP_NEAREST;
+      case kl::graphics::SamplerMipmapMode::eLinear:
+        return GL_NEAREST_MIPMAP_LINEAR;
+      }
+      break;
+    case kl::graphics::Filter::eLinear:
+      switch (mipmap) {
+      case kl::graphics::SamplerMipmapMode::eNearest:
+        return GL_LINEAR_MIPMAP_NEAREST;
+      case kl::graphics::SamplerMipmapMode::eLinear:
+        return GL_LINEAR_MIPMAP_LINEAR;
+      }
+      break;
+    }
+
+    std::unreachable();
+  }
+
+  static constexpr GLenum toGLFilter(kl::graphics::Filter filter) {
+    switch (filter) {
+    case kl::graphics::Filter::eNearest:
+      return GL_NEAREST;
+    case kl::graphics::Filter::eLinear:
+      return GL_LINEAR;
+    }
+
+    std::unreachable();
+  }
+
+  static constexpr std::tuple<GLfloat, GLfloat, GLfloat, GLfloat>
+  toGLBorderColor(kl::graphics::BorderColor color) {
+    switch (color) {
+    case kl::graphics::BorderColor::eTransparentBlack:
+      return {0.0f, 0.0f, 0.0f, 0.0f};
+    case kl::graphics::BorderColor::eOpaqueBlack:
+      return {0.0f, 0.0f, 0.0f, 1.0f};
+    case kl::graphics::BorderColor::eOpaqueWhite:
+      return {1.0f, 1.0f, 1.0f, 1.0f};
+    }
+
+    std::unreachable();
   }
 };
 } // namespace kl::graphics::opengl

@@ -120,6 +120,9 @@ kl::platform::Task<void> main_async() {
     });
 
     *buffer;
+
+    auto sampler = device->createSampler({});
+    *sampler;
   }
 
   int32_t count = 0;
