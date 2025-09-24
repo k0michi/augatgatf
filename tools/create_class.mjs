@@ -125,7 +125,8 @@ function generateHeader({
 function generateSource({ name, type }) {
     const { namespace, basename } = splitNamespace(name);
     let content = '';
-    const headerPath = getHeaderPath(name, { includeDir: false });
+    let headerPath = getHeaderPath(name, { includeDir: false });
+    headerPath = headerPath.replace(/\\/g, '/');
     content += `#include "${headerPath}"\n`;
     content += `\n`;
     if (namespace.length > 0) {

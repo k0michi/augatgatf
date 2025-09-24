@@ -1,4 +1,4 @@
-#include "kl\graphics\vertex_input_state.hh"
+#include "kl/graphics/vertex_input_state.hh"
 
 #include "kl/graphics/device.hh"
 #include "kl/graphics/opengl/symbol_converter.hh"

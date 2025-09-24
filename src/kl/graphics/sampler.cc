@@ -1,4 +1,4 @@
-#include "kl\graphics\sampler.hh"
+#include "kl/graphics/sampler.hh"
 
 #include "kl/graphics/device.hh"
 #include "kl/graphics/opengl/symbol_converter.hh"
