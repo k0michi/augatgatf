@@ -88,6 +88,7 @@ add_executable(main
   src/main.cc
 )
 target_link_libraries(main PRIVATE kl)
+set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
@@ -106,6 +107,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+
 add_executable(test_main
 # include test/**/*.cc
   test/test_matrix2x2.cc
@@ -115,6 +117,7 @@ add_executable(test_main
 )
 add_test(NAME Tests COMMAND test_main)
 target_link_libraries(test_main PRIVATE coverage_config gtest_main kl)
+set_property(TARGET test_main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 # GLSL compilation
 
