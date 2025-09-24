@@ -13,6 +13,7 @@
 #include "kl/common/rectangle2.hh"
 #include "opengl/gl_context.hh"
 #include "program.hh"
+#include "rasterization_state.hh"
 #include "scissor_rect.hh"
 #include "viewport.hh"
 
@@ -25,6 +26,7 @@ struct ContextState final {
   std::optional<ScissorRect> scissorRect;
   std::shared_ptr<Program> program;
   std::shared_ptr<ColorBlendState> colorBlendState;
+  std::shared_ptr<RasterizationState> rasterizationState;
 };
 
 /**
@@ -40,6 +42,7 @@ private:
   bool mScissorRectDirty = true;
   bool mProgramDirty = true;
   bool mColorBlendStateDirty = true;
+  bool mRasterizationStateDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -63,6 +66,10 @@ public:
   void
   setColorBlendState(std::shared_ptr<ColorBlendState> colorBlendState) noexcept;
   const std::shared_ptr<ColorBlendState> &getColorBlendState() const noexcept;
+  void setRasterizationState(
+      std::shared_ptr<RasterizationState> rasterizationState) noexcept;
+  const std::shared_ptr<RasterizationState> &
+  getRasterizationState() const noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;

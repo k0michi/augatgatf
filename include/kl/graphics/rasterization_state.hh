@@ -21,6 +21,10 @@ public:
   RasterizationState &operator=(const RasterizationState &) = delete;
   RasterizationState &operator=(RasterizationState &&) noexcept = delete;
 
+  inline const RasterizationStateDescriptor &descriptor() const noexcept {
+    return mDescriptor;
+  }
+
   static std::expected<std::shared_ptr<RasterizationState>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const RasterizationStateDescriptor &descriptor) noexcept;

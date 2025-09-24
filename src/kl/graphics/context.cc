@@ -256,6 +256,63 @@ void Context::applyState() noexcept {
 
     mColorBlendStateDirty = false;
   }
+
+  // Rasterization State
+
+  if (mRasterizationStateDirty) {
+    RasterizationStateDescriptor descriptor;
+
+    if (mState.rasterizationState) {
+      descriptor = mState.rasterizationState->descriptor();
+    } else {
+      descriptor = RasterizationStateDescriptor{};
+    }
+
+    if (descriptor.depthClampEnable) {
+      glContext->gladGLContext()->Enable(GL_DEPTH_CLAMP);
+    } else {
+      glContext->gladGLContext()->Disable(GL_DEPTH_CLAMP);
+    }
+
+    if (descriptor.rasterizerDiscardEnable) {
+      glContext->gladGLContext()->Enable(GL_RASTERIZER_DISCARD);
+    } else {
+      glContext->gladGLContext()->Disable(GL_RASTERIZER_DISCARD);
+    }
+
+    // TODO: Report error if polygon mode other than FILL is used on WebGL.
+#ifndef __EMSCRIPTEN__
+    glContext->gladGLContext()->PolygonMode(
+        GL_FRONT_AND_BACK,
+        opengl::SymbolConverter::toGLPolygonMode(descriptor.polygonMode));
+#endif
+
+    if (descriptor.cullMode == CullMode::eNone) {
+      glContext->gladGLContext()->Disable(GL_CULL_FACE);
+    } else {
+      glContext->gladGLContext()->Enable(GL_CULL_FACE);
+      glContext->gladGLContext()->CullFace(
+          *opengl::SymbolConverter::toGLCullMode(descriptor.cullMode));
+    }
+
+    glContext->gladGLContext()->FrontFace(
+        opengl::SymbolConverter::toGLFrontFace(descriptor.frontFace));
+
+    if (descriptor.depthBiasEnable) {
+      glContext->gladGLContext()->Enable(GL_POLYGON_OFFSET_FILL);
+    }
+
+    glContext->gladGLContext()->PolygonOffset(
+        descriptor.depthBiasSlopeFactor, descriptor.depthBiasConstantFactor);
+
+    // TODO: OpenGL 4.6 or GL_ARB_polygon_offset_clamp
+    // glContext->gladGLContext()->PolygonOffsetClamp(
+    //     descriptor.depthBiasSlopeFactor, descriptor.depthBiasConstantFactor,
+    //     descriptor.depthBiasClamp);
+
+    glContext->gladGLContext()->LineWidth(descriptor.lineWidth);
+    mRasterizationStateDirty = false;
+  }
 }
 
 std::optional<std::shared_ptr<opengl::GLContext>>

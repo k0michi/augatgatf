@@ -10,6 +10,7 @@
 
 #include "../color_blend_state_descriptor.hh"
 #include "../format.hh"
+#include "../rasterization_state_descriptor.hh"
 #include "../sampler_descriptor.hh"
 #include "../texture_descriptor.hh"
 
@@ -348,6 +349,40 @@ public:
                                kl::graphics::ColorComponent(0)),
         static_cast<GLboolean>((component & kl::graphics::ColorComponent::eA) !=
                                kl::graphics::ColorComponent(0))};
+  }
+
+  static constexpr GLenum toGLPolygonMode(kl::graphics::PolygonMode mode) {
+    switch (mode) {
+    case kl::graphics::PolygonMode::eFill:
+      return GL_FILL;
+    case kl::graphics::PolygonMode::eLine:
+      return GL_LINE;
+    case kl::graphics::PolygonMode::ePoint:
+      return GL_POINT;
+    }
+  }
+
+  static constexpr std::optional<GLenum>
+  toGLCullMode(kl::graphics::CullMode mode) {
+    switch (mode) {
+    case kl::graphics::CullMode::eNone:
+      return std::nullopt;
+    case kl::graphics::CullMode::eFront:
+      return GL_FRONT;
+    case kl::graphics::CullMode::eBack:
+      return GL_BACK;
+    case kl::graphics::CullMode::eFrontAndBack:
+      return GL_FRONT_AND_BACK;
+    }
+  }
+
+  static constexpr GLenum toGLFrontFace(kl::graphics::FrontFace face) {
+    switch (face) {
+    case kl::graphics::FrontFace::eCounterClockwise:
+      return GL_CCW;
+    case kl::graphics::FrontFace::eClockwise:
+      return GL_CW;
+    }
   }
 };
 } // namespace kl::graphics::opengl
