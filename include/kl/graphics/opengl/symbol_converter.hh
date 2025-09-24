@@ -521,6 +521,29 @@ public:
       return std::nullopt;
     }
   }
+
+  constexpr static GLenum toGLStencilOp(kl::graphics::StencilOp op) {
+    switch (op) {
+    case kl::graphics::StencilOp::eKeep:
+      return GL_KEEP;
+    case kl::graphics::StencilOp::eZero:
+      return GL_ZERO;
+    case kl::graphics::StencilOp::eReplace:
+      return GL_REPLACE;
+    case kl::graphics::StencilOp::eIncrementAndClamp:
+      return GL_INCR;
+    case kl::graphics::StencilOp::eDecrementAndClamp:
+      return GL_DECR;
+    case kl::graphics::StencilOp::eInvert:
+      return GL_INVERT;
+    case kl::graphics::StencilOp::eIncrementAndWrap:
+      return GL_INCR_WRAP;
+    case kl::graphics::StencilOp::eDecrementAndWrap:
+      return GL_DECR_WRAP;
+    }
+
+    std::unreachable();
+  }
 };
 } // namespace kl::graphics::opengl
 #endif // KL_GRAPHICS_OPENGL_SYMBOL_CONVERTER_HH

@@ -8,6 +8,7 @@
 
 #include "color_blend_state.hh"
 #include "context_descriptor.hh"
+#include "depth_stencil_state.hh"
 #include "device_child.hh"
 #include "framebuffer.hh"
 #include "kl/common/rectangle2.hh"
@@ -27,6 +28,7 @@ struct ContextState final {
   std::shared_ptr<Program> program;
   std::shared_ptr<ColorBlendState> colorBlendState;
   std::shared_ptr<RasterizationState> rasterizationState;
+  std::shared_ptr<DepthStencilState> depthStencilState;
 };
 
 /**
@@ -43,6 +45,7 @@ private:
   bool mProgramDirty = true;
   bool mColorBlendStateDirty = true;
   bool mRasterizationStateDirty = true;
+  bool mDepthStencilStateDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -70,6 +73,10 @@ public:
       std::shared_ptr<RasterizationState> rasterizationState) noexcept;
   const std::shared_ptr<RasterizationState> &
   getRasterizationState() const noexcept;
+  void setDepthStencilState(
+      std::shared_ptr<DepthStencilState> depthStencilState) noexcept;
+  const std::shared_ptr<DepthStencilState> &
+  getDepthStencilState() const noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;

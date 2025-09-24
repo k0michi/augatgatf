@@ -7,10 +7,12 @@ namespace kl::graphics {
 void Context::setFramebuffer(
     std::shared_ptr<Framebuffer> framebuffer) noexcept {
   mState.framebuffer = std::move(framebuffer);
+  mFramebufferDirty = true;
 }
 
 void Context::setViewport(const std::optional<Viewport> &viewport) noexcept {
   mState.viewport = viewport;
+  mViewportDirty = true;
 }
 
 const std::optional<Viewport> &Context::getViewport() const noexcept {
@@ -19,6 +21,7 @@ const std::optional<Viewport> &Context::getViewport() const noexcept {
 
 void Context::setScissorRect(const std::optional<ScissorRect> &rect) noexcept {
   mState.scissorRect = rect;
+  mScissorRectDirty = true;
 }
 
 const std::optional<ScissorRect> &Context::getScissorRect() const noexcept {
@@ -27,6 +30,7 @@ const std::optional<ScissorRect> &Context::getScissorRect() const noexcept {
 
 void Context::setProgram(std::shared_ptr<Program> program) noexcept {
   mState.program = std::move(program);
+  mProgramDirty = true;
 }
 
 const std::shared_ptr<Program> &Context::getProgram() const noexcept {
@@ -36,11 +40,34 @@ const std::shared_ptr<Program> &Context::getProgram() const noexcept {
 void Context::setColorBlendState(
     std::shared_ptr<ColorBlendState> colorBlendState) noexcept {
   mState.colorBlendState = std::move(colorBlendState);
+  mColorBlendStateDirty = true;
 }
 
 const std::shared_ptr<ColorBlendState> &
 Context::getColorBlendState() const noexcept {
   return mState.colorBlendState;
+}
+
+void Context::setRasterizationState(
+    std::shared_ptr<RasterizationState> rasterizationState) noexcept {
+  mState.rasterizationState = std::move(rasterizationState);
+  mRasterizationStateDirty = true;
+}
+
+const std::shared_ptr<RasterizationState> &
+Context::getRasterizationState() const noexcept {
+  return mState.rasterizationState;
+}
+
+void Context::setDepthStencilState(
+    std::shared_ptr<DepthStencilState> depthStencilState) noexcept {
+  mState.depthStencilState = std::move(depthStencilState);
+  mDepthStencilStateDirty = true;
+}
+
+const std::shared_ptr<DepthStencilState> &
+Context::getDepthStencilState() const noexcept {
+  return mState.depthStencilState;
 }
 
 void Context::clearColor(
@@ -311,6 +338,69 @@ void Context::applyState() noexcept {
 
     glContext->gladGLContext()->LineWidth(descriptor.lineWidth);
     mRasterizationStateDirty = false;
+  }
+
+  // Depth Stencil State
+
+  if (mDepthStencilStateDirty) {
+    DepthStencilStateDescriptor descriptor;
+
+    if (mState.depthStencilState) {
+      descriptor = mState.depthStencilState->descriptor();
+    } else {
+      descriptor = DepthStencilStateDescriptor{};
+    }
+
+    if (descriptor.depthTestEnable) {
+      glContext->gladGLContext()->Enable(GL_DEPTH_TEST);
+    } else {
+      glContext->gladGLContext()->Disable(GL_DEPTH_TEST);
+    }
+
+    glContext->gladGLContext()->DepthMask(
+        descriptor.depthWriteEnable ? GL_TRUE : GL_FALSE);
+
+    glContext->gladGLContext()->DepthFunc(
+        opengl::SymbolConverter::toGLCompareFunc(descriptor.depthCompareOp));
+
+    if (descriptor.stencilTestEnable) {
+      glContext->gladGLContext()->Enable(GL_STENCIL_TEST);
+    } else {
+      glContext->gladGLContext()->Disable(GL_STENCIL_TEST);
+    }
+
+    glContext->gladGLContext()->StencilFuncSeparate(
+        GL_FRONT,
+        opengl::SymbolConverter::toGLCompareFunc(descriptor.front.compareOp),
+        descriptor.front.reference, descriptor.front.compareMask);
+    glContext->gladGLContext()->StencilOpSeparate(
+        GL_FRONT,
+        opengl::SymbolConverter::toGLStencilOp(descriptor.front.failOp),
+        opengl::SymbolConverter::toGLStencilOp(descriptor.front.depthFailOp),
+        opengl::SymbolConverter::toGLStencilOp(descriptor.front.passOp));
+    glContext->gladGLContext()->StencilMaskSeparate(GL_FRONT,
+                                                    descriptor.front.writeMask);
+    glContext->gladGLContext()->StencilFuncSeparate(
+        GL_BACK,
+        opengl::SymbolConverter::toGLCompareFunc(descriptor.back.compareOp),
+        descriptor.back.reference, descriptor.back.compareMask);
+    glContext->gladGLContext()->StencilOpSeparate(
+        GL_BACK, opengl::SymbolConverter::toGLStencilOp(descriptor.back.failOp),
+        opengl::SymbolConverter::toGLStencilOp(descriptor.back.depthFailOp),
+        opengl::SymbolConverter::toGLStencilOp(descriptor.back.passOp));
+    glContext->gladGLContext()->StencilMaskSeparate(GL_BACK,
+                                                    descriptor.back.writeMask);
+
+    // TODO:
+    // if (descriptor.depthBoundsTestEnable) {
+    //   glContext->gladGLContext()->Enable(GL_DEPTH_BOUNDS_TEST_EXT);
+    //   glContext->gladGLContext()->DepthBoundsEXT(descriptor.minDepthBounds,
+    //                                              descriptor.maxDepthBounds);
+    // } else {
+    //   glContext->gladGLContext()->Disable(GL_DEPTH_BOUNDS_TEST_EXT);
+    // }
+
+    mDepthStencilStateDirty = false;
   }
 }
 
