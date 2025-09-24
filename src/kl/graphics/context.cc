@@ -145,9 +145,8 @@ void Context::applyState() noexcept {
                                          static_cast<GLint>(viewport.y),
                                          static_cast<GLsizei>(viewport.width),
                                          static_cast<GLsizei>(viewport.height));
-    glContext->gladGLContext()->DepthRange(
-        static_cast<GLclampd>(viewport.minDepth),
-        static_cast<GLclampd>(viewport.maxDepth));
+    glContext->gladGLContext()->DepthRangef(viewport.minDepth,
+                                            viewport.maxDepth);
     mViewportDirty = false;
   }
 

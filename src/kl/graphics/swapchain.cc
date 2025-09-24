@@ -71,6 +71,10 @@ Swapchain::create(std::shared_ptr<Device> device,
     }
   }
 
+#ifdef __EMSCRIPTEN__
+  device->getOrCreateContextForWindow(descriptor.window);
+#endif
+
   return swapchain;
 }
 

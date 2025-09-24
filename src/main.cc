@@ -61,69 +61,69 @@ kl::platform::Task<void> main_async() {
 
   auto rasterizationState = device->createRasterizationState({});
 
-  {
-    auto file = "shaders/test.vert.spv";
-    std::ifstream fs(file, std::ios::binary | std::ios::ate);
-    if (!fs.is_open()) {
-      std::cerr << "Failed to open file: " << file << std::endl;
-      co_return;
-    }
-    auto size = fs.tellg();
-    fs.seekg(0, std::ios::beg);
-    std::vector<std::byte> spirv_binary(size / sizeof(std::byte));
-    fs.read(reinterpret_cast<char *>(spirv_binary.data()), size);
-    fs.close();
-    auto shader = device->createShader({
-        .stage = kl::graphics::ShaderStage::eVertex,
-        .code = spirv_binary,
-        .entryPoint = "main",
-    });
+  // {
+  //   auto file = "shaders/test.vert.spv";
+  //   std::ifstream fs(file, std::ios::binary | std::ios::ate);
+  //   if (!fs.is_open()) {
+  //     std::cerr << "Failed to open file: " << file << std::endl;
+  //     co_return;
+  //   }
+  //   auto size = fs.tellg();
+  //   fs.seekg(0, std::ios::beg);
+  //   std::vector<std::byte> spirv_binary(size / sizeof(std::byte));
+  //   fs.read(reinterpret_cast<char *>(spirv_binary.data()), size);
+  //   fs.close();
+  //   auto shader = device->createShader({
+  //       .stage = kl::graphics::ShaderStage::eVertex,
+  //       .code = spirv_binary,
+  //       .entryPoint = "main",
+  //   });
 
-    if (!shader) {
-      std::cerr << "Failed to create shader: " << shader.error().what()
-                << std::endl;
-      co_return;
-    }
+  //   if (!shader) {
+  //     std::cerr << "Failed to create shader: " << shader.error().what()
+  //               << std::endl;
+  //     co_return;
+  //   }
 
-    *shader;
+  //   *shader;
 
-    auto program = device->createProgram({
-        .shaders =
-            {
-                device
-                    ->createShader({
-                        .stage = kl::graphics::ShaderStage::eVertex,
-                        .code = spirv_binary,
-                        .entryPoint = "main",
-                    })
-                    .value(),
-            },
-    });
+  //   auto program = device->createProgram({
+  //       .shaders =
+  //           {
+  //               device
+  //                   ->createShader({
+  //                       .stage = kl::graphics::ShaderStage::eVertex,
+  //                       .code = spirv_binary,
+  //                       .entryPoint = "main",
+  //                   })
+  //                   .value(),
+  //           },
+  //   });
 
-    if (!program) {
-      std::cerr << "Failed to create program: " << program.error().what()
-                << std::endl;
-      co_return;
-    }
+  //   if (!program) {
+  //     std::cerr << "Failed to create program: " << program.error().what()
+  //               << std::endl;
+  //     co_return;
+  //   }
 
-    auto texture = device->createTexture({
-        .type = kl::graphics::TextureType::e2D,
-        .format = kl::graphics::Format::eR8G8B8A8Unorm,
-        .extent = {512, 512, 1},
-        .mipLevels = 4,
-    });
+  //   auto texture = device->createTexture({
+  //       .type = kl::graphics::TextureType::e2D,
+  //       .format = kl::graphics::Format::eR8G8B8A8Unorm,
+  //       .extent = {512, 512, 1},
+  //       .mipLevels = 4,
+  //   });
 
-    *texture;
+  //   *texture;
 
-    auto buffer = device->createBuffer({
-        .size = 1024,
-    });
+  //   auto buffer = device->createBuffer({
+  //       .size = 1024,
+  //   });
 
-    *buffer;
+  //   *buffer;
 
-    auto sampler = device->createSampler({});
-    *sampler;
-  }
+  //   auto sampler = device->createSampler({});
+  //   *sampler;
+  // }
 
   int32_t count = 0;
 

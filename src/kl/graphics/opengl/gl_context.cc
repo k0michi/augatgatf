@@ -69,7 +69,11 @@ GLContext::create(const GLContextDescriptor &descriptor) noexcept {
   auto sdlContext = SDL_GL_CreateContext(descriptor.window);
 
   context->mGladGLContext = std::make_unique<GladGLContext>();
+#ifndef __EMSCRIPTEN__
   gladLoadGLContext(context->mGladGLContext.get(), &SDL_GL_GetProcAddress);
+#else
+  gladLoadGLES2Context(context->mGladGLContext.get(), &SDL_GL_GetProcAddress);
+#endif
 
   GLint extensionsCount = 0;
   context->mGladGLContext->GetIntegerv(GL_NUM_EXTENSIONS, &extensionsCount);

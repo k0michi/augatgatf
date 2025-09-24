@@ -94,8 +94,10 @@ set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME
 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
-  target_compile_options(main PRIVATE -fwasm-exceptions)
-  set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fwasm-exceptions")
+  target_compile_options(kl PRIVATE -fexceptions -g)
+  set_target_properties(kl PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
+  target_compile_options(main PRIVATE -fexceptions -g)
+  set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
 endif()
 
 # GoogleTest
