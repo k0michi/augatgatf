@@ -143,3 +143,4 @@ CMakeUserPresets.json
 
 build*/
 .vscode/
+.vs/
