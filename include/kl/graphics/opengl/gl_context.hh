@@ -5,6 +5,8 @@
 #include <memory>
 #include <mutex>
 #include <stdexcept>
+#include <string>
+#include <unordered_set>
 
 #include <SDL3/SDL_video.h>
 #include <glad/gl.h>
@@ -21,6 +23,7 @@ private:
   SDL_GLContext mContext;
   std::recursive_mutex mMutex;
   std::unique_ptr<GladGLContext> mGladGLContext;
+  std::unordered_set<std::string> mExtensions;
 
 public:
   virtual ~GLContext() noexcept;
@@ -36,6 +39,7 @@ public:
   GladGLContext *gladGLContext() const noexcept;
   void lock() noexcept;
   void unlock() noexcept;
+  bool hasExtension(const std::string &extension) const noexcept;
 
   static std::expected<std::shared_ptr<GLContext>, std::runtime_error>
   create(const GLContextDescriptor &descriptor) noexcept;

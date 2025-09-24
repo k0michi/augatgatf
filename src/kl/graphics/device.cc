@@ -159,6 +159,19 @@ Device::create(std::shared_ptr<Instance> instance,
     return std::unexpected(defaultContextResult.error());
   }
 
+  auto defaultContext = defaultContextResult.value();
+  std::scoped_lock lock(*defaultContext);
+
+  device->mFeatures.anisotropicFiltering =
+      defaultContext->hasExtension("GL_EXT_texture_filter_anisotropic");
+  device->mFeatures.depthClamp =
+      defaultContext->hasExtension("GL_ARB_depth_clamp");
+  device->mFeatures.polygonMode = true; // Always supported in desktop GL.
+  device->mFeatures.independentBlend =
+      defaultContext->hasExtension("GL_ARB_draw_buffers_blend");
+  device->mFeatures.computeShaders =
+      defaultContext->hasExtension("GL_ARB_compute_shader");
+
   device->mContexts.emplace_back(defaultContextResult.value());
 #endif
 

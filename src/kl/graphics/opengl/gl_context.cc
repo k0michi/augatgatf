@@ -67,6 +67,15 @@ GLContext::create(const GLContextDescriptor &descriptor) noexcept {
   context->mGladGLContext = std::make_unique<GladGLContext>();
   gladLoadGLContext(context->mGladGLContext.get(), &SDL_GL_GetProcAddress);
 
+  GLint extensionsCount = 0;
+  context->mGladGLContext->GetIntegerv(GL_NUM_EXTENSIONS, &extensionsCount);
+  for (GLint i = 0; i < extensionsCount; ++i) {
+    const char *extension =
+        reinterpret_cast<const char *>(context->mGladGLContext->GetStringi(
+            GL_EXTENSIONS, static_cast<GLuint>(i)));
+    context->mExtensions.insert(extension);
+  }
+
   SDL_GL_MakeCurrent(nullptr, nullptr);
 
   if (!sdlContext) {

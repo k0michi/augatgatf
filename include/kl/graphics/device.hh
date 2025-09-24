@@ -15,6 +15,7 @@
 #include "context.hh"
 #include "depth_stencil_state.hh"
 #include "device_descriptor.hh"
+#include "features.hh"
 #include "framebuffer.hh"
 #include "kl/platform/window.hh"
 #include "opengl/gl_context.hh"
@@ -43,6 +44,7 @@ private:
   std::unordered_map<std::shared_ptr<platform::Window>,
                      std::shared_ptr<opengl::GLContext>>
       mWindowContexts;
+  Features mFeatures;
 
 public:
   virtual ~Device() noexcept;
@@ -76,6 +78,8 @@ public:
   createContext(const ContextDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Sampler>, std::runtime_error>
   createSampler(const SamplerDescriptor &descriptor) noexcept;
+
+  inline const Features &features() const noexcept { return mFeatures; }
 
   /**
    * @brief Internal.
