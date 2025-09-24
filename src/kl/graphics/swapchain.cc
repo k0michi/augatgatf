@@ -64,7 +64,11 @@ Swapchain::create(std::shared_ptr<Device> device,
 
   if (descriptor.window->glSurfaceConfig() != glSurfaceConfig) {
     descriptor.window->setGLSurfaceConfig(glSurfaceConfig);
-    descriptor.window->recreate();
+
+    if (!descriptor.window->recreate()) {
+      return std::unexpected(
+          std::runtime_error("Failed to recreate window for swapchain"));
+    }
   }
 
   return swapchain;
