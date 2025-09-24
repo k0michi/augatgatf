@@ -142,7 +142,7 @@ Window::setMinimumSize(const kl::common::Extent2<int32_t> &size) noexcept {
   return {};
 }
 
-std::expected<kl::common::Point2<int32_t>, std::runtime_error>
+std::expected<kl::common::Offset2<int32_t>, std::runtime_error>
 Window::position() const noexcept {
   int x, y;
 
@@ -150,11 +150,11 @@ Window::position() const noexcept {
     return std::unexpected(std::runtime_error(SDL_GetError()));
   }
 
-  return kl::common::Point2<int32_t>{x, y};
+  return kl::common::Offset2<int32_t>{x, y};
 }
 
 std::expected<void, std::runtime_error>
-Window::setPosition(const kl::common::Point2<int32_t> &position) noexcept {
+Window::setPosition(const kl::common::Offset2<int32_t> &position) noexcept {
   if (!SDL_SetWindowPosition(mWindow, position.x, position.y)) {
     return std::unexpected(std::runtime_error(SDL_GetError()));
   }

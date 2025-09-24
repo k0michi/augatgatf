@@ -12,7 +12,7 @@
 #include <SDL3/SDL.h>
 
 #include "kl/common/extent2.hh"
-#include "kl/common/point2.hh"
+#include "kl/common/offset2.hh"
 #include "kl/graphics/opengl/surface_config.hh"
 #include "window_descriptor.hh"
 
@@ -52,10 +52,10 @@ public:
   std::expected<void, std::runtime_error>
   setMinimumSize(const kl::common::Extent2<int32_t> &size) noexcept;
 
-  std::expected<kl::common::Point2<int32_t>, std::runtime_error>
+  std::expected<kl::common::Offset2<int32_t>, std::runtime_error>
   position() const noexcept;
   std::expected<void, std::runtime_error>
-  setPosition(const kl::common::Point2<int32_t> &position) noexcept;
+  setPosition(const kl::common::Offset2<int32_t> &position) noexcept;
 
   std::string title() const noexcept;
   std::expected<void, std::runtime_error>
