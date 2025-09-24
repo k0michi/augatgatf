@@ -6,6 +6,7 @@
 #include <optional>
 #include <stdexcept>
 
+#include "color_blend_state.hh"
 #include "context_descriptor.hh"
 #include "device_child.hh"
 #include "framebuffer.hh"
@@ -23,6 +24,7 @@ struct ContextState final {
   std::optional<Viewport> viewport;
   std::optional<ScissorRect> scissorRect;
   std::shared_ptr<Program> program;
+  std::shared_ptr<ColorBlendState> colorBlendState;
 };
 
 /**
@@ -37,6 +39,7 @@ private:
   bool mViewportDirty = true;
   bool mScissorRectDirty = true;
   bool mProgramDirty = true;
+  bool mColorBlendStateDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -57,6 +60,9 @@ public:
   const std::optional<ScissorRect> &getScissorRect() const noexcept;
   void setProgram(std::shared_ptr<Program> program) noexcept;
   const std::shared_ptr<Program> &getProgram() const noexcept;
+  void
+  setColorBlendState(std::shared_ptr<ColorBlendState> colorBlendState) noexcept;
+  const std::shared_ptr<ColorBlendState> &getColorBlendState() const noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;

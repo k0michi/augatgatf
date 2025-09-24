@@ -1,6 +1,7 @@
 #include "kl/graphics/context.hh"
 
 #include "kl/graphics/device.hh"
+#include "kl/graphics/opengl/symbol_converter.hh"
 
 namespace kl::graphics {
 void Context::setFramebuffer(
@@ -30,6 +31,16 @@ void Context::setProgram(std::shared_ptr<Program> program) noexcept {
 
 const std::shared_ptr<Program> &Context::getProgram() const noexcept {
   return mState.program;
+}
+
+void Context::setColorBlendState(
+    std::shared_ptr<ColorBlendState> colorBlendState) noexcept {
+  mState.colorBlendState = std::move(colorBlendState);
+}
+
+const std::shared_ptr<ColorBlendState> &
+Context::getColorBlendState() const noexcept {
+  return mState.colorBlendState;
 }
 
 void Context::clearColor(
@@ -170,6 +181,80 @@ void Context::applyState() noexcept {
     glContext->gladGLContext()->UseProgram(
         (mState.program ? mState.program->glProgram() : 0));
     mProgramDirty = false;
+  }
+
+  // Color Blend State
+
+  if (mColorBlendStateDirty) {
+    ColorBlendStateDescriptor descriptor;
+
+    if (mState.colorBlendState) {
+      descriptor = mState.colorBlendState->descriptor();
+    } else {
+      descriptor = ColorBlendStateDescriptor{};
+    }
+
+    if (descriptor.independentBlendEnable) {
+      // TODO: Check whether independent blending is supported.
+
+      for (uint32_t i = 0; i < descriptor.attachments.size(); i++) {
+        if (descriptor.attachments[i].blendEnable) {
+          glContext->gladGLContext()->Enablei(GL_BLEND, i);
+        } else {
+          glContext->gladGLContext()->Disablei(GL_BLEND, i);
+        }
+
+        glContext->gladGLContext()->BlendFuncSeparatei(
+            i,
+            opengl::SymbolConverter::toGLBlendFunc(
+                descriptor.attachments[i].srcColorBlendFactor),
+            opengl::SymbolConverter::toGLBlendFunc(
+                descriptor.attachments[i].dstColorBlendFactor),
+            opengl::SymbolConverter::toGLBlendFunc(
+                descriptor.attachments[i].srcAlphaBlendFactor),
+            opengl::SymbolConverter::toGLBlendFunc(
+                descriptor.attachments[i].dstAlphaBlendFactor));
+        glContext->gladGLContext()->BlendEquationSeparatei(
+            i,
+            opengl::SymbolConverter::toGLBlendEquation(
+                descriptor.attachments[i].colorBlendOp),
+            opengl::SymbolConverter::toGLBlendEquation(
+                descriptor.attachments[i].alphaBlendOp));
+        auto colorMask = opengl::SymbolConverter::toGLColorMask(
+            descriptor.attachments[i].colorWriteMask);
+        glContext->gladGLContext()->ColorMaski(
+            i, std::get<0>(colorMask), std::get<1>(colorMask),
+            std::get<2>(colorMask), std::get<3>(colorMask));
+      }
+    } else {
+      if (descriptor.attachments[0].blendEnable) {
+        glContext->gladGLContext()->Enable(GL_BLEND);
+      } else {
+        glContext->gladGLContext()->Disable(GL_BLEND);
+      }
+
+      glContext->gladGLContext()->BlendFuncSeparate(
+          opengl::SymbolConverter::toGLBlendFunc(
+              descriptor.attachments[0].srcColorBlendFactor),
+          opengl::SymbolConverter::toGLBlendFunc(
+              descriptor.attachments[0].dstColorBlendFactor),
+          opengl::SymbolConverter::toGLBlendFunc(
+              descriptor.attachments[0].srcAlphaBlendFactor),
+          opengl::SymbolConverter::toGLBlendFunc(
+              descriptor.attachments[0].dstAlphaBlendFactor));
+      glContext->gladGLContext()->BlendEquationSeparate(
+          opengl::SymbolConverter::toGLBlendEquation(
+              descriptor.attachments[0].colorBlendOp),
+          opengl::SymbolConverter::toGLBlendEquation(
+              descriptor.attachments[0].alphaBlendOp));
+      auto colorMask = opengl::SymbolConverter::toGLColorMask(
+          descriptor.attachments[0].colorWriteMask);
+      glContext->gladGLContext()->ColorMask(
+          std::get<0>(colorMask), std::get<1>(colorMask),
+          std::get<2>(colorMask), std::get<3>(colorMask));
+    }
+
+    mColorBlendStateDirty = false;
   }
 }
 

@@ -21,6 +21,10 @@ public:
   ColorBlendState &operator=(const ColorBlendState &) = delete;
   ColorBlendState &operator=(ColorBlendState &&) noexcept = delete;
 
+  inline const ColorBlendStateDescriptor &descriptor() const noexcept {
+    return mDescriptor;
+  }
+
   static std::expected<std::shared_ptr<ColorBlendState>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const ColorBlendStateDescriptor &descriptor) noexcept;

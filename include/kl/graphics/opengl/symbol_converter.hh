@@ -8,6 +8,7 @@
 
 #include <glad/gl.h>
 
+#include "../color_blend_state_descriptor.hh"
 #include "../format.hh"
 #include "../sampler_descriptor.hh"
 #include "../texture_descriptor.hh"
@@ -272,6 +273,81 @@ public:
     }
 
     std::unreachable();
+  }
+
+  static constexpr GLenum toGLBlendFunc(kl::graphics::BlendFactor factor) {
+    switch (factor) {
+    case kl::graphics::BlendFactor::eZero:
+      return GL_ZERO;
+    case kl::graphics::BlendFactor::eOne:
+      return GL_ONE;
+    case kl::graphics::BlendFactor::eSrcColor:
+      return GL_SRC_COLOR;
+    case kl::graphics::BlendFactor::eOneMinusSrcColor:
+      return GL_ONE_MINUS_SRC_COLOR;
+    case kl::graphics::BlendFactor::eDstColor:
+      return GL_DST_COLOR;
+    case kl::graphics::BlendFactor::eOneMinusDstColor:
+      return GL_ONE_MINUS_DST_COLOR;
+    case kl::graphics::BlendFactor::eSrcAlpha:
+      return GL_SRC_ALPHA;
+    case kl::graphics::BlendFactor::eOneMinusSrcAlpha:
+      return GL_ONE_MINUS_SRC_ALPHA;
+    case kl::graphics::BlendFactor::eDstAlpha:
+      return GL_DST_ALPHA;
+    case kl::graphics::BlendFactor::eOneMinusDstAlpha:
+      return GL_ONE_MINUS_DST_ALPHA;
+    case kl::graphics::BlendFactor::eConstantColor:
+      return GL_CONSTANT_COLOR;
+    case kl::graphics::BlendFactor::eOneMinusConstantColor:
+      return GL_ONE_MINUS_CONSTANT_COLOR;
+    case kl::graphics::BlendFactor::eConstantAlpha:
+      return GL_CONSTANT_ALPHA;
+    case kl::graphics::BlendFactor::eOneMinusConstantAlpha:
+      return GL_ONE_MINUS_CONSTANT_ALPHA;
+    case kl::graphics::BlendFactor::eSrcAlphaSaturate:
+      return GL_SRC_ALPHA_SATURATE;
+    case kl::graphics::BlendFactor::eSrc1Color:
+      return GL_SRC1_COLOR;
+    case kl::graphics::BlendFactor::eOneMinusSrc1Color:
+      return GL_ONE_MINUS_SRC1_COLOR;
+    case kl::graphics::BlendFactor::eSrc1Alpha:
+      return GL_SRC1_ALPHA;
+    case kl::graphics::BlendFactor::eOneMinusSrc1Alpha:
+      return GL_ONE_MINUS_SRC1_ALPHA;
+    }
+
+    std::unreachable();
+  }
+
+  static constexpr GLenum toGLBlendEquation(kl::graphics::BlendOp op) {
+    switch (op) {
+    case kl::graphics::BlendOp::eAdd:
+      return GL_FUNC_ADD;
+    case kl::graphics::BlendOp::eSubtract:
+      return GL_FUNC_SUBTRACT;
+    case kl::graphics::BlendOp::eReverseSubtract:
+      return GL_FUNC_REVERSE_SUBTRACT;
+    case kl::graphics::BlendOp::eMin:
+      return GL_MIN;
+    case kl::graphics::BlendOp::eMax:
+      return GL_MAX;
+    }
+
+    std::unreachable();
+  }
+
+  static constexpr std::tuple<GLboolean, GLboolean, GLboolean, GLboolean>
+  toGLColorMask(kl::graphics::ColorComponent component) {
+    return {
+        static_cast<GLboolean>((component & kl::graphics::ColorComponent::eR) !=
+                               kl::graphics::ColorComponent(0)),
+        static_cast<GLboolean>((component & kl::graphics::ColorComponent::eG) !=
+                               kl::graphics::ColorComponent(0)),
+        static_cast<GLboolean>((component & kl::graphics::ColorComponent::eB) !=
+                               kl::graphics::ColorComponent(0)),
+        static_cast<GLboolean>((component & kl::graphics::ColorComponent::eA) !=
+                               kl::graphics::ColorComponent(0))};
   }
 };
 } // namespace kl::graphics::opengl
