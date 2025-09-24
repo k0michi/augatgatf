@@ -16,6 +16,14 @@ const std::optional<Viewport> &Context::getViewport() const noexcept {
   return mState.viewport;
 }
 
+void Context::setScissorRect(const std::optional<ScissorRect> &rect) noexcept {
+  mState.scissorRect = rect;
+}
+
+const std::optional<ScissorRect> &Context::getScissorRect() const noexcept {
+  return mState.scissorRect;
+}
+
 void Context::clearColor(
     std::tuple<float, float, float, float> color) noexcept {
   applyState();
@@ -113,6 +121,25 @@ void Context::applyState() noexcept {
   glContext->gladGLContext()->DepthRange(
       static_cast<GLclampd>(viewport.minDepth),
       static_cast<GLclampd>(viewport.maxDepth));
+
+  // NOTE: Vulkan and WebGPU do not support disabling scissor test.
+  glContext->gladGLContext()->Enable(GL_SCISSOR_TEST);
+
+  ScissorRect scissorRect;
+  if (mState.scissorRect) {
+    scissorRect = *(mState.scissorRect);
+  } else if (mState.framebuffer) {
+    auto extent = mState.framebuffer->extent();
+    scissorRect.offset = {0, 0};
+    scissorRect.extent = {static_cast<uint32_t>(extent.width),
+                          static_cast<uint32_t>(extent.height)};
+  }
+
+  glContext->gladGLContext()->Scissor(
+      static_cast<GLint>(scissorRect.offset.x),
+      static_cast<GLint>(scissorRect.offset.y),
+      static_cast<GLsizei>(scissorRect.extent.width),
+      static_cast<GLsizei>(scissorRect.extent.height));
 }
 
 std::optional<std::shared_ptr<opengl::GLContext>>

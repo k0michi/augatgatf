@@ -130,7 +130,11 @@ kl::platform::Task<void> main_async() {
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
     context->setFramebuffer(swapchain->framebuffer());
-    // context->setViewport(kl::graphics::Viewport{0, 0, 10, 10, 0, 1});
+    context->setViewport(kl::graphics::Viewport{0, 0, 10, 10, 0, 1});
+    context->setScissorRect(kl::graphics::ScissorRect{
+        .offset = {0, 0},
+        .extent = {10, 10},
+    });
     context->clearColor({1.0f, 1.0f, 0.0f, 1.0f});
     swapchain->present(1);
     instance->pollEvents();

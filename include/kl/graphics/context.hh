@@ -9,7 +9,9 @@
 #include "context_descriptor.hh"
 #include "device_child.hh"
 #include "framebuffer.hh"
+#include "kl/common/rectangle2.hh"
 #include "opengl/gl_context.hh"
+#include "scissor_rect.hh"
 #include "viewport.hh"
 
 namespace kl::graphics {
@@ -18,8 +20,12 @@ class Device;
 struct ContextState final {
   std::shared_ptr<Framebuffer> framebuffer;
   std::optional<Viewport> viewport;
+  std::optional<ScissorRect> scissorRect;
 };
 
+/**
+ * @brief Rendering context. Context is where users dispatch rendering commands.
+ */
 class Context : public DeviceChild {
 private:
   ContextDescriptor mDescriptor;
@@ -40,6 +46,8 @@ public:
   void setFramebuffer(std::shared_ptr<Framebuffer> framebuffer) noexcept;
   void setViewport(const std::optional<Viewport> &viewport) noexcept;
   const std::optional<Viewport> &getViewport() const noexcept;
+  void setScissorRect(const std::optional<ScissorRect> &rect) noexcept;
+  const std::optional<ScissorRect> &getScissorRect() const noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;
