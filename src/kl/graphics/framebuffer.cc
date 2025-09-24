@@ -3,6 +3,30 @@
 #include "kl/graphics/device.hh"
 
 namespace kl::graphics {
+Framebuffer::~Framebuffer() noexcept {
+  if (mFramebuffer == 0) {
+    return;
+  }
+
+  auto devicePtr = mDevice.lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto contextExp = devicePtr->defaultContext();
+
+  if (!contextExp) {
+    return;
+  }
+
+  auto context = *contextExp;
+
+  std::scoped_lock lock(*context);
+  context->gladGLContext()->DeleteFramebuffers(1, &mFramebuffer);
+  mFramebuffer = 0;
+}
+
 std::expected<std::shared_ptr<Framebuffer>, std::runtime_error>
 Framebuffer::create(std::shared_ptr<Device> device,
                     const FramebufferDescriptor &descriptor) noexcept {

@@ -4,6 +4,18 @@
 #include "kl/graphics/opengl/symbol_converter.hh"
 
 namespace kl::graphics {
+VertexInputState::~VertexInputState() noexcept {
+  for (auto &[context, vertexArray] : mVertexArrays) {
+    if (vertexArray == 0) {
+      continue;
+    }
+
+    std::scoped_lock lock(*context);
+    context->gladGLContext()->DeleteVertexArrays(1, &vertexArray);
+    vertexArray = 0;
+  }
+}
+
 std::expected<GLuint, std::runtime_error> VertexInputState::glVertexArray(
     std::shared_ptr<opengl::GLContext> context) noexcept {
   auto it = mVertexArrays.find(context);

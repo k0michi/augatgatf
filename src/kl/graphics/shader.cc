@@ -6,16 +6,27 @@
 
 namespace kl::graphics {
 Shader::~Shader() noexcept {
+  if (mShader == 0) {
+    return;
+  }
+
   auto device = mDevice.lock();
 
-  if (device) {
-    auto context = device->defaultContext();
-
-    if (context) {
-      std::scoped_lock lock(**context);
-      (*context)->gladGLContext()->DeleteShader(mShader);
-    }
+  if (!device) {
+    return;
   }
+
+  auto contextExp = device->defaultContext();
+
+  if (!contextExp) {
+    return;
+  }
+
+  auto context = *contextExp;
+
+  std::scoped_lock lock(*context);
+  context->gladGLContext()->DeleteShader(mShader);
+  mShader = 0;
 }
 
 std::expected<std::shared_ptr<Shader>, std::runtime_error>

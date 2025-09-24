@@ -33,7 +33,7 @@ private:
   kl::common::Extent2<uint32_t> mExtent;
 
 public:
-  virtual ~Framebuffer() noexcept = default;
+  virtual ~Framebuffer() noexcept;
 
   Framebuffer(const Framebuffer &) = delete;
   Framebuffer(Framebuffer &&) noexcept = delete;

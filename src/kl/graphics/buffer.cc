@@ -3,6 +3,30 @@
 #include "kl/graphics/device.hh"
 
 namespace kl::graphics {
+Buffer::~Buffer() noexcept {
+  if (mBuffer == 0) {
+    return;
+  }
+
+  auto devicePtr = device().lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto contextExp = devicePtr->defaultContext();
+
+  if (!contextExp) {
+    return;
+  }
+
+  auto context = *contextExp;
+
+  std::scoped_lock lock(*context);
+  context->gladGLContext()->DeleteBuffers(1, &mBuffer);
+  mBuffer = 0;
+}
+
 std::expected<std::shared_ptr<Buffer>, std::runtime_error>
 Buffer::create(std::shared_ptr<Device> device,
                const BufferDescriptor &descriptor) noexcept {

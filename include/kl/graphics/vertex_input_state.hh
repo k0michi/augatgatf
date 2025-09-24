@@ -26,7 +26,7 @@ private:
   std::unordered_map<std::shared_ptr<opengl::GLContext>, GLuint> mVertexArrays;
 
 public:
-  virtual ~VertexInputState() noexcept = default;
+  virtual ~VertexInputState() noexcept;
 
   VertexInputState(const VertexInputState &) = delete;
   VertexInputState(VertexInputState &&) noexcept = delete;

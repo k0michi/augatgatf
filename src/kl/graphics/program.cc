@@ -3,6 +3,30 @@
 #include "kl/graphics/device.hh"
 
 namespace kl::graphics {
+Program::~Program() noexcept {
+  if (mProgram != 0) {
+    return;
+  }
+
+  auto devicePtr = mDevice.lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto contextExp = devicePtr->defaultContext();
+
+  if (!contextExp) {
+    return;
+  }
+
+  auto context = *contextExp;
+
+  std::scoped_lock lock(*context);
+  context->gladGLContext()->DeleteProgram(mProgram);
+  mProgram = 0;
+}
+
 std::expected<std::shared_ptr<Program>, std::runtime_error>
 Program::create(std::shared_ptr<Device> device,
                 const ProgramDescriptor &descriptor) noexcept {

@@ -19,7 +19,7 @@ private:
   GLuint mBuffer = 0;
 
 public:
-  virtual ~Buffer() noexcept = default;
+  virtual ~Buffer() noexcept;
 
   Buffer(const Buffer &) = delete;
   Buffer(Buffer &&) noexcept = delete;

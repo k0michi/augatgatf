@@ -4,6 +4,30 @@
 #include "kl/graphics/opengl/symbol_converter.hh"
 
 namespace kl::graphics {
+Sampler::~Sampler() noexcept {
+  if (mSampler == 0) {
+    return;
+  }
+
+  auto devicePtr = mDevice.lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto contextExp = devicePtr->defaultContext();
+
+  if (!contextExp) {
+    return;
+  }
+
+  auto context = *contextExp;
+
+  std::scoped_lock lock(*context);
+  context->gladGLContext()->DeleteSamplers(1, &mSampler);
+  mSampler = 0;
+}
+
 std::expected<std::shared_ptr<Sampler>, std::runtime_error>
 Sampler::create(std::shared_ptr<Device> device,
                 const SamplerDescriptor &descriptor) noexcept {

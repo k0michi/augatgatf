@@ -19,7 +19,7 @@ private:
   GLuint mProgram = 0;
 
 public:
-  virtual ~Program() noexcept = default;
+  virtual ~Program() noexcept;
 
   Program(const Program &) = delete;
   Program(Program &&) noexcept = delete;

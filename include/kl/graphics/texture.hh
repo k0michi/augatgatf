@@ -17,7 +17,7 @@ private:
   GLuint mTexture = 0;
 
 public:
-  virtual ~Texture() noexcept = default;
+  virtual ~Texture() noexcept;
 
   Texture(const Texture &) = delete;
   Texture(Texture &&) noexcept = delete;

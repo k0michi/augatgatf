@@ -7,6 +7,30 @@
 #include <cmath>
 
 namespace kl::graphics {
+Texture::~Texture() noexcept {
+  if (mTexture == 0) {
+    return;
+  }
+
+  auto device = mDevice.lock();
+
+  if (!device) {
+    return;
+  }
+
+  auto contextExp = device->defaultContext();
+
+  if (!contextExp) {
+    return;
+  }
+
+  auto context = *contextExp;
+
+  std::scoped_lock lock(*context);
+  context->gladGLContext()->DeleteTextures(1, &mTexture);
+  mTexture = 0;
+}
+
 std::expected<std::shared_ptr<Texture>, std::runtime_error>
 Texture::create(std::shared_ptr<Device> device,
                 const TextureDescriptor &descriptor) noexcept {

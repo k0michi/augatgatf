@@ -16,7 +16,6 @@ class Device;
 
 class Shader : public DeviceChild {
 private:
-  std::weak_ptr<Device> mDevice;
   GLuint mShader = 0;
 
 public:

@@ -19,7 +19,7 @@ class Sampler : public DeviceChild {
   GLuint mSampler = 0;
 
 public:
-  virtual ~Sampler() noexcept = default;
+  virtual ~Sampler() noexcept;
 
   Sampler(const Sampler &) = delete;
   Sampler(Sampler &&) noexcept = delete;
