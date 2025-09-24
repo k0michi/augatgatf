@@ -46,6 +46,10 @@ void GLContext::unlock() noexcept {
   mMutex.unlock();
 }
 
+bool GLContext::hasExtension(const std::string &extension) const noexcept {
+  return mExtensions.find(extension) != mExtensions.end();
+}
+
 std::expected<std::shared_ptr<GLContext>, std::runtime_error>
 GLContext::create(const GLContextDescriptor &descriptor) noexcept {
   auto context = std::shared_ptr<GLContext>(new GLContext());

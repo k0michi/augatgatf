@@ -384,6 +384,143 @@ public:
       return GL_CW;
     }
   }
+
+  // (size, type, normalized)
+  static constexpr std::optional<std::tuple<GLint, GLenum, GLboolean>>
+  toGLVertexAttrib(kl::graphics::Format format) {
+    switch (format) {
+    case kl::graphics::Format::eR8Unorm:
+      return std::make_tuple(1, GL_UNSIGNED_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8Snorm:
+      return std::make_tuple(1, GL_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8Uscaled:
+      return std::make_tuple(1, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8Sscaled:
+      return std::make_tuple(1, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8Uint:
+      return std::make_tuple(1, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8Sint:
+      return std::make_tuple(1, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8Unorm:
+      return std::make_tuple(2, GL_UNSIGNED_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8G8Snorm:
+      return std::make_tuple(2, GL_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8G8Uscaled:
+      return std::make_tuple(2, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8Sscaled:
+      return std::make_tuple(2, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8Uint:
+      return std::make_tuple(2, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8Sint:
+      return std::make_tuple(2, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8Unorm:
+      return std::make_tuple(3, GL_UNSIGNED_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8G8B8Snorm:
+      return std::make_tuple(3, GL_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8G8B8Uscaled:
+      return std::make_tuple(3, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8Sscaled:
+      return std::make_tuple(3, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8Uint:
+      return std::make_tuple(3, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8Sint:
+      return std::make_tuple(3, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8A8Unorm:
+      return std::make_tuple(4, GL_UNSIGNED_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8G8B8A8Snorm:
+      return std::make_tuple(4, GL_BYTE, GL_TRUE);
+    case kl::graphics::Format::eR8G8B8A8Uscaled:
+      return std::make_tuple(4, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8A8Sscaled:
+      return std::make_tuple(4, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8A8Uint:
+      return std::make_tuple(4, GL_UNSIGNED_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR8G8B8A8Sint:
+      return std::make_tuple(4, GL_BYTE, GL_FALSE);
+    case kl::graphics::Format::eR16Unorm:
+      return std::make_tuple(1, GL_UNSIGNED_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16Snorm:
+      return std::make_tuple(1, GL_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16Uscaled:
+      return std::make_tuple(1, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16Sscaled:
+      return std::make_tuple(1, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16Uint:
+      return std::make_tuple(1, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16Sint:
+      return std::make_tuple(1, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16Sfloat:
+      return std::make_tuple(1, GL_HALF_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR16G16Unorm:
+      return std::make_tuple(2, GL_UNSIGNED_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16G16Snorm:
+      return std::make_tuple(2, GL_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16G16Uscaled:
+      return std::make_tuple(2, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16Sscaled:
+      return std::make_tuple(2, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16Uint:
+      return std::make_tuple(2, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16Sint:
+      return std::make_tuple(2, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16Sfloat:
+      return std::make_tuple(2, GL_HALF_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16Unorm:
+      return std::make_tuple(3, GL_UNSIGNED_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16G16B16Snorm:
+      return std::make_tuple(3, GL_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16G16B16Uscaled:
+      return std::make_tuple(3, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16Sscaled:
+      return std::make_tuple(3, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16Uint:
+      return std::make_tuple(3, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16Sint:
+      return std::make_tuple(3, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16Sfloat:
+      return std::make_tuple(3, GL_HALF_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16A16Unorm:
+      return std::make_tuple(4, GL_UNSIGNED_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16G16B16A16Snorm:
+      return std::make_tuple(4, GL_SHORT, GL_TRUE);
+    case kl::graphics::Format::eR16G16B16A16Uscaled:
+      return std::make_tuple(4, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16A16Sscaled:
+      return std::make_tuple(4, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16A16Uint:
+      return std::make_tuple(4, GL_UNSIGNED_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16A16Sint:
+      return std::make_tuple(4, GL_SHORT, GL_FALSE);
+    case kl::graphics::Format::eR16G16B16A16Sfloat:
+      return std::make_tuple(4, GL_HALF_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR32Uint:
+      return std::make_tuple(1, GL_UNSIGNED_INT, GL_FALSE);
+    case kl::graphics::Format::eR32Sint:
+      return std::make_tuple(1, GL_INT, GL_FALSE);
+    case kl::graphics::Format::eR32Sfloat:
+      return std::make_tuple(1, GL_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR32G32Uint:
+      return std::make_tuple(2, GL_UNSIGNED_INT, GL_FALSE);
+    case kl::graphics::Format::eR32G32Sint:
+      return std::make_tuple(2, GL_INT, GL_FALSE);
+    case kl::graphics::Format::eR32G32Sfloat:
+      return std::make_tuple(2, GL_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR32G32B32Uint:
+      return std::make_tuple(3, GL_UNSIGNED_INT, GL_FALSE);
+    case kl::graphics::Format::eR32G32B32Sint:
+      return std::make_tuple(3, GL_INT, GL_FALSE);
+    case kl::graphics::Format::eR32G32B32Sfloat:
+      return std::make_tuple(3, GL_FLOAT, GL_FALSE);
+    case kl::graphics::Format::eR32G32B32A32Uint:
+      return std::make_tuple(4, GL_UNSIGNED_INT, GL_FALSE);
+    case kl::graphics::Format::eR32G32B32A32Sint:
+      return std::make_tuple(4, GL_INT, GL_FALSE);
+    case kl::graphics::Format::eR32G32B32A32Sfloat:
+      return std::make_tuple(4, GL_FLOAT, GL_FALSE);
+    default:
+      return std::nullopt;
+    }
+  }
 };
 } // namespace kl::graphics::opengl
 #endif // KL_GRAPHICS_OPENGL_SYMBOL_CONVERTER_HH
