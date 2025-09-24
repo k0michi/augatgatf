@@ -11,6 +11,7 @@
 #include "framebuffer.hh"
 #include "kl/common/rectangle2.hh"
 #include "opengl/gl_context.hh"
+#include "program.hh"
 #include "scissor_rect.hh"
 #include "viewport.hh"
 
@@ -21,15 +22,21 @@ struct ContextState final {
   std::shared_ptr<Framebuffer> framebuffer;
   std::optional<Viewport> viewport;
   std::optional<ScissorRect> scissorRect;
+  std::shared_ptr<Program> program;
 };
 
 /**
  * @brief Rendering context. Context is where users dispatch rendering commands.
  */
+// TODO: Proper error handling.
 class Context : public DeviceChild {
 private:
   ContextDescriptor mDescriptor;
   ContextState mState;
+  bool mFramebufferDirty = true;
+  bool mViewportDirty = true;
+  bool mScissorRectDirty = true;
+  bool mProgramDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -48,6 +55,8 @@ public:
   const std::optional<Viewport> &getViewport() const noexcept;
   void setScissorRect(const std::optional<ScissorRect> &rect) noexcept;
   const std::optional<ScissorRect> &getScissorRect() const noexcept;
+  void setProgram(std::shared_ptr<Program> program) noexcept;
+  const std::shared_ptr<Program> &getProgram() const noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;

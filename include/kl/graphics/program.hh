@@ -26,6 +26,8 @@ public:
   Program &operator=(const Program &) = delete;
   Program &operator=(Program &&) noexcept = delete;
 
+  inline GLuint glProgram() const noexcept { return mProgram; }
+
   static std::expected<std::shared_ptr<Program>, std::runtime_error>
   create(std::shared_ptr<Device> device,
          const ProgramDescriptor &descriptor) noexcept;

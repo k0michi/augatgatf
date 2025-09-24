@@ -24,12 +24,19 @@ const std::optional<ScissorRect> &Context::getScissorRect() const noexcept {
   return mState.scissorRect;
 }
 
+void Context::setProgram(std::shared_ptr<Program> program) noexcept {
+  mState.program = std::move(program);
+}
+
+const std::shared_ptr<Program> &Context::getProgram() const noexcept {
+  return mState.program;
+}
+
 void Context::clearColor(
     std::tuple<float, float, float, float> color) noexcept {
   applyState();
   auto devicePtr = device().lock();
 
-  // FIXME: Error handling
   if (!devicePtr) {
     return;
   }
@@ -96,50 +103,74 @@ void Context::applyState() noexcept {
 
   auto glContext = *glContextOpt;
   std::scoped_lock lock(*glContext);
-  glContext->gladGLContext()->BindFramebuffer(
-      GL_DRAW_FRAMEBUFFER,
-      (mState.framebuffer ? mState.framebuffer->glFramebuffer() : 0));
 
-  Viewport viewport;
+  // Framebuffer
 
-  if (mState.viewport) {
-    viewport = *(mState.viewport);
-  } else if (mState.framebuffer) {
-    auto extent = mState.framebuffer->extent();
-    viewport.x = 0;
-    viewport.y = 0;
-    viewport.width = static_cast<float>(extent.width);
-    viewport.height = static_cast<float>(extent.height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
+  if (mFramebufferDirty) {
+    glContext->gladGLContext()->BindFramebuffer(
+        GL_DRAW_FRAMEBUFFER,
+        (mState.framebuffer ? mState.framebuffer->glFramebuffer() : 0));
+    mFramebufferDirty = false;
   }
 
-  glContext->gladGLContext()->Viewport(static_cast<GLint>(viewport.x),
-                                       static_cast<GLint>(viewport.y),
-                                       static_cast<GLsizei>(viewport.width),
-                                       static_cast<GLsizei>(viewport.height));
-  glContext->gladGLContext()->DepthRange(
-      static_cast<GLclampd>(viewport.minDepth),
-      static_cast<GLclampd>(viewport.maxDepth));
+  // Viewport
 
-  // NOTE: Vulkan and WebGPU do not support disabling scissor test.
-  glContext->gladGLContext()->Enable(GL_SCISSOR_TEST);
+  if (mViewportDirty) {
+    Viewport viewport;
 
-  ScissorRect scissorRect;
-  if (mState.scissorRect) {
-    scissorRect = *(mState.scissorRect);
-  } else if (mState.framebuffer) {
-    auto extent = mState.framebuffer->extent();
-    scissorRect.offset = {0, 0};
-    scissorRect.extent = {static_cast<uint32_t>(extent.width),
-                          static_cast<uint32_t>(extent.height)};
+    if (mState.viewport) {
+      viewport = *(mState.viewport);
+    } else if (mState.framebuffer) {
+      auto extent = mState.framebuffer->extent();
+      viewport.x = 0;
+      viewport.y = 0;
+      viewport.width = static_cast<float>(extent.width);
+      viewport.height = static_cast<float>(extent.height);
+      viewport.minDepth = 0.0f;
+      viewport.maxDepth = 1.0f;
+    }
+
+    glContext->gladGLContext()->Viewport(static_cast<GLint>(viewport.x),
+                                         static_cast<GLint>(viewport.y),
+                                         static_cast<GLsizei>(viewport.width),
+                                         static_cast<GLsizei>(viewport.height));
+    glContext->gladGLContext()->DepthRange(
+        static_cast<GLclampd>(viewport.minDepth),
+        static_cast<GLclampd>(viewport.maxDepth));
+    mViewportDirty = false;
   }
 
-  glContext->gladGLContext()->Scissor(
-      static_cast<GLint>(scissorRect.offset.x),
-      static_cast<GLint>(scissorRect.offset.y),
-      static_cast<GLsizei>(scissorRect.extent.width),
-      static_cast<GLsizei>(scissorRect.extent.height));
+  // Scissor Rect
+
+  if (mScissorRectDirty) {
+    // NOTE: Vulkan and WebGPU do not support disabling scissor test.
+    glContext->gladGLContext()->Enable(GL_SCISSOR_TEST);
+
+    ScissorRect scissorRect;
+    if (mState.scissorRect) {
+      scissorRect = *(mState.scissorRect);
+    } else if (mState.framebuffer) {
+      auto extent = mState.framebuffer->extent();
+      scissorRect.offset = {0, 0};
+      scissorRect.extent = {static_cast<uint32_t>(extent.width),
+                            static_cast<uint32_t>(extent.height)};
+    }
+
+    glContext->gladGLContext()->Scissor(
+        static_cast<GLint>(scissorRect.offset.x),
+        static_cast<GLint>(scissorRect.offset.y),
+        static_cast<GLsizei>(scissorRect.extent.width),
+        static_cast<GLsizei>(scissorRect.extent.height));
+    mScissorRectDirty = false;
+  }
+
+  // Program
+
+  if (mProgramDirty) {
+    glContext->gladGLContext()->UseProgram(
+        (mState.program ? mState.program->glProgram() : 0));
+    mProgramDirty = false;
+  }
 }
 
 std::optional<std::shared_ptr<opengl::GLContext>>
