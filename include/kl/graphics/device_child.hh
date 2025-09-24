@@ -7,7 +7,7 @@ namespace kl::graphics {
 class Device;
 
 class DeviceChild {
-private:
+protected:
   std::weak_ptr<Device> mDevice;
 
 public:
