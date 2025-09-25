@@ -78,6 +78,8 @@ public:
   createContext(const ContextDescriptor &descriptor) noexcept;
   std::expected<std::shared_ptr<Sampler>, std::runtime_error>
   createSampler(const SamplerDescriptor &descriptor) noexcept;
+  std::expected<std::shared_ptr<VertexInputState>, std::runtime_error>
+  createVertexInputState(const VertexInputStateDescriptor &descriptor) noexcept;
 
   inline const Features &features() const noexcept { return mFeatures; }
 

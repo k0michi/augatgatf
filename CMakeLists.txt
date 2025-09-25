@@ -128,7 +128,8 @@ set_property(TARGET test_main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RU
 find_program(GLSLANG_VALIDATOR glslangValidator)
 
 set(GLSL_FILES
-  shaders/test.vert
+  shaders/hello.vert
+  shaders/hello.frag
 )
 
 set(SPIRV_OUTPUTS "")

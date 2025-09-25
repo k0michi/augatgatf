@@ -27,12 +27,18 @@ std::expected<GLuint, std::runtime_error> VertexInputState::glVertexArray(
   std::scoped_lock lock(*context);
   GLuint vertexArray = 0;
   context->gladGLContext()->GenVertexArrays(1, &vertexArray);
+  context->gladGLContext()->BindVertexArray(vertexArray);
 
   if (vertexArray == 0) {
     return std::unexpected(
         std::runtime_error("Failed to create vertex array object"));
   }
 
+  for (auto &&attribute : mDescriptor.attributes) {
+    context->gladGLContext()->EnableVertexAttribArray(attribute.location);
+  }
+
+  context->gladGLContext()->BindVertexArray(0);
   return mVertexArrays[context] = vertexArray;
 }
 
@@ -42,6 +48,11 @@ VertexInputState::create(std::shared_ptr<Device> device,
   auto vertexInputState =
       std::shared_ptr<VertexInputState>(new VertexInputState(device));
   vertexInputState->mDescriptor = descriptor;
+
+  for (const auto &binding : descriptor.bindings) {
+    vertexInputState->mBindingMap[binding.binding] = binding;
+  }
+
   return vertexInputState;
 }
 

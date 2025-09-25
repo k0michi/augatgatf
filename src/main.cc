@@ -10,8 +10,22 @@
 #include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
+#include <array>
 #include <fstream>
 #include <spirv_glsl.hpp>
+
+std::vector<std::byte> readFileBinary(const std::string &filename) {
+  std::ifstream file(filename, std::ios::binary);
+  if (!file) {
+    throw std::runtime_error("Failed to open file: " + filename);
+  }
+  std::vector<char> tmp((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+  std::vector<std::byte> buffer(tmp.size());
+  std::transform(tmp.begin(), tmp.end(), buffer.begin(),
+                 [](char c) { return static_cast<std::byte>(c); });
+  return buffer;
+}
 
 kl::platform::Task<void> main_async() {
   kl::math::Vector2 a{3.0f, 4.0f};
@@ -61,81 +75,89 @@ kl::platform::Task<void> main_async() {
 
   auto rasterizationState = device->createRasterizationState({});
 
-  // {
-  //   auto file = "shaders/test.vert.spv";
-  //   std::ifstream fs(file, std::ios::binary | std::ios::ate);
-  //   if (!fs.is_open()) {
-  //     std::cerr << "Failed to open file: " << file << std::endl;
-  //     co_return;
-  //   }
-  //   auto size = fs.tellg();
-  //   fs.seekg(0, std::ios::beg);
-  //   std::vector<std::byte> spirv_binary(size / sizeof(std::byte));
-  //   fs.read(reinterpret_cast<char *>(spirv_binary.data()), size);
-  //   fs.close();
-  //   auto shader = device->createShader({
-  //       .stage = kl::graphics::ShaderStage::eVertex,
-  //       .code = spirv_binary,
-  //       .entryPoint = "main",
-  //   });
+  auto program = device->createProgram({
+      .shaders = {device
+                      ->createShader({
+                          .stage = kl::graphics::ShaderStage::eVertex,
+                          .code = readFileBinary("shaders/hello.vert.spv"),
+                          .entryPoint = "main",
+                      })
+                      .value(),
+                  device
+                      ->createShader({
+                          .stage = kl::graphics::ShaderStage::eFragment,
+                          .code = readFileBinary("shaders/hello.frag.spv"),
+                          .entryPoint = "main",
+                      })
+                      .value()},
+  });
 
-  //   if (!shader) {
-  //     std::cerr << "Failed to create shader: " << shader.error().what()
-  //               << std::endl;
-  //     co_return;
-  //   }
+  if (!program) {
+    std::cerr << "Failed to create program: " << program.error().what()
+              << std::endl;
+    co_return;
+  }
 
-  //   *shader;
+  auto texture = device->createTexture({
+      .type = kl::graphics::TextureType::e2D,
+      .format = kl::graphics::Format::eR8G8B8A8Unorm,
+      .extent = {512, 512, 1},
+      .mipLevels = 4,
+  });
 
-  //   auto program = device->createProgram({
-  //       .shaders =
-  //           {
-  //               device
-  //                   ->createShader({
-  //                       .stage = kl::graphics::ShaderStage::eVertex,
-  //                       .code = spirv_binary,
-  //                       .entryPoint = "main",
-  //                   })
-  //                   .value(),
-  //           },
-  //   });
+  auto buffer = device->createBuffer({
+      .size = 1024,
+  });
 
-  //   if (!program) {
-  //     std::cerr << "Failed to create program: " << program.error().what()
-  //               << std::endl;
-  //     co_return;
-  //   }
+  auto sampler = device->createSampler({});
 
-  //   auto texture = device->createTexture({
-  //       .type = kl::graphics::TextureType::e2D,
-  //       .format = kl::graphics::Format::eR8G8B8A8Unorm,
-  //       .extent = {512, 512, 1},
-  //       .mipLevels = 4,
-  //   });
+  auto vertexInputState = device->createVertexInputState({
+      .bindings = {{
+          .binding = 0,
+          .stride = 12,
+          .inputRate = kl::graphics::VertexInputRate::eVertex,
+      }},
+      .attributes = {{
+          .location = 0,
+          .binding = 0,
+          .format = kl::graphics::Format::eR32G32B32Sfloat,
+          .offset = 0,
+      }},
+  });
 
-  //   *texture;
+  std::array<float, 9> vertexData = {
+      0.0f,  0.5f,
+      0.0f, // Vertex 1: x, y, z
+      -0.5f, -0.5f,
+      0.0f, // Vertex 3: x, y, z
+      0.5f,  -0.5f,
+      0.0f, // Vertex 2: x, y, z
+  };
 
-  //   auto buffer = device->createBuffer({
-  //       .size = 1024,
-  //   });
+  auto vertexBuffer = device->createBuffer({
+      .size = sizeof(vertexData),
+      .usage = kl::graphics::BufferUsage::eVertexBuffer,
+  });
 
-  //   *buffer;
-
-  //   auto sampler = device->createSampler({});
-  //   *sampler;
-  // }
+  context->writeBuffer(vertexBuffer.value(), 0,
+                       std::as_bytes(std::span(vertexData)));
 
   int32_t count = 0;
 
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
     context->setFramebuffer(swapchain->framebuffer());
-    context->setViewport(kl::graphics::Viewport{0, 0, 10, 10, 0, 1});
-    context->setScissorRect(kl::graphics::ScissorRect{
-        .offset = {0, 0},
-        .extent = {10, 10},
-    });
-    context->clearColor({1.0f, 1.0f, 0.0f, 1.0f});
+    // context->setViewport(kl::graphics::Viewport{0, 0, 10, 10, 0, 1});
+    // context->setScissorRect(kl::graphics::ScissorRect{
+    //     .offset = {0, 0},
+    //     .extent = {10, 10},
+    // });
+    // context->clearColor({1.0f, 1.0f, 0.0f, 1.0f});
+    // context->clearDepthStencil(1.0f, 0);
+    context->setProgram(program.value());
+    context->setVertexBuffer(0, vertexBuffer.value(), 0);
+    context->setVertexInputState(vertexInputState.value());
+    context->draw(kl::graphics::PrimitiveTopology::eTriangleList, 3, 1, 0, 0);
     swapchain->present(1);
     instance->pollEvents();
 

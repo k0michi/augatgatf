@@ -70,6 +70,26 @@ Context::getDepthStencilState() const noexcept {
   return mState.depthStencilState;
 }
 
+void Context::setVertexInputState(
+    std::shared_ptr<VertexInputState> vertexInputState) noexcept {
+  mState.vertexInputState = std::move(vertexInputState);
+  mVertexInputStateDirty = true;
+}
+
+const std::shared_ptr<VertexInputState> &
+Context::getVertexInputState() const noexcept {
+  return mState.vertexInputState;
+}
+
+void Context::setVertexBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
+                              uint32_t offset) noexcept {
+  if (mState.vertexBufferBinding.size() <= binding) {
+    mState.vertexBufferBinding.resize(binding + 1);
+  }
+
+  mState.vertexBufferBinding[binding] = {std::move(buffer), offset};
+}
+
 void Context::clearColor(
     std::tuple<float, float, float, float> color) noexcept {
   applyState();
@@ -115,12 +135,98 @@ void Context::clearDepthStencil(float depth, int32_t stencil) noexcept {
                                     GL_STENCIL_BUFFER_BIT);
 }
 
+void Context::draw(PrimitiveTopology topology, uint32_t vertexCount,
+                   uint32_t instanceCount, uint32_t firstVertex,
+                   uint32_t firstInstance) noexcept {
+  applyState();
+  auto devicePtr = device().lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto glContextOpt = currentGLContext();
+
+  if (!glContextOpt) {
+    return;
+  }
+
+  auto glContext = *glContextOpt;
+  std::scoped_lock lock(*glContext);
+
+  GLenum mode = opengl::SymbolConverter::toGLDrawMode(topology);
+
+  if (firstInstance == 0) {
+    if (instanceCount == 1) {
+      glContext->gladGLContext()->DrawArrays(mode,
+                                             static_cast<GLint>(firstVertex),
+                                             static_cast<GLsizei>(vertexCount));
+    } else {
+      glContext->gladGLContext()->DrawArraysInstanced(
+          mode, static_cast<GLint>(firstVertex),
+          static_cast<GLsizei>(vertexCount),
+          static_cast<GLsizei>(instanceCount));
+    }
+  } else {
+    glContext->gladGLContext()->DrawArraysInstancedBaseInstance(
+        mode, static_cast<GLint>(firstVertex),
+        static_cast<GLsizei>(vertexCount), static_cast<GLsizei>(instanceCount),
+        static_cast<GLuint>(firstInstance));
+  }
+}
+
 std::expected<std::shared_ptr<Context>, std::runtime_error>
 Context::create(std::shared_ptr<Device> device,
                 const ContextDescriptor &descriptor) noexcept {
   auto context = std::shared_ptr<Context>(new Context(device));
   context->mDescriptor = descriptor;
   return context;
+}
+
+void Context::writeBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
+                          std::span<const std::byte> data) noexcept {
+  auto devicePtr = device().lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto glContextOpt = currentGLContext();
+
+  if (!glContextOpt) {
+    return;
+  }
+
+  auto glContext = *glContextOpt;
+  std::scoped_lock lock(*glContext);
+  glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, buffer->glBuffer());
+  glContext->gladGLContext()->BufferSubData(
+      GL_ARRAY_BUFFER, static_cast<GLintptr>(offset),
+      static_cast<GLsizeiptr>(data.size_bytes()), data.data());
+  glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Context::readBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
+                         std::span<std::byte> data) noexcept {
+  auto devicePtr = device().lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto glContextOpt = currentGLContext();
+
+  if (!glContextOpt) {
+    return;
+  }
+
+  auto glContext = *glContextOpt;
+  std::scoped_lock lock(*glContext);
+  glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, buffer->glBuffer());
+  glContext->gladGLContext()->GetBufferSubData(
+      GL_ARRAY_BUFFER, static_cast<GLintptr>(offset),
+      static_cast<GLsizeiptr>(data.size_bytes()), data.data());
+  glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 Context::Context(std::shared_ptr<Device> device) noexcept
@@ -401,6 +507,63 @@ void Context::applyState() noexcept {
     // }
 
     mDepthStencilStateDirty = false;
+  }
+
+  // Vertex Input State
+
+  if (mVertexInputStateDirty) {
+    if (mState.vertexInputState) {
+      auto vertexArrayExp = mState.vertexInputState->glVertexArray(glContext);
+
+      if (vertexArrayExp) {
+        glContext->gladGLContext()->BindVertexArray(*vertexArrayExp);
+
+        for (auto &&attribute :
+             mState.vertexInputState->descriptor().attributes) {
+          // glBindVertexBuffer emulation
+
+          auto attribOpt =
+              opengl::SymbolConverter::toGLVertexAttrib(attribute.format);
+
+          if (!attribOpt) {
+            // TODO: Report error
+            continue;
+          }
+
+          auto attrib = *attribOpt;
+
+          auto &&binding = mState.vertexBufferBinding[attribute.binding];
+
+          if (!binding) {
+            // TODO: Report error
+            continue;
+          }
+
+          auto bindingDesc =
+              mState.vertexInputState->getBindingDescriptor(attribute.binding);
+          if (!bindingDesc) {
+            // TODO: Report error
+            continue;
+          }
+
+          glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER,
+                                                 binding->buffer->glBuffer());
+          glContext->gladGLContext()->VertexAttribPointer(
+              attribute.location, std::get<0>(attrib), std::get<1>(attrib),
+              std::get<2>(attrib), bindingDesc->stride,
+              reinterpret_cast<const void *>(
+                  static_cast<uintptr_t>(attribute.offset + binding->offset)));
+          glContext->gladGLContext()->VertexAttribDivisor(
+              attribute.location,
+              (bindingDesc->inputRate == VertexInputRate::eVertex ? 0 : 1));
+          glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+      }
+    } else {
+      glContext->gladGLContext()->BindVertexArray(0);
+    }
+
+    mVertexInputStateDirty = false;
   }
 }
 

@@ -4,8 +4,11 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <span>
 #include <stdexcept>
+#include <vector>
 
+#include "buffer.hh"
 #include "color_blend_state.hh"
 #include "context_descriptor.hh"
 #include "depth_stencil_state.hh"
@@ -13,13 +16,20 @@
 #include "framebuffer.hh"
 #include "kl/common/rectangle2.hh"
 #include "opengl/gl_context.hh"
+#include "primitive_topology.hh"
 #include "program.hh"
 #include "rasterization_state.hh"
 #include "scissor_rect.hh"
+#include "vertex_input_state.hh"
 #include "viewport.hh"
 
 namespace kl::graphics {
 class Device;
+
+struct VertexBufferBinding {
+  std::shared_ptr<Buffer> buffer;
+  uint32_t offset = 0;
+};
 
 struct ContextState final {
   std::shared_ptr<Framebuffer> framebuffer;
@@ -29,6 +39,8 @@ struct ContextState final {
   std::shared_ptr<ColorBlendState> colorBlendState;
   std::shared_ptr<RasterizationState> rasterizationState;
   std::shared_ptr<DepthStencilState> depthStencilState;
+  std::shared_ptr<VertexInputState> vertexInputState;
+  std::vector<std::optional<VertexBufferBinding>> vertexBufferBinding;
 };
 
 /**
@@ -46,6 +58,7 @@ private:
   bool mColorBlendStateDirty = true;
   bool mRasterizationStateDirty = true;
   bool mDepthStencilStateDirty = true;
+  bool mVertexInputStateDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -77,9 +90,23 @@ public:
       std::shared_ptr<DepthStencilState> depthStencilState) noexcept;
   const std::shared_ptr<DepthStencilState> &
   getDepthStencilState() const noexcept;
+  void setVertexInputState(
+      std::shared_ptr<VertexInputState> vertexInputState) noexcept;
+  const std::shared_ptr<VertexInputState> &getVertexInputState() const noexcept;
+  void setVertexBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
+                       uint32_t offset) noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;
+
+  void draw(PrimitiveTopology topology, uint32_t vertexCount,
+            uint32_t instanceCount = 1, uint32_t firstVertex = 0,
+            uint32_t firstInstance = 0) noexcept;
+
+  void writeBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
+                   std::span<const std::byte> data) noexcept;
+  void readBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
+                  std::span<std::byte> data) noexcept;
 
   static std::expected<std::shared_ptr<Context>, std::runtime_error>
   create(std::shared_ptr<Device> device,

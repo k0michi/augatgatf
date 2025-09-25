@@ -47,6 +47,22 @@ Program::create(std::shared_ptr<Device> device,
   }
 
   (*context)->gladGLContext()->LinkProgram(program->mProgram);
+
+  GLint linkStatus;
+  (*context)->gladGLContext()->GetProgramiv(program->mProgram, GL_LINK_STATUS,
+                                            &linkStatus);
+
+  if (linkStatus != GL_TRUE) {
+    GLint logLength = 0;
+    (*context)->gladGLContext()->GetProgramiv(program->mProgram,
+                                              GL_INFO_LOG_LENGTH, &logLength);
+    std::string log(logLength, '\0');
+    (*context)->gladGLContext()->GetProgramInfoLog(program->mProgram, logLength,
+                                                   nullptr, log.data());
+    return std::unexpected(
+        std::runtime_error("Failed to link program: " + log));
+  }
+
   return program;
 }
 

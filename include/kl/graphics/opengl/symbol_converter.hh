@@ -10,6 +10,7 @@
 
 #include "../color_blend_state_descriptor.hh"
 #include "../format.hh"
+#include "../primitive_topology.hh"
 #include "../rasterization_state_descriptor.hh"
 #include "../sampler_descriptor.hh"
 #include "../texture_descriptor.hh"
@@ -540,6 +541,36 @@ public:
       return GL_INCR_WRAP;
     case kl::graphics::StencilOp::eDecrementAndWrap:
       return GL_DECR_WRAP;
+    }
+
+    std::unreachable();
+  }
+
+  constexpr static GLenum
+  toGLDrawMode(kl::graphics::PrimitiveTopology topology) {
+    switch (topology) {
+    case kl::graphics::PrimitiveTopology::ePointList:
+      return GL_POINTS;
+    case kl::graphics::PrimitiveTopology::eLineList:
+      return GL_LINES;
+    case kl::graphics::PrimitiveTopology::eLineStrip:
+      return GL_LINE_STRIP;
+    case kl::graphics::PrimitiveTopology::eTriangleList:
+      return GL_TRIANGLES;
+    case kl::graphics::PrimitiveTopology::eTriangleStrip:
+      return GL_TRIANGLE_STRIP;
+    case kl::graphics::PrimitiveTopology::eTriangleFan:
+      return GL_TRIANGLE_FAN;
+    case kl::graphics::PrimitiveTopology::eLineListWithAdjacency:
+      return GL_LINES_ADJACENCY;
+    case kl::graphics::PrimitiveTopology::eLineStripWithAdjacency:
+      return GL_LINE_STRIP_ADJACENCY;
+    case kl::graphics::PrimitiveTopology::eTriangleListWithAdjacency:
+      return GL_TRIANGLES_ADJACENCY;
+    case kl::graphics::PrimitiveTopology::eTriangleStripWithAdjacency:
+      return GL_TRIANGLE_STRIP_ADJACENCY;
+    case kl::graphics::PrimitiveTopology::ePatchList:
+      return GL_PATCHES;
     }
 
     std::unreachable();

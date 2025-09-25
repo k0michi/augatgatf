@@ -24,6 +24,7 @@ class VertexInputState : public DeviceChild {
 private:
   VertexInputStateDescriptor mDescriptor;
   std::unordered_map<std::shared_ptr<opengl::GLContext>, GLuint> mVertexArrays;
+  std::unordered_map<uint32_t, VertexInputBindingDescriptor> mBindingMap;
 
 public:
   virtual ~VertexInputState() noexcept;
@@ -35,6 +36,12 @@ public:
 
   inline const VertexInputStateDescriptor &descriptor() const noexcept {
     return mDescriptor;
+  }
+
+  inline const VertexInputBindingDescriptor *
+  getBindingDescriptor(uint32_t binding) const noexcept {
+    auto it = mBindingMap.find(binding);
+    return (it != mBindingMap.end() ? &it->second : nullptr);
   }
 
   /**

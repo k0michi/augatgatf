@@ -68,6 +68,12 @@ Device::createSampler(const SamplerDescriptor &descriptor) noexcept {
   return Sampler::create(shared_from_this(), descriptor);
 }
 
+std::expected<std::shared_ptr<VertexInputState>, std::runtime_error>
+Device::createVertexInputState(
+    const VertexInputStateDescriptor &descriptor) noexcept {
+  return VertexInputState::create(shared_from_this(), descriptor);
+}
+
 std::optional<std::shared_ptr<opengl::GLContext>> Device::getContextForWindow(
     const std::shared_ptr<platform::Window> &window) noexcept {
   auto it = mWindowContexts.find(window);
@@ -88,7 +94,7 @@ Device::getOrCreateContextForWindow(
 #ifndef __EMSCRIPTEN__
   auto glContextResult = opengl::GLContext::create({
       .window = window->sdlWindow(),
-      .shareContext = nullptr,
+      .shareContext = mContexts[0],
       .profile = SDL_GL_CONTEXT_PROFILE_CORE,
       .majorVersion = 3,
       .minorVersion = 3,

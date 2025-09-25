@@ -1,5 +1,7 @@
 #include "kl/graphics/opengl/gl_context.hh"
 
+#include <iostream>
+
 namespace kl::graphics::opengl {
 GLContext::~GLContext() noexcept {
   if (mContext) {
@@ -39,10 +41,26 @@ GladGLContext *GLContext::gladGLContext() const noexcept {
 void GLContext::lock() noexcept {
   mMutex.lock();
   SDL_GL_MakeCurrent(mWindow, mContext);
+  mLockCount++;
+
+  auto error = mGladGLContext->GetError();
+  if (error != GL_NO_ERROR) {
+    std::cerr << "OpenGL Error: " << error << std::endl;
+  }
 }
 
 void GLContext::unlock() noexcept {
-  SDL_GL_MakeCurrent(nullptr, nullptr);
+  mLockCount--;
+  auto error = mGladGLContext->GetError();
+
+  if (error != GL_NO_ERROR) {
+    std::cerr << "OpenGL Error: " << error << std::endl;
+  }
+
+  if (mLockCount == 0) {
+    SDL_GL_MakeCurrent(nullptr, nullptr);
+  }
+
   mMutex.unlock();
 }
 

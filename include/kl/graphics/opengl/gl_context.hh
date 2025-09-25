@@ -24,6 +24,7 @@ private:
   std::recursive_mutex mMutex;
   std::unique_ptr<GladGLContext> mGladGLContext;
   std::unordered_set<std::string> mExtensions;
+  uint32_t mLockCount = 0;
 
 public:
   virtual ~GLContext() noexcept;
