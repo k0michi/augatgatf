@@ -35,6 +35,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spirv-cross)
 
+# libuv
+
+FetchContent_Declare(
+  libuv
+  GIT_REPOSITORY https://github.com/libuv/libuv.git
+  GIT_TAG v1.51.0
+)
+FetchContent_MakeAvailable(libuv)
+
 # main
 
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
@@ -98,6 +107,8 @@ if(EMSCRIPTEN)
   set_target_properties(kl PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
   target_compile_options(main PRIVATE -fexceptions -g)
   set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
+else()
+  target_link_libraries(main PRIVATE uv)
 endif()
 
 # GoogleTest
