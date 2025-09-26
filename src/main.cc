@@ -130,18 +130,20 @@ kl::platform::Task<void> pseudoMain(int argc, char **argv) {
 
   auto rasterizationState = device->createRasterizationState({});
 
+  auto vertShader = co_await loadAsync("shaders/hello.vert.spv");
+  auto fragShader = co_await loadAsync("shaders/hello.frag.spv");
   auto program = device->createProgram({
       .shaders = {device
                       ->createShader({
                           .stage = kl::graphics::ShaderStage::eVertex,
-                          .code = co_await loadAsync("shaders/hello.vert.spv"),
+                          .code = vertShader,
                           .entryPoint = "main",
                       })
                       .value(),
                   device
                       ->createShader({
                           .stage = kl::graphics::ShaderStage::eFragment,
-                          .code = co_await loadAsync("shaders/hello.frag.spv"),
+                          .code = fragShader,
                           .entryPoint = "main",
                       })
                       .value()},
