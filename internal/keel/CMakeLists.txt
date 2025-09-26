@@ -83,6 +83,7 @@ add_library(keel STATIC
   src/kl/graphics/swapchain.cc
   src/kl/graphics/texture.cc
   src/kl/graphics/vertex_input_state.cc
+  src/kl/io/file_system.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/window.cc
