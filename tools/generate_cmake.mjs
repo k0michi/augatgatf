@@ -3,6 +3,7 @@ import path from "path";
 
 const args = process.argv.slice(2);
 const outputPath = args[0] || "CMakeLists.txt";
+const parent = path.dirname(outputPath);
 
 let content = await fsPromises.readFile(outputPath, "utf-8");
 content = content.replace(/\r\n/g, "\n");
@@ -24,7 +25,7 @@ while (index < content.length) {
         process.exit(1);
     }
 
-    let sources = await Array.fromAsync(fsPromises.glob(pattern));
+    let sources = await Array.fromAsync(fsPromises.glob(pattern, { cwd: parent }));
     sources = sources.map(src => src.replace(/\\/g, "/"));
     sources.sort();
 
