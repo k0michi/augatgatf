@@ -276,6 +276,67 @@ template <std::floating_point T> struct Matrix<T, 4, 4> final {
         static_cast<U>(m30), static_cast<U>(m31), static_cast<U>(m32),
         static_cast<U>(m33)};
   }
+
+  static constexpr Matrix<T, 4, 4> perspective(T fovY, T aspect, T zNear,
+                                               T zFar) noexcept {
+    constexpr T f = static_cast<T>(1) / std::tan(fovY / static_cast<T>(2));
+    return Matrix<T, 4, 4>{f / aspect,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           f,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           (zFar + zNear) / (zNear - zFar),
+                           static_cast<T>(-1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           (static_cast<T>(2) * zFar * zNear) / (zNear - zFar),
+                           static_cast<T>(0)};
+  }
+
+  static constexpr Matrix<T, 4, 4> frustum(T left, T right, T bottom, T top,
+                                           T zNear, T zFar) noexcept {
+    return Matrix<T, 4, 4>{(static_cast<T>(2) * zNear) / (right - left),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           (static_cast<T>(2) * zNear) / (top - bottom),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           (right + left) / (right - left),
+                           (top + bottom) / (top - bottom),
+                           -(zFar + zNear) / (zFar - zNear),
+                           static_cast<T>(-1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           -(static_cast<T>(2) * zFar * zNear) / (zFar - zNear),
+                           static_cast<T>(0)};
+  };
+
+  static constexpr Matrix<T, 4, 4> ortho(T left, T right, T bottom, T top,
+                                         T zNear, T zFar) noexcept {
+    return Matrix<T, 4, 4>{static_cast<T>(2) / (right - left),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(2) / (top - bottom),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(-2) / (zFar - zNear),
+                           static_cast<T>(0),
+                           -(right + left) / (right - left),
+                           -(top + bottom) / (top - bottom),
+                           -(zFar + zNear) / (zFar - zNear),
+                           static_cast<T>(1)};
+  }
 };
 
 template <std::floating_point T>
