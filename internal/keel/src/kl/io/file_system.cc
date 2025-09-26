@@ -87,7 +87,7 @@ private:
 };
 
 namespace kl::io {
-kl::platform::Task<std::vector<std::byte>>
+kl::concurrent::Task<std::vector<std::byte>>
 FileSystem::readFileBinaryAsync(std::string_view filename) {
   std::vector<std::byte> result = co_await ReadFileAwaiter(filename);
   co_return result;

@@ -1,12 +1,12 @@
-#ifndef KL_PLATFORM_TASK_HH
-#define KL_PLATFORM_TASK_HH
+#ifndef KL_CONCURRENT_TASK_HH
+#define KL_CONCURRENT_TASK_HH
 
 #include <concepts>
 #include <coroutine>
 #include <memory>
 #include <optional>
 
-namespace kl::platform {
+namespace kl::concurrent {
 template <typename T> struct TaskInternal {
   T mValue;
   bool mReady = false;
@@ -92,5 +92,5 @@ template <> struct Task<void> {
 private:
   std::shared_ptr<TaskInternal<void>> mInternal;
 };
-} // namespace kl::platform
-#endif // KL_PLATFORM_TASK_HH
+} // namespace kl::concurrent
+#endif // KL_CONCURRENT_TASK_HH

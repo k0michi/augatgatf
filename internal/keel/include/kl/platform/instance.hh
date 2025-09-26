@@ -5,9 +5,9 @@
 #include <memory>
 #include <stdexcept>
 
+#include "kl/concurrent/task.hh"
 #include "kl/platform/frame_awaiter.hh"
 #include "kl/platform/instance_descriptor.hh"
-#include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
 namespace kl::platform {

@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
 
-#include "kl/platform/task.hh"
+#include "kl/concurrent/task.hh"
 
-kl::platform::Task<void> fTaskVoid() { co_return; }
+kl::concurrent::Task<void> fTaskVoid() { co_return; }
 
-kl::platform::Task<int> fTaskInt() { co_return 42; }
+kl::concurrent::Task<int> fTaskInt() { co_return 42; }
 
-kl::platform::Task<std::string> fTaskString() { co_return "Hello, World!"; }
+kl::concurrent::Task<std::string> fTaskString() { co_return "Hello, World!"; }
 
-kl::platform::Task<int> fTaskChain() {
+kl::concurrent::Task<int> fTaskChain() {
   int value = co_await fTaskInt();
   co_await fTaskString();
   co_await fTaskVoid();
@@ -32,7 +32,7 @@ TEST(TaskTest, ChainTasks) {
   EXPECT_EQ(task.await_resume(), 43);
 }
 
-kl::platform::Task<int> fAwaitMultipleTimes() {
+kl::concurrent::Task<int> fAwaitMultipleTimes() {
   auto task1 = fTaskInt();
   co_await task1;
   auto value1 = co_await task1;

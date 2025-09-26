@@ -5,14 +5,14 @@
 #include <string_view>
 #include <vector>
 
-#include "kl/platform/task.hh"
+#include "kl/concurrent/task.hh"
 
 namespace kl::io {
 class FileSystem {
 public:
   FileSystem() = delete;
 
-  static kl::platform::Task<std::vector<std::byte>>
+  static kl::concurrent::Task<std::vector<std::byte>>
   readFileBinaryAsync(std::string_view filename);
 };
 } // namespace kl::io

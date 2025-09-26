@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "kl/concurrent/task.hh"
 #include "kl/graphics/instance.hh"
 #include "kl/math/matrix2x2.hh"
 #include "kl/math/matrix3x3.hh"
@@ -7,7 +8,6 @@
 #include "kl/math/vector3.hh"
 #include "kl/math/vector4.hh"
 #include "kl/platform/instance.hh"
-#include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
 #include <algorithm>
@@ -68,7 +68,7 @@ private:
 #endif
 
 #ifdef __EMSCRIPTEN__
-kl::platform::Task<std::vector<std::byte>> fetch(std::string_view url) {
+kl::concurrent::Task<std::vector<std::byte>> fetch(std::string_view url) {
   std::vector<std::byte> result = co_await FetchAwaiter(url);
   co_return result;
 }
@@ -87,7 +87,7 @@ std::vector<std::byte> readFileBinary(std::string_view filename) {
   return buffer;
 }
 
-kl::platform::Task<std::vector<std::byte>>
+kl::concurrent::Task<std::vector<std::byte>>
 loadAsync(std::string_view filename) {
 #ifdef __EMSCRIPTEN__
   auto data = co_await fetch(filename);
@@ -97,7 +97,7 @@ loadAsync(std::string_view filename) {
 #endif
 }
 
-kl::platform::Task<void> pseudoMain(int argc, char **argv) {
+kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
   auto instanceResult =
       kl::platform::Instance::create(kl::platform::InstanceDescriptor{});
   if (!instanceResult) {
