@@ -42,9 +42,7 @@ template <typename T> struct Task {
         std::make_shared<TaskInternal<T>>();
   };
 
-  explicit Task(promise_type &p)
-      : mHandle(std::coroutine_handle<promise_type>::from_promise(p)),
-        mInternal(p.mInternal) {}
+  explicit Task(promise_type &p) : mInternal(p.mInternal) {}
 
   bool await_ready() const noexcept { return mInternal->mReady; }
 
@@ -55,7 +53,6 @@ template <typename T> struct Task {
   T await_resume() const { return mInternal->mValue; }
 
 private:
-  std::coroutine_handle<promise_type> mHandle;
   std::shared_ptr<TaskInternal<T>> mInternal;
 };
 
@@ -82,9 +79,7 @@ template <> struct Task<void> {
         std::make_shared<TaskInternal<void>>();
   };
 
-  explicit Task(promise_type &p)
-      : mHandle(std::coroutine_handle<promise_type>::from_promise(p)),
-        mInternal(p.mInternal) {}
+  explicit Task(promise_type &p) : mInternal(p.mInternal) {}
 
   bool await_ready() const noexcept { return mInternal->mReady; }
 
@@ -95,7 +90,6 @@ template <> struct Task<void> {
   void await_resume() const {}
 
 private:
-  std::coroutine_handle<promise_type> mHandle;
   std::shared_ptr<TaskInternal<void>> mInternal;
 };
 } // namespace kl::platform

@@ -10,14 +10,74 @@
 #include "kl/platform/task.hh"
 #include "kl/platform/window.hh"
 
+#include <algorithm>
 #include <array>
 #include <fstream>
-#include <spirv_glsl.hpp>
+#include <string>
+#include <string_view>
 
-std::vector<std::byte> readFileBinary(const std::string &filename) {
-  std::ifstream file(filename, std::ios::binary);
+#ifndef __EMSCRIPTEN__
+#include <uv.h>
+#endif
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/fetch.h>
+
+struct FetchAwaiter {
+  FetchAwaiter(std::string_view url) : mUrl(url) {}
+
+  bool await_ready() const noexcept { return false; }
+
+  void await_suspend(std::coroutine_handle<> handle) {
+    mHandle = handle;
+    emscripten_fetch_attr_t attr;
+    emscripten_fetch_attr_init(&attr);
+    strcpy(attr.requestMethod, "GET");
+    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+    attr.onsuccess = [](emscripten_fetch_t *fetch) {
+      auto self = static_cast<FetchAwaiter *>(fetch->userData);
+      self->mData.assign(reinterpret_cast<const std::byte *>(fetch->data),
+                         reinterpret_cast<const std::byte *>(fetch->data) +
+                             fetch->numBytes);
+      self->mHandle.resume();
+      emscripten_fetch_close(fetch);
+    };
+    attr.onerror = [](emscripten_fetch_t *fetch) {
+      auto self = static_cast<FetchAwaiter *>(fetch->userData);
+      self->mError = true;
+      self->mHandle.resume();
+      emscripten_fetch_close(fetch);
+    };
+    attr.userData = this;
+    emscripten_fetch(&attr, mUrl.data());
+  }
+
+  std::vector<std::byte> await_resume() {
+    if (mError) {
+      throw std::runtime_error("Failed to fetch: " + mUrl);
+    }
+    return mData;
+  }
+
+private:
+  std::string mUrl;
+  std::vector<std::byte> mData;
+  std::coroutine_handle<> mHandle;
+  bool mError = false;
+};
+#endif
+
+#ifdef __EMSCRIPTEN__
+kl::platform::Task<std::vector<std::byte>> fetch(std::string_view url) {
+  std::vector<std::byte> result = co_await FetchAwaiter(url);
+  co_return result;
+}
+#endif
+
+std::vector<std::byte> readFileBinary(std::string_view filename) {
+  std::ifstream file(filename.data(), std::ios::binary);
   if (!file) {
-    throw std::runtime_error("Failed to open file: " + filename);
+    throw std::runtime_error("Failed to open file: " + std::string(filename));
   }
   std::vector<char> tmp((std::istreambuf_iterator<char>(file)),
                         std::istreambuf_iterator<char>());
@@ -27,22 +87,17 @@ std::vector<std::byte> readFileBinary(const std::string &filename) {
   return buffer;
 }
 
-kl::platform::Task<void> main_async() {
-  kl::math::Vector2 a{3.0f, 4.0f};
-  kl::math::Vector2 b{1.0f, 2.0f};
-  kl::math::DVector2 d = a;
-  long long x = 1;
-  char i = x;
-  kl::math::Vector2 c = d;
-  std::cout << c << std::endl;
-  kl::math::Matrix2x2 m{1.0f, 2.0f, 3.0f, 4.0f};
-  auto inv = m.inverse();
-  if (inv) {
-    std::cout << *inv << std::endl;
-  } else {
-    std::cout << "Matrix is not invertible" << std::endl;
-  }
+kl::platform::Task<std::vector<std::byte>>
+loadAsync(std::string_view filename) {
+#ifdef __EMSCRIPTEN__
+  auto data = co_await fetch(filename);
+  co_return data;
+#else
+  co_return readFileBinary(filename);
+#endif
+}
 
+kl::platform::Task<void> pseudoMain(int argc, char **argv) {
   auto instanceResult =
       kl::platform::Instance::create(kl::platform::InstanceDescriptor{});
   if (!instanceResult) {
@@ -79,14 +134,14 @@ kl::platform::Task<void> main_async() {
       .shaders = {device
                       ->createShader({
                           .stage = kl::graphics::ShaderStage::eVertex,
-                          .code = readFileBinary("shaders/hello.vert.spv"),
+                          .code = co_await loadAsync("shaders/hello.vert.spv"),
                           .entryPoint = "main",
                       })
                       .value(),
                   device
                       ->createShader({
                           .stage = kl::graphics::ShaderStage::eFragment,
-                          .code = readFileBinary("shaders/hello.frag.spv"),
+                          .code = co_await loadAsync("shaders/hello.frag.spv"),
                           .entryPoint = "main",
                       })
                       .value()},
@@ -172,7 +227,14 @@ kl::platform::Task<void> main_async() {
   }
 }
 
-int main() {
-  main_async();
+int main(int argc, char **argv) {
+  pseudoMain(argc, argv);
+
+#ifndef __EMSCRIPTEN__
+  uv_loop_t *loop = uv_default_loop();
+  uv_run(loop, UV_RUN_DEFAULT);
+  uv_loop_close(loop);
+#endif
+
   return 0;
 }

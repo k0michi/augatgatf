@@ -37,12 +37,14 @@ FetchContent_MakeAvailable(spirv-cross)
 
 # libuv
 
-FetchContent_Declare(
-  libuv
-  GIT_REPOSITORY https://github.com/libuv/libuv.git
-  GIT_TAG v1.51.0
-)
-FetchContent_MakeAvailable(libuv)
+if(NOT EMSCRIPTEN)
+  FetchContent_Declare(
+    libuv
+    GIT_REPOSITORY https://github.com/libuv/libuv.git
+    GIT_TAG v1.51.0
+  )
+  FetchContent_MakeAvailable(libuv)
+endif()
 
 # main
 
@@ -104,9 +106,9 @@ set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
   target_compile_options(kl PRIVATE -fexceptions -g)
-  set_target_properties(kl PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
+  set_target_properties(kl PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g -s FETCH")
   target_compile_options(main PRIVATE -fexceptions -g)
-  set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
+  set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g -s FETCH")
 else()
   target_link_libraries(kl PUBLIC uv)
 endif()
