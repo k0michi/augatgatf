@@ -83,6 +83,7 @@ add_library(kl STATIC
   src/kl/graphics/swapchain.cc
   src/kl/graphics/texture.cc
   src/kl/graphics/vertex_input_state.cc
+  src/kl/io/file_system.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/window.cc
@@ -108,7 +109,7 @@ if(EMSCRIPTEN)
   target_compile_options(main PRIVATE -fexceptions -g)
   set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g")
 else()
-  target_link_libraries(main PRIVATE uv)
+  target_link_libraries(kl PUBLIC uv)
 endif()
 
 # GoogleTest
@@ -127,6 +128,7 @@ add_executable(test_main
 # include test/**/*.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
+  test/test_task.cc
   test/test_vector2.cc
 # end
 )

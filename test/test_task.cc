@@ -1,0 +1,33 @@
+#include <gtest/gtest.h>
+
+#include "kl/platform/task.hh"
+
+kl::platform::Task<void> fTaskVoid() { co_return; }
+
+kl::platform::Task<int> fTaskInt() { co_return 42; }
+
+kl::platform::Task<std::string> fTaskString() { co_return "Hello, World!"; }
+
+kl::platform::Task<int> fTaskChain() {
+  int value = co_await fTaskInt();
+  co_await fTaskString();
+  co_await fTaskVoid();
+  co_return value + 1;
+}
+
+TEST(TaskTest, ImmediateReadyVoid) {
+  auto task = fTaskVoid();
+  EXPECT_TRUE(task.await_ready());
+}
+
+TEST(TaskTest, ImmediateReadyInt) {
+  auto task = fTaskInt();
+  EXPECT_TRUE(task.await_ready());
+  EXPECT_EQ(task.await_resume(), 42);
+}
+
+TEST(TaskTest, ChainTasks) {
+  auto task = fTaskChain();
+  EXPECT_TRUE(task.await_ready());
+  EXPECT_EQ(task.await_resume(), 43);
+}
