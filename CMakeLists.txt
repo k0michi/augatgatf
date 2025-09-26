@@ -20,8 +20,6 @@ set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME
 
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
-  target_compile_options(main PRIVATE -fexceptions -g)
-  set_target_properties(main PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g -s FETCH")
 endif()
 
 # GLSL compilation

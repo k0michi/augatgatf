@@ -97,7 +97,7 @@ target_link_libraries(keel PUBLIC coverage_config)
 
 if(EMSCRIPTEN)
   target_compile_options(keel PRIVATE -fexceptions -g)
-  set_target_properties(keel PROPERTIES LINK_FLAGS "-s FULL_ES3=1 -fexceptions -g -s FETCH")
+  target_link_options(keel INTERFACE -sFULL_ES3=1 -fexceptions -g -sFETCH)
 else()
   target_link_libraries(keel PUBLIC uv)
 endif()
