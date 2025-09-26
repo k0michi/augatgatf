@@ -19,7 +19,11 @@ void Swapchain::present(int32_t interval) noexcept {
   }
 
   std::scoped_lock lock(**context);
+  // Prevent "Cannot set timing mode for main loop since a main loop does not
+  // exist! Call emscripten_set_main_loop first to set one up."
+#ifndef __EMSCRIPTEN__
   SDL_GL_SetSwapInterval(interval);
+#endif
   SDL_GL_SwapWindow(mDescriptor.window->sdlWindow());
 }
 
