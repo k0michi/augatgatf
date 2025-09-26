@@ -68,6 +68,7 @@ struct ReadFileAwaiter {
   }
 
   std::vector<std::byte> await_resume() {
+    // TODO:
     // if (mError) {
     //   throw std::runtime_error("Failed to read file: " + mFilename);
     // }
