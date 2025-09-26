@@ -31,3 +31,16 @@ TEST(TaskTest, ChainTasks) {
   EXPECT_TRUE(task.await_ready());
   EXPECT_EQ(task.await_resume(), 43);
 }
+
+kl::platform::Task<int> fAwaitMultipleTimes() {
+  auto task1 = fTaskInt();
+  co_await task1;
+  auto value1 = co_await task1;
+  co_return value1;
+}
+
+TEST(TaskTest, AwaitMultipleTimes) {
+  auto task = fAwaitMultipleTimes();
+  EXPECT_TRUE(task.await_ready());
+  EXPECT_EQ(task.await_resume(), 42);
+}
