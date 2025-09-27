@@ -10,6 +10,9 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 add_subdirectory(internal/keel)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
 # main
 
 add_executable(main
