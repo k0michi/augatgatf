@@ -5,6 +5,7 @@
 #include "kl/math/matrix2x2.hh"
 #include "kl/math/matrix3x3.hh"
 #include "kl/math/matrix4x4.hh"
+#include "kl/math/quaternion.hh"
 #include "kl/math/vector2.hh"
 #include "kl/math/vector3.hh"
 #include "kl/math/vector4.hh"
@@ -213,6 +214,13 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
       .usage = kl::graphics::BufferUsage::eUniformBuffer,
   });
 
+  context->setRasterizationState(
+      device
+          ->createRasterizationState({
+              .cullMode = kl::graphics::CullMode::eNone,
+          })
+          .value());
+
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
     context->setFramebuffer(swapchain->framebuffer());
@@ -232,8 +240,9 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
             45.0f * (3.14159265359f / 180.0f), 800.0f / 600.0f, 0.1f, 100.0f),
         .view = kl::math::Matrix4x4::lookAt(
             {0.0f, 0.0f, -2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
-        .model =
-            kl::math::Matrix4x4::rotateY(0.01f * static_cast<float>(count)),
+        .model = kl::math::Matrix4x4::fromQuaternion(
+            kl::math::Quaternion<float>::fromAxisAngle(
+                {0.0f, .0f, 1.0f}, static_cast<float>(count) * 0.01f)),
     };
 
     context->writeBuffer(uniformBuffer.value(), 0,
