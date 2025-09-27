@@ -3,6 +3,7 @@
 
 #include <optional>
 
+#include "quaternion.hh"
 #include "vector4.hh"
 
 namespace kl::math {
@@ -57,6 +58,26 @@ template <std::floating_point T> struct Matrix<T, 4, 4> final {
         static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
         static_cast<T>(0), static_cast<T>(0), static_cast<T>(0),
         static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4>
+  fromQuaternion(const Quaternion<T> &q) noexcept {
+    return Matrix<T, 4, 4>{1 - 2 * (q.y * q.y + q.z * q.z),
+                           2 * (q.x * q.y - q.z * q.w),
+                           2 * (q.x * q.z + q.y * q.w),
+                           0,
+                           2 * (q.x * q.y + q.z * q.w),
+                           1 - 2 * (q.x * q.x + q.z * q.z),
+                           2 * (q.y * q.z - q.x * q.w),
+                           0,
+                           2 * (q.x * q.z - q.y * q.w),
+                           2 * (q.y * q.z + q.x * q.w),
+                           1 - 2 * (q.x * q.x + q.y * q.y),
+                           0,
+                           0,
+                           0,
+                           0,
+                           1};
   }
 
   constexpr std::size_t rowSize() const noexcept { return kRowSize; }
