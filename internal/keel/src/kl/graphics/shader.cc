@@ -69,6 +69,21 @@ Shader::create(std::shared_ptr<Device> device,
                                false
 #endif
   });
+
+  if (descriptor.stage == ShaderStage::eVertex) {
+    for (auto &resource : glsl.get_shader_resources().stage_outputs) {
+      uint32_t loc = glsl.get_decoration(resource.id, spv::DecorationLocation);
+      std::string newName = "vertOut" + std::to_string(loc);
+      glsl.set_name(resource.id, newName);
+    }
+  } else if (descriptor.stage == ShaderStage::eFragment) {
+    for (auto &resource : glsl.get_shader_resources().stage_inputs) {
+      uint32_t loc = glsl.get_decoration(resource.id, spv::DecorationLocation);
+      std::string newName = "vertOut" + std::to_string(loc);
+      glsl.set_name(resource.id, newName);
+    }
+  }
+
   auto constants = glsl.get_specialization_constants();
 
   for (auto &&specConst : descriptor.specializationConstants) {
