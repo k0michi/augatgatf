@@ -430,7 +430,7 @@ std::ostream &operator<<(std::ostream &os, const Matrix<T, 4, 4> &matrix) {
   return os;
 }
 
-using Matrix4x4f = Matrix<float, 4, 4>;
-using Matrix4x4d = Matrix<double, 4, 4>;
+using Matrix4x4 = Matrix<float, 4, 4>;
+using DMatrix4x4 = Matrix<double, 4, 4>;
 } // namespace kl::math
 #endif // KL_MATH_MATRIX4X4_HH
