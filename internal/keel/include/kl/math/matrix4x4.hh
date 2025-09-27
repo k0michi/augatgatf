@@ -279,7 +279,7 @@ template <std::floating_point T> struct Matrix<T, 4, 4> final {
 
   static constexpr Matrix<T, 4, 4> perspective(T fovY, T aspect, T zNear,
                                                T zFar) noexcept {
-    constexpr T f = static_cast<T>(1) / std::tan(fovY / static_cast<T>(2));
+    T f = static_cast<T>(1) / std::tan(fovY / static_cast<T>(2));
     return Matrix<T, 4, 4>{f / aspect,
                            static_cast<T>(0),
                            static_cast<T>(0),
@@ -335,6 +335,132 @@ template <std::floating_point T> struct Matrix<T, 4, 4> final {
                            -(right + left) / (right - left),
                            -(top + bottom) / (top - bottom),
                            -(zFar + zNear) / (zFar - zNear),
+                           static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4> lookAt(const Vector<T, 3> &eye,
+                                          const Vector<T, 3> &center,
+                                          const Vector<T, 3> &up) noexcept {
+    Vector<T, 3> f = Vector<T, 3>::normalize(center - eye);
+    Vector<T, 3> s = Vector<T, 3>::normalize(
+        Vector<T, 3>::cross(f, Vector<T, 3>::normalize(up)));
+    Vector<T, 3> u = Vector<T, 3>::cross(s, f);
+    return Matrix<T, 4, 4>{s.x,
+                           u.x,
+                           -f.x,
+                           static_cast<T>(0),
+                           s.y,
+                           u.y,
+                           -f.y,
+                           static_cast<T>(0),
+                           s.z,
+                           u.z,
+                           -f.z,
+                           static_cast<T>(0),
+                           -Vector<T, 3>::dot(s, eye),
+                           -Vector<T, 3>::dot(u, eye),
+                           Vector<T, 3>::dot(f, eye),
+                           static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4> translate(const Vector<T, 3> &v) noexcept {
+    return Matrix<T, 4, 4>{static_cast<T>(1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1),
+                           static_cast<T>(0),
+                           v.x,
+                           v.y,
+                           v.z,
+                           static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4> scale(const Vector<T, 3> &v) noexcept {
+    return Matrix<T, 4, 4>{v.x,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           v.y,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           v.z,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4> rotateX(T angle) noexcept {
+    T c = std::cos(angle);
+    T s = std::sin(angle);
+    return Matrix<T, 4, 4>{static_cast<T>(1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           c,
+                           -s,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           s,
+                           c,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4> rotateY(T angle) noexcept {
+    T c = std::cos(angle);
+    T s = std::sin(angle);
+    return Matrix<T, 4, 4>{c,
+                           static_cast<T>(0),
+                           s,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           -s,
+                           static_cast<T>(0),
+                           c,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1)};
+  }
+
+  static constexpr Matrix<T, 4, 4> rotateZ(T angle) noexcept {
+    T c = std::cos(angle);
+    T s = std::sin(angle);
+    return Matrix<T, 4, 4>{c,
+                           -s,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           s,
+                           c,
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(1),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
+                           static_cast<T>(0),
                            static_cast<T>(1)};
   }
 };
