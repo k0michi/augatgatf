@@ -4,6 +4,7 @@
 #include "kl/graphics/instance.hh"
 #include "kl/math/matrix2x2.hh"
 #include "kl/math/matrix3x3.hh"
+#include "kl/math/matrix4x4.hh"
 #include "kl/math/vector2.hh"
 #include "kl/math/vector3.hh"
 #include "kl/math/vector4.hh"
@@ -97,6 +98,12 @@ loadAsync(std::string_view filename) {
 #endif
 }
 
+struct Matrices {
+  kl::math::Matrix4x4 projection;
+  kl::math::Matrix4x4 view;
+  kl::math::Matrix4x4 model;
+};
+
 kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
   auto instanceResult =
       kl::platform::Instance::create(kl::platform::InstanceDescriptor{});
@@ -130,8 +137,8 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
 
   auto rasterizationState = device->createRasterizationState({});
 
-  auto vertShader = co_await loadAsync("shaders/hello.vert.spv");
-  auto fragShader = co_await loadAsync("shaders/hello.frag.spv");
+  auto vertShader = co_await loadAsync("shaders/uniform.vert.spv");
+  auto fragShader = co_await loadAsync("shaders/uniform.frag.spv");
   auto program = device->createProgram({
       .shaders = {device
                       ->createShader({
@@ -201,6 +208,11 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
 
   int32_t count = 0;
 
+  auto uniformBuffer = device->createBuffer({
+      .size = sizeof(Matrices),
+      .usage = kl::graphics::BufferUsage::eUniformBuffer,
+  });
+
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
     context->setFramebuffer(swapchain->framebuffer());
@@ -209,11 +221,25 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     //     .offset = {0, 0},
     //     .extent = {10, 10},
     // });
-    // context->clearColor({1.0f, 1.0f, 0.0f, 1.0f});
-    // context->clearDepthStencil(1.0f, 0);
+    context->clearColor({0.0f, 0.0f, 0.0f, 0.0f});
+    context->clearDepthStencil(1.0f, 0);
     context->setProgram(program.value());
     context->setVertexBuffer(0, vertexBuffer.value(), 0);
     context->setVertexInputState(vertexInputState.value());
+
+    Matrices matrices{
+        .projection = kl::math::Matrix4x4::perspective(
+            45.0f * (3.14159265359f / 180.0f), 800.0f / 600.0f, 0.1f, 100.0f),
+        .view = kl::math::Matrix4x4::lookAt(
+            {0.0f, 0.0f, -2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
+        .model =
+            kl::math::Matrix4x4::rotateY(0.01f * static_cast<float>(count)),
+    };
+
+    context->writeBuffer(uniformBuffer.value(), 0,
+                         std::as_bytes(std::span(&matrices, 1)));
+
+    context->setUniformBuffer(0, uniformBuffer.value(), 0, sizeof(Matrices));
     context->draw(kl::graphics::PrimitiveTopology::eTriangleList, 3, 1, 0, 0);
     swapchain->present(1);
     instance->pollEvents();

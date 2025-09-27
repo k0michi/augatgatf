@@ -31,6 +31,12 @@ struct VertexBufferBinding {
   uint32_t offset = 0;
 };
 
+struct UniformBufferBinding {
+  std::shared_ptr<Buffer> buffer;
+  uint32_t offset = 0;
+  uint32_t size = 0;
+};
+
 struct ContextState final {
   std::shared_ptr<Framebuffer> framebuffer;
   std::optional<Viewport> viewport;
@@ -41,6 +47,7 @@ struct ContextState final {
   std::shared_ptr<DepthStencilState> depthStencilState;
   std::shared_ptr<VertexInputState> vertexInputState;
   std::vector<std::optional<VertexBufferBinding>> vertexBufferBinding;
+  std::vector<std::optional<UniformBufferBinding>> uniformBufferBinding;
 };
 
 /**
@@ -59,6 +66,7 @@ private:
   bool mRasterizationStateDirty = true;
   bool mDepthStencilStateDirty = true;
   bool mVertexInputStateDirty = true;
+  bool mUniformBufferDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -95,6 +103,8 @@ public:
   const std::shared_ptr<VertexInputState> &getVertexInputState() const noexcept;
   void setVertexBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
                        uint32_t offset) noexcept;
+  void setUniformBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
+                        uint32_t offset, uint32_t size) noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;

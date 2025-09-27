@@ -88,6 +88,17 @@ void Context::setVertexBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
   }
 
   mState.vertexBufferBinding[binding] = {std::move(buffer), offset};
+  mVertexInputStateDirty = true;
+}
+
+void Context::setUniformBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
+                               uint32_t offset, uint32_t size) noexcept {
+  if (mState.uniformBufferBinding.size() <= binding) {
+    mState.uniformBufferBinding.resize(binding + 1);
+  }
+
+  mState.uniformBufferBinding[binding] = {std::move(buffer), offset, size};
+  mUniformBufferDirty = true;
 }
 
 void Context::clearColor(
@@ -564,6 +575,24 @@ void Context::applyState() noexcept {
     }
 
     mVertexInputStateDirty = false;
+  }
+
+  // Uniform Buffer
+
+  if (mUniformBufferDirty) {
+    for (uint32_t i = 0; i < mState.uniformBufferBinding.size(); i++) {
+      auto &&binding = mState.uniformBufferBinding[i];
+
+      if (!binding) {
+        continue;
+      }
+
+      glContext->gladGLContext()->BindBufferRange(
+          GL_UNIFORM_BUFFER, i, binding->buffer->glBuffer(), binding->offset,
+          binding->size);
+    }
+
+    mUniformBufferDirty = false;
   }
 }
 

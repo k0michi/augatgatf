@@ -32,6 +32,8 @@ find_program(GLSLANG_VALIDATOR glslangValidator)
 set(GLSL_FILES
   shaders/hello.vert
   shaders/hello.frag
+  shaders/uniform.vert
+  shaders/uniform.frag
 )
 
 set(SPIRV_OUTPUTS "")
