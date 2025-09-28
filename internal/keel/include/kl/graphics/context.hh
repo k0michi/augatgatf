@@ -51,10 +51,10 @@ struct ContextState final {
   std::shared_ptr<RasterizationState> rasterizationState;
   std::shared_ptr<DepthStencilState> depthStencilState;
   std::shared_ptr<VertexInputState> vertexInputState;
-  std::vector<std::optional<VertexBufferBinding>> vertexBufferBinding;
-  std::vector<std::optional<UniformBufferBinding>> uniformBufferBinding;
-  std::vector<std::shared_ptr<Texture>> textureBinding;
-  std::vector<std::shared_ptr<Sampler>> samplerBinding;
+  std::vector<std::optional<VertexBufferBinding>> vertexBufferBindings;
+  std::vector<std::optional<UniformBufferBinding>> uniformBufferBindings;
+  std::vector<std::shared_ptr<Texture>> textureBindings;
+  std::vector<std::shared_ptr<Sampler>> samplerBindings;
 };
 
 /**

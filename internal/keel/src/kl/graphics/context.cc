@@ -83,41 +83,41 @@ Context::getVertexInputState() const noexcept {
 
 void Context::setVertexBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
                               uint32_t offset) noexcept {
-  if (mState.vertexBufferBinding.size() <= binding) {
-    mState.vertexBufferBinding.resize(binding + 1);
+  if (mState.vertexBufferBindings.size() <= binding) {
+    mState.vertexBufferBindings.resize(binding + 1);
   }
 
-  mState.vertexBufferBinding[binding] = {std::move(buffer), offset};
+  mState.vertexBufferBindings[binding] = {std::move(buffer), offset};
   mVertexInputStateDirty = true;
 }
 
 void Context::setUniformBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
                                uint32_t offset, uint32_t size) noexcept {
-  if (mState.uniformBufferBinding.size() <= binding) {
-    mState.uniformBufferBinding.resize(binding + 1);
+  if (mState.uniformBufferBindings.size() <= binding) {
+    mState.uniformBufferBindings.resize(binding + 1);
   }
 
-  mState.uniformBufferBinding[binding] = {std::move(buffer), offset, size};
+  mState.uniformBufferBindings[binding] = {std::move(buffer), offset, size};
   mUniformBufferDirty = true;
 }
 
 void Context::setTexture(uint32_t binding,
                          std::shared_ptr<Texture> texture) noexcept {
-  if (mState.textureBinding.size() <= binding) {
-    mState.textureBinding.resize(binding + 1);
+  if (mState.textureBindings.size() <= binding) {
+    mState.textureBindings.resize(binding + 1);
   }
 
-  mState.textureBinding[binding] = std::move(texture);
+  mState.textureBindings[binding] = std::move(texture);
   mTextureBindingDirty = true;
 }
 
 void Context::setSampler(uint32_t binding,
                          std::shared_ptr<Sampler> sampler) noexcept {
-  if (mState.samplerBinding.size() <= binding) {
-    mState.samplerBinding.resize(binding + 1);
+  if (mState.samplerBindings.size() <= binding) {
+    mState.samplerBindings.resize(binding + 1);
   }
 
-  mState.samplerBinding[binding] = std::move(sampler);
+  mState.samplerBindings[binding] = std::move(sampler);
   mTextureBindingDirty = true;
 }
 
@@ -616,7 +616,7 @@ void Context::applyState() noexcept {
 
           auto attrib = *attribOpt;
 
-          auto &&binding = mState.vertexBufferBinding[attribute.binding];
+          auto &&binding = mState.vertexBufferBindings[attribute.binding];
 
           if (!binding) {
             // TODO: Report error
@@ -653,8 +653,8 @@ void Context::applyState() noexcept {
   // Uniform Buffer
 
   if (mUniformBufferDirty) {
-    for (uint32_t i = 0; i < mState.uniformBufferBinding.size(); i++) {
-      auto &&binding = mState.uniformBufferBinding[i];
+    for (uint32_t i = 0; i < mState.uniformBufferBindings.size(); i++) {
+      auto &&binding = mState.uniformBufferBindings[i];
 
       if (!binding) {
         continue;
@@ -671,8 +671,8 @@ void Context::applyState() noexcept {
   // Texture
 
   if (mTextureBindingDirty) {
-    for (uint32_t i = 0; i < mState.textureBinding.size(); i++) {
-      auto &&binding = mState.textureBinding[i];
+    for (uint32_t i = 0; i < mState.textureBindings.size(); i++) {
+      auto &&binding = mState.textureBindings[i];
       glContext->gladGLContext()->ActiveTexture(GL_TEXTURE0 + i);
 
       if (!binding) {
@@ -697,8 +697,8 @@ void Context::applyState() noexcept {
   }
 
   if (mSamplerBindingDirty) {
-    for (uint32_t i = 0; i < mState.samplerBinding.size(); i++) {
-      auto &&binding = mState.samplerBinding[i];
+    for (uint32_t i = 0; i < mState.samplerBindings.size(); i++) {
+      auto &&binding = mState.samplerBindings[i];
 
       if (!binding) {
         glContext->gladGLContext()->BindSampler(i, 0);
