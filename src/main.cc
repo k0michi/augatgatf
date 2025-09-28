@@ -182,7 +182,7 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     co_return;
   }
 
-  auto mipLevels = 4;
+  auto mipLevels = 8;
   auto texture = device
                      ->createTexture({
                          .type = kl::graphics::TextureType::e2D,
@@ -299,6 +299,8 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
           })
           .value());
 
+  kl::math::Vector3 eye{0.0f, 0.0f, -2.0f};
+
   while (!instance->shouldQuit()) {
     auto elapsed = co_await instance->waitFrame();
     context->setFramebuffer(swapchain->framebuffer());
@@ -324,8 +326,8 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     Matrices matrices{
         .projection = kl::math::Matrix4x4::perspective(
             45.0f * (3.14159265359f / 180.0f), 800.0f / 600.0f, 0.1f, 100.0f),
-        .view = kl::math::Matrix4x4::lookAt(
-            {0.0f, 0.0f, -2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
+        .view = kl::math::Matrix4x4::lookAt(eye, {0.0f, 0.0f, 0.0f},
+                                            {0.0f, 1.0f, 0.0f}),
         .model = kl::math::Matrix4x4::fromQuaternion(
             kl::math::Quaternion<float>::fromAxisAngle(
                 {0.0f, 1.0f, 0.0f}, instance->getMouseState().wheel.y * 0.1f)),
@@ -348,6 +350,33 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     if (instance->getKeyboardState()[kl::platform::KeyCode::eEscape] ==
         kl::platform::ButtonState::ePressed) {
       break;
+    }
+
+    auto keyboardState = instance->getKeyboardState();
+    auto dir = kl::math::Vector3::zero() - eye;
+    auto up = kl::math::Vector3{0.0f, 1.0f, 0.0f};
+    auto right = kl::math::Vector3::cross(dir, up);
+    dir.normalize();
+    right.normalize();
+
+    if (keyboardState[kl::platform::KeyCode::eW] ==
+        kl::platform::ButtonState::ePressed) {
+      eye += dir * 0.01f;
+    }
+
+    if (keyboardState[kl::platform::KeyCode::eS] ==
+        kl::platform::ButtonState::ePressed) {
+      eye -= dir * 0.01f;
+    }
+
+    if (keyboardState[kl::platform::KeyCode::eA] ==
+        kl::platform::ButtonState::ePressed) {
+      eye -= right * 0.01f;
+    }
+
+    if (keyboardState[kl::platform::KeyCode::eD] ==
+        kl::platform::ButtonState::ePressed) {
+      eye += right * 0.01f;
     }
 
     // std::cout << elapsed << std::endl;
