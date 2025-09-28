@@ -138,6 +138,8 @@ public:
                     const common::Extent3<uint32_t> &dstExtent,
                     std::span<const std::byte> srcData, uint32_t srcRowLength,
                     uint32_t srcImageHeight) noexcept;
+  // TODO: readTexture
+  void generateMipmaps(std::shared_ptr<Texture> texture) noexcept;
 
   static std::expected<std::shared_ptr<Context>, std::runtime_error>
   create(std::shared_ptr<Device> device,

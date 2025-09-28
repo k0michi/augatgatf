@@ -187,6 +187,7 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
                          .mipLevels = 4,
                      })
                      .value();
+  context->generateMipmaps(texture);
 
   auto sampler = device->createSampler({}).value();
 

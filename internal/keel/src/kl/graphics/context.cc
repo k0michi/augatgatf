@@ -313,6 +313,35 @@ void Context::writeTexture(std::shared_ptr<Texture> dstTexture,
   glContext->gladGLContext()->PixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0);
 }
 
+void Context::generateMipmaps(std::shared_ptr<Texture> texture) noexcept {
+  auto devicePtr = device().lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto glContextOpt = currentGLContext();
+
+  if (!glContextOpt) {
+    return;
+  }
+
+  auto glContext = *glContextOpt;
+  std::scoped_lock lock(*glContext);
+
+  if (texture->descriptor().type == TextureType::e2D) {
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_2D,
+                                            texture->glTexture());
+    glContext->gladGLContext()->GenerateMipmap(GL_TEXTURE_2D);
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_2D, 0);
+  } else if (texture->descriptor().type == TextureType::e3D) {
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_3D,
+                                            texture->glTexture());
+    glContext->gladGLContext()->GenerateMipmap(GL_TEXTURE_3D);
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_3D, 0);
+  }
+}
+
 Context::Context(std::shared_ptr<Device> device) noexcept
     : DeviceChild(std::move(device)) {}
 
