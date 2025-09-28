@@ -4,7 +4,7 @@ namespace kl::platform {
 KeyboardState::KeyboardState()
     : mKeyStates(static_cast<std::size_t>(SDL_SCANCODE_COUNT),
                  ButtonState::eReleased),
-      mModState(ModKeyCode::eNone) {}
+      modState(ModKeyCode::eNone) {}
 
 ButtonState &KeyboardState::operator[](ScanCode scanCode) & {
   if (static_cast<std::size_t>(scanCode) >= mKeyStates.size()) {

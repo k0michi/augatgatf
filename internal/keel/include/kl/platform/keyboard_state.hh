@@ -17,7 +17,7 @@ class KeyboardState final {
   std::vector<ButtonState> mKeyStates;
 
 public:
-  ModKeyCode mModState;
+  ModKeyCode modState;
 
 public:
   KeyboardState();

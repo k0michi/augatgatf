@@ -77,7 +77,7 @@ KeyboardState Instance::getKeyboardState() const noexcept {
         keyStates[i] ? ButtonState::ePressed : ButtonState::eReleased;
   }
 
-  state.mModState = static_cast<ModKeyCode>(SDL_GetModState());
+  state.modState = static_cast<ModKeyCode>(SDL_GetModState());
   return state;
 }
 
