@@ -2,6 +2,7 @@
 
 
 layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec2 aTexCoord;
 layout(location = 0) out vec2 vTexCoord;
 
 layout(std140, binding = 0) uniform Matrices {
@@ -12,5 +13,5 @@ layout(std140, binding = 0) uniform Matrices {
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
-    vTexCoord = aPos.xy;
+    vTexCoord = aTexCoord;
 }

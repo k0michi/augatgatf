@@ -225,25 +225,57 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
   auto vertexInputState = device->createVertexInputState({
       .bindings = {{
           .binding = 0,
-          .stride = 12,
+          .stride = 20, // 3 floats for position + 2 floats for texcoord
           .inputRate = kl::graphics::VertexInputRate::eVertex,
       }},
       .attributes = {{
-          .location = 0,
-          .binding = 0,
-          .format = kl::graphics::Format::eR32G32B32Sfloat,
-          .offset = 0,
-      }},
+                         // position
+                         .location = 0,
+                         .binding = 0,
+                         .format = kl::graphics::Format::eR32G32B32Sfloat,
+                         .offset = 0,
+                     },
+                     {
+                         // texcoord
+                         .location = 1,
+                         .binding = 0,
+                         .format = kl::graphics::Format::eR32G32Sfloat,
+                         .offset = 12,
+                     }},
   });
 
-  std::array<float, 9> vertexData = {
-      0.0f,  0.5f,
-      0.0f, // Vertex 1: x, y, z
-      -0.5f, -0.5f,
-      0.0f, // Vertex 3: x, y, z
-      0.5f,  -0.5f,
-      0.0f, // Vertex 2: x, y, z
-  };
+  // 12ポリゴン（36頂点）の立方体（各面2三角形）
+  // 各頂点: x, y, z, u, v
+  std::array<float, 180> vertexData = {
+      // Front face
+      -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.5f, 0.5f,
+      0.5f, 1.0f, 1.0f, -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f,
+      1.0f, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+
+      // Back face
+      -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.5f,
+      -0.5f, -0.5f, 0.0f, 0.0f, -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, -0.5f, 0.5f,
+      -0.5f, 1.0f, 1.0f, 0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+
+      // Left face
+      -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, -0.5f,
+      0.5f, 0.5f, 1.0f, 1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -0.5f, 0.5f,
+      0.5f, 1.0f, 1.0f, -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+
+      // Right face
+      0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.5f, -0.5f,
+      0.5f, 0.0f, 0.0f, 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.5f, 0.5f, -0.5f, 1.0f,
+      1.0f, 0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+
+      // Top face
+      -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.5f, 0.5f,
+      0.5f, 1.0f, 0.0f, -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.5f, 0.5f, 0.5f, 1.0f,
+      0.0f, 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+
+      // Bottom face
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.5f, -0.5f, 0.5f, 0.0f, 0.0f, -0.5f,
+      -0.5f, 0.5f, 1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.5f, -0.5f,
+      -0.5f, 0.0f, 1.0f, 0.5f, -0.5f, 0.5f, 0.0f, 0.0f};
 
   auto vertexBuffer = device->createBuffer({
       .size = sizeof(vertexData),
@@ -282,6 +314,12 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     context->setVertexInputState(vertexInputState.value());
     context->setTexture(0, texture);
     context->setSampler(0, sampler);
+    context->setDepthStencilState(device
+                                      ->createDepthStencilState({
+                                          .depthTestEnable = true,
+                                          .depthWriteEnable = true,
+                                      })
+                                      .value());
 
     Matrices matrices{
         .projection = kl::math::Matrix4x4::perspective(
@@ -297,7 +335,7 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
                          std::as_bytes(std::span(&matrices, 1)));
 
     context->setUniformBuffer(0, uniformBuffer.value(), 0, sizeof(Matrices));
-    context->draw(kl::graphics::PrimitiveTopology::eTriangleList, 3, 1, 0, 0);
+    context->draw(kl::graphics::PrimitiveTopology::eTriangleList, 36, 1, 0, 0);
     swapchain->present(1);
     instance->pollEvents();
 
