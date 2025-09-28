@@ -105,17 +105,20 @@ struct Matrices {
   kl::math::Matrix4x4 model;
 };
 
-std::vector<uint8_t> createDummyTexture(int size = 64, int blockSize = 8) {
+std::vector<uint8_t>
+createDummyTexture(int size = 64, int blockSize = 8,
+                   std::array<uint8_t, 4> colorA = {255, 255, 255, 255},
+                   std::array<uint8_t, 4> colorB = {32, 32, 32, 255}) {
   std::vector<uint8_t> data(size * size * 4);
   for (int y = 0; y < size; ++y) {
     for (int x = 0; x < size; ++x) {
       bool checker = ((x / blockSize) % 2) == ((y / blockSize) % 2);
-      uint8_t color = checker ? 255 : 32;
+      auto &color = checker ? colorA : colorB;
       int idx = (y * size + x) * 4;
-      data[idx + 0] = color; // R
-      data[idx + 1] = color; // G
-      data[idx + 2] = color; // B
-      data[idx + 3] = 255;   // A
+      data[idx + 0] = color[0]; // R
+      data[idx + 1] = color[1]; // G
+      data[idx + 2] = color[2]; // B
+      data[idx + 3] = color[3]; // A
     }
   }
   return data;
@@ -179,20 +182,39 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     co_return;
   }
 
+  auto mipLevels = 4;
   auto texture = device
                      ->createTexture({
                          .type = kl::graphics::TextureType::e2D,
                          .format = kl::graphics::Format::eR8G8B8A8Unorm,
                          .extent = {512, 512, 1},
-                         .mipLevels = 4,
+                         .mipLevels = mipLevels,
                      })
                      .value();
-  auto textureData = createDummyTexture(512, 32);
-  context->writeTexture(texture, 0, {0, 0, 0}, {512, 512, 1},
-                        std::as_bytes(std::span(textureData)),
-                        /* srcRowLength */ 512,
-                        /* srcImageHeight */ 512);
-  context->generateMipmaps(texture);
+
+  // 各mipレベルごとに異なる色
+  std::array<std::array<uint8_t, 4>, 8> mipColors = {
+      std::array<uint8_t, 4>{255, 0, 0, 255},     // レベル0: 赤
+      std::array<uint8_t, 4>{0, 255, 0, 255},     // レベル1: 緑
+      std::array<uint8_t, 4>{0, 0, 255, 255},     // レベル2: 青
+      std::array<uint8_t, 4>{255, 255, 0, 255},   // レベル3: 黄
+      std::array<uint8_t, 4>{255, 0, 255, 255},   // レベル4: マゼンタ
+      std::array<uint8_t, 4>{0, 255, 255, 255},   // レベル5: シアン
+      std::array<uint8_t, 4>{255, 255, 255, 255}, // レベル6: 白
+      std::array<uint8_t, 4>{0, 0, 0, 255},       // レベル7: 黒
+  };
+  for (int level = 0; level < mipLevels; ++level) {
+    int size = 512 >> level;
+    if (size < 1)
+      size = 1;
+    auto textureData = createDummyTexture(size, 8, mipColors[level]);
+    context->writeTexture(
+        texture, level, {0, 0, 0},
+        {static_cast<unsigned int>(size), static_cast<unsigned int>(size), 1},
+        std::as_bytes(std::span(textureData)),
+        /* srcRowLength */ size,
+        /* srcImageHeight */ size);
+  }
 
   auto sampler = device->createSampler({}).value();
 
@@ -268,7 +290,7 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
             {0.0f, 0.0f, -2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
         .model = kl::math::Matrix4x4::fromQuaternion(
             kl::math::Quaternion<float>::fromAxisAngle(
-                {0.0f, .0f, 1.0f}, static_cast<float>(count) * 0.01f)),
+                {0.0f, 1.0f, 0.0f}, static_cast<float>(count) * 0.003f)),
     };
 
     context->writeBuffer(uniformBuffer.value(), 0,
