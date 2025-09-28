@@ -1,8 +1,8 @@
-#ifndef KL_GRAPHICS_FEATURES_HH
-#define KL_GRAPHICS_FEATURES_HH
+#ifndef KL_GRAPHICS_DEVICE_FEATURES_HH
+#define KL_GRAPHICS_DEVICE_FEATURES_HH
 
 namespace kl::graphics {
-struct Features final {
+struct DeviceFeatures final {
   bool anisotropicFiltering;
   bool depthClamp;
   bool polygonMode;
@@ -11,4 +11,4 @@ struct Features final {
   // TODO: Add more features.
 };
 } // namespace kl::graphics
-#endif // KL_GRAPHICS_FEATURES_HH
+#endif // KL_GRAPHICS_DEVICE_FEATURES_HH
