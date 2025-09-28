@@ -2,6 +2,7 @@
 
 #include <string>
 
+#ifndef __EMSCRIPTEN__
 #include <uv.h>
 
 struct ReadFileAwaiter {
@@ -85,11 +86,16 @@ private:
   std::coroutine_handle<> mHandle;
   bool mError = false;
 };
+#endif
 
 namespace kl::io {
 kl::concurrent::Task<std::vector<std::byte>>
 FileSystem::readFileBinaryAsync(std::string_view filename) {
+#ifndef __EMSCRIPTEN__
   std::vector<std::byte> result = co_await ReadFileAwaiter(filename);
   co_return result;
+#else
+  throw std::runtime_error("FileSystem::readFileBinaryAsync: Not implemented");
+#endif
 }
 } // namespace kl::io

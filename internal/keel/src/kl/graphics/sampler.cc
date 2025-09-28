@@ -57,8 +57,12 @@ Sampler::create(std::shared_ptr<Device> device,
   context->gladGLContext()->SamplerParameteri(
       sampler->mSampler, GL_TEXTURE_WRAP_R,
       opengl::SymbolConverter::toGLSamplerWrap(descriptor.addressModeW));
+
+  // TODO: Proper check
+#ifndef __EMSCRIPTEN__
   context->gladGLContext()->SamplerParameterf(
       sampler->mSampler, GL_TEXTURE_LOD_BIAS, descriptor.mipLodBias);
+#endif
 
   // TODO: Anisotropy (OpenGL 4.6 or GL_EXT_texture_filter_anisotropic)
 

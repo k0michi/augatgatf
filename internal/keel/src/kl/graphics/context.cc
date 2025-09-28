@@ -160,7 +160,7 @@ void Context::clearDepthStencil(float depth, int32_t stencil) noexcept {
 
   auto glContext = *glContextOpt;
   std::scoped_lock lock(*glContext);
-  glContext->gladGLContext()->ClearDepth(depth);
+  glContext->gladGLContext()->ClearDepthf(depth);
   glContext->gladGLContext()->ClearStencil(stencil);
   glContext->gladGLContext()->Clear(GL_DEPTH_BUFFER_BIT |
                                     GL_STENCIL_BUFFER_BIT);
@@ -513,11 +513,14 @@ void Context::applyState() noexcept {
       descriptor = RasterizationStateDescriptor{};
     }
 
+    // TODO: Proper check
+#ifndef __EMSCRIPTEN__
     if (descriptor.depthClampEnable) {
       glContext->gladGLContext()->Enable(GL_DEPTH_CLAMP);
     } else {
       glContext->gladGLContext()->Disable(GL_DEPTH_CLAMP);
     }
+#endif
 
     if (descriptor.rasterizerDiscardEnable) {
       glContext->gladGLContext()->Enable(GL_RASTERIZER_DISCARD);
