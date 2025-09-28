@@ -105,6 +105,22 @@ struct Matrices {
   kl::math::Matrix4x4 model;
 };
 
+std::vector<uint8_t> createDummyTexture(int size = 64, int blockSize = 8) {
+  std::vector<uint8_t> data(size * size * 4);
+  for (int y = 0; y < size; ++y) {
+    for (int x = 0; x < size; ++x) {
+      bool checker = ((x / blockSize) % 2) == ((y / blockSize) % 2);
+      uint8_t color = checker ? 255 : 32;
+      int idx = (y * size + x) * 4;
+      data[idx + 0] = color; // R
+      data[idx + 1] = color; // G
+      data[idx + 2] = color; // B
+      data[idx + 3] = 255;   // A
+    }
+  }
+  return data;
+}
+
 kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
   auto instanceResult =
       kl::platform::Instance::create(kl::platform::InstanceDescriptor{});
@@ -138,8 +154,8 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
 
   auto rasterizationState = device->createRasterizationState({});
 
-  auto vertShader = co_await loadAsync("shaders/uniform.vert.spv");
-  auto fragShader = co_await loadAsync("shaders/uniform.frag.spv");
+  auto vertShader = co_await loadAsync("shaders/texture.vert.spv");
+  auto fragShader = co_await loadAsync("shaders/texture.frag.spv");
   auto program = device->createProgram({
       .shaders = {device
                       ->createShader({
@@ -163,18 +179,26 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     co_return;
   }
 
-  auto texture = device->createTexture({
-      .type = kl::graphics::TextureType::e2D,
-      .format = kl::graphics::Format::eR8G8B8A8Unorm,
-      .extent = {512, 512, 1},
-      .mipLevels = 4,
-  });
+  auto texture = device
+                     ->createTexture({
+                         .type = kl::graphics::TextureType::e2D,
+                         .format = kl::graphics::Format::eR8G8B8A8Unorm,
+                         .extent = {512, 512, 1},
+                         .mipLevels = 4,
+                     })
+                     .value();
+
+  auto sampler = device->createSampler({}).value();
+
+  auto textureData = createDummyTexture(512, 32);
+  context->writeTexture(texture, 0, {0, 0, 0}, {512, 512, 1},
+                        std::as_bytes(std::span(textureData)),
+                        /* srcRowLength */ 512,
+                        /* srcImageHeight */ 512);
 
   auto buffer = device->createBuffer({
       .size = 1024,
   });
-
-  auto sampler = device->createSampler({});
 
   auto vertexInputState = device->createVertexInputState({
       .bindings = {{
@@ -234,6 +258,8 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
     context->setProgram(program.value());
     context->setVertexBuffer(0, vertexBuffer.value(), 0);
     context->setVertexInputState(vertexInputState.value());
+    context->setTexture(0, texture);
+    context->setSampler(0, sampler);
 
     Matrices matrices{
         .projection = kl::math::Matrix4x4::perspective(

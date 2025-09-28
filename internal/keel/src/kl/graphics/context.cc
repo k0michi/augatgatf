@@ -101,6 +101,26 @@ void Context::setUniformBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
   mUniformBufferDirty = true;
 }
 
+void Context::setTexture(uint32_t binding,
+                         std::shared_ptr<Texture> texture) noexcept {
+  if (mState.textureBinding.size() <= binding) {
+    mState.textureBinding.resize(binding + 1);
+  }
+
+  mState.textureBinding[binding] = std::move(texture);
+  mTextureBindingDirty = true;
+}
+
+void Context::setSampler(uint32_t binding,
+                         std::shared_ptr<Sampler> sampler) noexcept {
+  if (mState.samplerBinding.size() <= binding) {
+    mState.samplerBinding.resize(binding + 1);
+  }
+
+  mState.samplerBinding[binding] = std::move(sampler);
+  mTextureBindingDirty = true;
+}
+
 void Context::clearColor(
     std::tuple<float, float, float, float> color) noexcept {
   applyState();
@@ -238,6 +258,59 @@ void Context::readBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
       GL_ARRAY_BUFFER, static_cast<GLintptr>(offset),
       static_cast<GLsizeiptr>(data.size_bytes()), data.data());
   glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Context::writeTexture(std::shared_ptr<Texture> dstTexture,
+                           int32_t dstLevel,
+                           const common::Offset3<int32_t> &dstOffset,
+                           const common::Extent3<uint32_t> &dstExtent,
+                           std::span<const std::byte> srcData,
+                           uint32_t srcRowLength,
+                           uint32_t srcImageHeight) noexcept {
+  auto devicePtr = device().lock();
+
+  if (!devicePtr) {
+    return;
+  }
+
+  auto glContextOpt = currentGLContext();
+
+  if (!glContextOpt) {
+    return;
+  }
+
+  auto format =
+      opengl::SymbolConverter::toGLFormat(dstTexture->descriptor().format);
+
+  auto glContext = *glContextOpt;
+  std::scoped_lock lock(*glContext);
+  glContext->gladGLContext()->PixelStorei(GL_UNPACK_ROW_LENGTH, srcRowLength);
+  glContext->gladGLContext()->PixelStorei(GL_UNPACK_IMAGE_HEIGHT,
+                                          srcImageHeight);
+
+  if (dstTexture->descriptor().type == TextureType::e2D) {
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_2D,
+                                            dstTexture->glTexture());
+    glContext->gladGLContext()->TexSubImage2D(
+        GL_TEXTURE_2D, dstLevel, dstOffset.x, dstOffset.y,
+        static_cast<GLsizei>(dstExtent.width),
+        static_cast<GLsizei>(dstExtent.height), std::get<1>(format),
+        std::get<2>(format), srcData.data());
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_2D, 0);
+  } else if (dstTexture->descriptor().type == TextureType::e3D) {
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_3D,
+                                            dstTexture->glTexture());
+    glContext->gladGLContext()->TexSubImage3D(
+        GL_TEXTURE_3D, dstLevel, dstOffset.x, dstOffset.y, dstOffset.z,
+        static_cast<GLsizei>(dstExtent.width),
+        static_cast<GLsizei>(dstExtent.height),
+        static_cast<GLsizei>(dstExtent.depth), std::get<1>(format),
+        std::get<2>(format), srcData.data());
+    glContext->gladGLContext()->BindTexture(GL_TEXTURE_3D, 0);
+  }
+
+  glContext->gladGLContext()->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  glContext->gladGLContext()->PixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0);
 }
 
 Context::Context(std::shared_ptr<Device> device) noexcept
@@ -593,6 +666,49 @@ void Context::applyState() noexcept {
     }
 
     mUniformBufferDirty = false;
+  }
+
+  // Texture
+
+  if (mTextureBindingDirty) {
+    for (uint32_t i = 0; i < mState.textureBinding.size(); i++) {
+      auto &&binding = mState.textureBinding[i];
+      glContext->gladGLContext()->ActiveTexture(GL_TEXTURE0 + i);
+
+      if (!binding) {
+        glContext->gladGLContext()->BindTexture(GL_TEXTURE_2D, 0);
+        continue;
+      }
+
+      auto glTextureType = opengl::SymbolConverter::toGLTextureType(
+          binding->descriptor().type, binding->descriptor().samples);
+
+      if (!glTextureType) {
+        // TODO: Report error
+        continue;
+      }
+
+      glContext->gladGLContext()->ActiveTexture(GL_TEXTURE0 + i);
+      glContext->gladGLContext()->BindTexture(*glTextureType,
+                                              binding->glTexture());
+    }
+
+    mTextureBindingDirty = false;
+  }
+
+  if (mSamplerBindingDirty) {
+    for (uint32_t i = 0; i < mState.samplerBinding.size(); i++) {
+      auto &&binding = mState.samplerBinding[i];
+
+      if (!binding) {
+        glContext->gladGLContext()->BindSampler(i, 0);
+        continue;
+      }
+
+      glContext->gladGLContext()->BindSampler(i, binding->glSampler());
+    }
+
+    mSamplerBindingDirty = false;
   }
 }
 

@@ -34,6 +34,8 @@ set(GLSL_FILES
   shaders/hello.frag
   shaders/uniform.vert
   shaders/uniform.frag
+  shaders/texture.vert
+  shaders/texture.frag
 )
 
 set(SPIRV_OUTPUTS "")

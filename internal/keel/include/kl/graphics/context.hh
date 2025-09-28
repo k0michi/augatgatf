@@ -19,9 +19,14 @@
 #include "primitive_topology.hh"
 #include "program.hh"
 #include "rasterization_state.hh"
+#include "sampler.hh"
 #include "scissor_rect.hh"
+#include "texture.hh"
 #include "vertex_input_state.hh"
 #include "viewport.hh"
+
+#include "kl/common/extent3.hh"
+#include "kl/common/offset3.hh"
 
 namespace kl::graphics {
 class Device;
@@ -48,6 +53,8 @@ struct ContextState final {
   std::shared_ptr<VertexInputState> vertexInputState;
   std::vector<std::optional<VertexBufferBinding>> vertexBufferBinding;
   std::vector<std::optional<UniformBufferBinding>> uniformBufferBinding;
+  std::vector<std::shared_ptr<Texture>> textureBinding;
+  std::vector<std::shared_ptr<Sampler>> samplerBinding;
 };
 
 /**
@@ -67,6 +74,8 @@ private:
   bool mDepthStencilStateDirty = true;
   bool mVertexInputStateDirty = true;
   bool mUniformBufferDirty = true;
+  bool mTextureBindingDirty = true;
+  bool mSamplerBindingDirty = true;
 
 public:
   virtual ~Context() noexcept = default;
@@ -105,6 +114,8 @@ public:
                        uint32_t offset) noexcept;
   void setUniformBuffer(uint32_t binding, std::shared_ptr<Buffer> buffer,
                         uint32_t offset, uint32_t size) noexcept;
+  void setTexture(uint32_t binding, std::shared_ptr<Texture> texture) noexcept;
+  void setSampler(uint32_t binding, std::shared_ptr<Sampler> sampler) noexcept;
 
   void clearColor(std::tuple<float, float, float, float> color) noexcept;
   void clearDepthStencil(float depth, int32_t stencil) noexcept;
@@ -117,6 +128,16 @@ public:
                    std::span<const std::byte> data) noexcept;
   void readBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
                   std::span<std::byte> data) noexcept;
+  /**
+   * https://learn.microsoft.com/ja-jp/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-updatesubresource
+   * https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyBufferToImage.html
+   * https://developer.apple.com/documentation/metal/mtlblitcommandencoder/copy(from:sourceoffset:sourcebytesperrow:sourcebytesperimage:sourcesize:to:destinationslice:destinationlevel:destinationorigin:options:)?language=objc
+   */
+  void writeTexture(std::shared_ptr<Texture> dstTexture, int32_t dstLevel,
+                    const common::Offset3<int32_t> &dstOffset,
+                    const common::Extent3<uint32_t> &dstExtent,
+                    std::span<const std::byte> srcData, uint32_t srcRowLength,
+                    uint32_t srcImageHeight) noexcept;
 
   static std::expected<std::shared_ptr<Context>, std::runtime_error>
   create(std::shared_ptr<Device> device,
