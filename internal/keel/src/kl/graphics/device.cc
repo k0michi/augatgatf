@@ -168,6 +168,7 @@ Device::create(std::shared_ptr<Instance> instance,
   auto defaultContext = defaultContextResult.value();
   std::scoped_lock lock(*defaultContext);
 
+  // TODO: Refactor this into a function
   device->mFeatures.anisotropicFiltering =
       defaultContext->hasExtension("GL_EXT_texture_filter_anisotropic");
   device->mFeatures.depthClamp =
@@ -177,6 +178,13 @@ Device::create(std::shared_ptr<Instance> instance,
       defaultContext->hasExtension("GL_ARB_draw_buffers_blend");
   device->mFeatures.computeShaders =
       defaultContext->hasExtension("GL_ARB_compute_shader");
+
+  device->mProperties.renderer = reinterpret_cast<const char *>(
+      defaultContext->gladGLContext()->GetString(GL_RENDERER));
+  device->mProperties.vendor = reinterpret_cast<const char *>(
+      defaultContext->gladGLContext()->GetString(GL_VENDOR));
+  device->mProperties.version = reinterpret_cast<const char *>(
+      defaultContext->gladGLContext()->GetString(GL_VERSION));
 
   device->mContexts.emplace_back(defaultContextResult.value());
 #endif

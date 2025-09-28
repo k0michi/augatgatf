@@ -15,6 +15,7 @@
 #include "context.hh"
 #include "depth_stencil_state.hh"
 #include "device_descriptor.hh"
+#include "device_properties.hh"
 #include "features.hh"
 #include "framebuffer.hh"
 #include "kl/platform/window.hh"
@@ -45,6 +46,7 @@ private:
                      std::shared_ptr<opengl::GLContext>>
       mWindowContexts;
   Features mFeatures;
+  DeviceProperties mProperties;
 
 public:
   virtual ~Device() noexcept;
@@ -82,6 +84,9 @@ public:
   createVertexInputState(const VertexInputStateDescriptor &descriptor) noexcept;
 
   inline const Features &features() const noexcept { return mFeatures; }
+  inline const DeviceProperties &properties() const noexcept {
+    return mProperties;
+  }
 
   /**
    * @brief Internal.
