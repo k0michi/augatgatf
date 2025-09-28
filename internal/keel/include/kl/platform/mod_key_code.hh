@@ -25,38 +25,41 @@ enum class ModKeyCode : SDL_Keymod {
   eGui = SDL_KMOD_GUI,
 };
 
-ModKeyCode operator|(ModKeyCode a, ModKeyCode b) noexcept {
-  return static_cast<ModKeyCode>(static_cast<SDL_Keymod>(a) |
-                                 static_cast<SDL_Keymod>(b));
+constexpr ModKeyCode &operator|=(ModKeyCode &lhs, ModKeyCode rhs) {
+  lhs = static_cast<ModKeyCode>(static_cast<SDL_Keymod>(lhs) |
+                                static_cast<SDL_Keymod>(rhs));
+  return lhs;
 }
 
-ModKeyCode &operator|=(ModKeyCode &a, ModKeyCode b) noexcept {
-  a = a | b;
-  return a;
+constexpr ModKeyCode operator|(ModKeyCode lhs, ModKeyCode rhs) {
+  lhs |= rhs;
+  return lhs;
 }
 
-ModKeyCode operator&(ModKeyCode a, ModKeyCode b) noexcept {
-  return static_cast<ModKeyCode>(static_cast<SDL_Keymod>(a) &
-                                 static_cast<SDL_Keymod>(b));
+constexpr ModKeyCode &operator&=(ModKeyCode &lhs, ModKeyCode rhs) {
+  lhs = static_cast<ModKeyCode>(static_cast<SDL_Keymod>(lhs) &
+                                static_cast<SDL_Keymod>(rhs));
+  return lhs;
 }
 
-ModKeyCode &operator&=(ModKeyCode &a, ModKeyCode b) noexcept {
-  a = a & b;
-  return a;
+constexpr ModKeyCode operator&(ModKeyCode lhs, ModKeyCode rhs) {
+  lhs &= rhs;
+  return lhs;
 }
 
-ModKeyCode operator~(ModKeyCode a) noexcept {
-  return static_cast<ModKeyCode>(~static_cast<SDL_Keymod>(a));
+constexpr ModKeyCode operator~(ModKeyCode mod) {
+  return static_cast<ModKeyCode>(~static_cast<SDL_Keymod>(mod));
 }
 
-ModKeyCode &operator^=(ModKeyCode &a, ModKeyCode b) noexcept {
-  a = a ^ b;
-  return a;
+constexpr ModKeyCode &operator^=(ModKeyCode &lhs, ModKeyCode rhs) {
+  lhs = static_cast<ModKeyCode>(static_cast<SDL_Keymod>(lhs) ^
+                                static_cast<SDL_Keymod>(rhs));
+  return lhs;
 }
 
-ModKeyCode operator^(ModKeyCode a, ModKeyCode b) noexcept {
-  return static_cast<ModKeyCode>(static_cast<SDL_Keymod>(a) ^
-                                 static_cast<SDL_Keymod>(b));
+constexpr ModKeyCode operator^(ModKeyCode lhs, ModKeyCode rhs) {
+  lhs ^= rhs;
+  return lhs;
 }
 } // namespace kl::platform
 #endif // KL_PLATFORM_MOD_KEY_CODE_HH

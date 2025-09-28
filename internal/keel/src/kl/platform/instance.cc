@@ -67,5 +67,19 @@ MouseState Instance::getMouseState() const noexcept {
   return state;
 }
 
+KeyboardState Instance::getKeyboardState() const noexcept {
+  int numKeys = 0;
+  const bool *keyStates = SDL_GetKeyboardState(&numKeys);
+  KeyboardState state{};
+
+  for (int i = 0; i < numKeys; ++i) {
+    state[static_cast<ScanCode>(i)] =
+        keyStates[i] ? ButtonState::ePressed : ButtonState::eReleased;
+  }
+
+  state.mModState = static_cast<ModKeyCode>(SDL_GetModState());
+  return state;
+}
+
 FrameAwaiter Instance::waitFrame() noexcept { return FrameAwaiter(); }
 } // namespace kl::platform

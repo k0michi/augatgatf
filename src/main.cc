@@ -345,6 +345,11 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
       SDL_ClearError();
     }
 
+    if (instance->getKeyboardState()[kl::platform::KeyCode::eEscape] ==
+        kl::platform::ButtonState::ePressed) {
+      break;
+    }
+
     // std::cout << elapsed << std::endl;
     count++;
   }

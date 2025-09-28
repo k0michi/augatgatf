@@ -5,6 +5,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "keyboard_state.hh"
 #include "kl/concurrent/task.hh"
 #include "kl/platform/frame_awaiter.hh"
 #include "kl/platform/instance_descriptor.hh"
@@ -31,6 +32,7 @@ public:
   std::expected<std::shared_ptr<Window>, std::runtime_error>
   createWindow(const WindowDescriptor &descriptor) noexcept;
   MouseState getMouseState() const noexcept;
+  KeyboardState getKeyboardState() const noexcept;
 
   static std::expected<std::shared_ptr<Instance>, std::runtime_error>
   create(const InstanceDescriptor &descriptor) noexcept;

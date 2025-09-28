@@ -84,6 +84,7 @@ add_library(keel STATIC
   src/kl/io/file_system.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
+  src/kl/platform/keyboard_state.cc
   src/kl/platform/window.cc
 # end
 )
