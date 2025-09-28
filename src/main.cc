@@ -187,15 +187,14 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
                          .mipLevels = 4,
                      })
                      .value();
-  context->generateMipmaps(texture);
-
-  auto sampler = device->createSampler({}).value();
-
   auto textureData = createDummyTexture(512, 32);
   context->writeTexture(texture, 0, {0, 0, 0}, {512, 512, 1},
                         std::as_bytes(std::span(textureData)),
                         /* srcRowLength */ 512,
                         /* srcImageHeight */ 512);
+  context->generateMipmaps(texture);
+
+  auto sampler = device->createSampler({}).value();
 
   auto buffer = device->createBuffer({
       .size = 1024,
