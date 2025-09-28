@@ -2,7 +2,7 @@
 
 namespace web_audio {
 enum class PanningModelType {
-  eEqualPower,
+  eEqualpower,
   eHRTF,
 };
 }
