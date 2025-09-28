@@ -328,7 +328,7 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
             {0.0f, 0.0f, -2.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}),
         .model = kl::math::Matrix4x4::fromQuaternion(
             kl::math::Quaternion<float>::fromAxisAngle(
-                {0.0f, 1.0f, 0.0f}, static_cast<float>(count) * 0.003f)),
+                {0.0f, 1.0f, 0.0f}, instance->getMouseState().wheel.y * 0.1f)),
     };
 
     context->writeBuffer(uniformBuffer.value(), 0,

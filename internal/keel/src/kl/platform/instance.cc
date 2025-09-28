@@ -30,6 +30,9 @@ void Instance::pollEvents() noexcept {
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_EVENT_QUIT) {
       mShouldQuit = true;
+    } else if (event.type == SDL_EVENT_MOUSE_WHEEL) {
+      mAccumulatedWheel.x += event.wheel.x;
+      mAccumulatedWheel.y += event.wheel.y;
     }
   }
 }
@@ -39,6 +42,29 @@ bool Instance::shouldQuit() const noexcept { return mShouldQuit; }
 std::expected<std::shared_ptr<Window>, std::runtime_error>
 Instance::createWindow(const WindowDescriptor &descriptor) noexcept {
   return Window::create(descriptor);
+}
+
+MouseState Instance::getMouseState() const noexcept {
+  MouseState state;
+
+  SDL_MouseButtonFlags buttons =
+      SDL_GetMouseState(reinterpret_cast<float *>(&state.localPosition.x),
+                        reinterpret_cast<float *>(&state.localPosition.y));
+  SDL_GetGlobalMouseState(reinterpret_cast<float *>(&state.globalPosition.x),
+                          reinterpret_cast<float *>(&state.globalPosition.y));
+
+  state.leftButton = (buttons & SDL_BUTTON_LMASK) ? ButtonState::ePressed
+                                                  : ButtonState::eReleased;
+  state.middleButton = (buttons & SDL_BUTTON_MMASK) ? ButtonState::ePressed
+                                                    : ButtonState::eReleased;
+  state.rightButton = (buttons & SDL_BUTTON_RMASK) ? ButtonState::ePressed
+                                                   : ButtonState::eReleased;
+  state.x1Button = (buttons & SDL_BUTTON_X1MASK) ? ButtonState::ePressed
+                                                 : ButtonState::eReleased;
+  state.x2Button = (buttons & SDL_BUTTON_X2MASK) ? ButtonState::ePressed
+                                                 : ButtonState::eReleased;
+  state.wheel = mAccumulatedWheel;
+  return state;
 }
 
 FrameAwaiter Instance::waitFrame() noexcept { return FrameAwaiter(); }
