@@ -144,5 +144,12 @@ OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   context->sampleRate_ = options.sampleRate;
   return context;
 }
+
+std::shared_ptr<OfflineAudioContext>
+OfflineAudioContext::create(std::uint32_t numberOfChannels,
+                            std::uint32_t length, float sampleRate) {
+  return create(
+      OfflineAudioContextOptions{numberOfChannels, length, sampleRate});
+}
 } // namespace web_audio
 #endif // WEB_AUDIO_IMPLEMENTATION
