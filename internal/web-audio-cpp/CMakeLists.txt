@@ -21,7 +21,12 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-file(GLOB WEB_AUDIO_TEST_SRC "test/*.cc")
+set(WEB_AUDIO_TEST_SRC
+# include test/**/*.cc
+  test/test_periodic_wave.cc
+  test/test_render_quantum.cc
+# end
+)
 add_executable(test_web_audio ${WEB_AUDIO_TEST_SRC})
 target_link_libraries(test_web_audio PRIVATE web-audio-cpp GTest::gtest_main)
 add_test(NAME test_web_audio COMMAND test_web_audio)
