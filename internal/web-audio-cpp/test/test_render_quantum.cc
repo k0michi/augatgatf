@@ -119,7 +119,7 @@ TEST(RenderQuantumTest, Mix5_1ToMono) {
   auto &data = rq.getChannelData();
   EXPECT_EQ(data.size(), 1);
   EXPECT_NEAR(data[0][0],
-              std::sqrtf(0.5f) * (1.0f + 0.5f) + 0.25f +
+              std::sqrt(0.5f) * (1.0f + 0.5f) + 0.25f +
                   0.5f * (0.0625f + 0.03125f),
               0.01f);
 }
@@ -148,8 +148,8 @@ TEST(RenderQuantumTest, Mix5_1ToStereo) {
   rq.mix(2, ChannelInterpretation::eSpeakers);
   auto &data = rq.getChannelData();
   EXPECT_EQ(data.size(), 2);
-  EXPECT_NEAR(data[0][0], 1.0f + std::sqrtf(0.5f) * (0.25f + 0.0625f), 0.01f);
-  EXPECT_NEAR(data[1][0], 0.5f + std::sqrtf(0.5f) * (0.25f + 0.03125f), 0.01f);
+  EXPECT_NEAR(data[0][0], 1.0f + std::sqrt(0.5f) * (0.25f + 0.0625f), 0.01f);
+  EXPECT_NEAR(data[1][0], 0.5f + std::sqrt(0.5f) * (0.25f + 0.03125f), 0.01f);
 }
 
 TEST(RenderQuantumTest, Mix5_1ToQuad) {
@@ -163,8 +163,8 @@ TEST(RenderQuantumTest, Mix5_1ToQuad) {
   rq.mix(4, ChannelInterpretation::eSpeakers);
   auto &data = rq.getChannelData();
   EXPECT_EQ(data.size(), 4);
-  EXPECT_NEAR(data[0][0], 1.0f + std::sqrtf(0.5f) * 0.25f, 0.01f);
-  EXPECT_NEAR(data[1][0], 0.5f + std::sqrtf(0.5f) * 0.25f, 0.01f);
+  EXPECT_NEAR(data[0][0], 1.0f + std::sqrt(0.5f) * 0.25f, 0.01f);
+  EXPECT_NEAR(data[1][0], 0.5f + std::sqrt(0.5f) * 0.25f, 0.01f);
   EXPECT_NEAR(data[2][0], 0.0625f, 0.01f);
   EXPECT_NEAR(data[3][0], 0.03125f, 0.01f);
 }

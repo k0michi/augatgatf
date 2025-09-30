@@ -160,7 +160,7 @@ void RenderQuantum::mix(std::uint32_t computedNumberOfChannels,
          */
         for (std::uint32_t i = 0; i < length_; ++i) {
           channelData_[0][i] =
-              std::sqrtf(0.5f) * (channelData_[0][i] + channelData_[1][i]) +
+              std::sqrt(0.5f) * (channelData_[0][i] + channelData_[1][i]) +
               channelData_[2][i] +
               0.5f * (channelData_[4][i] + channelData_[5][i]);
         }
@@ -174,10 +174,10 @@ void RenderQuantum::mix(std::uint32_t computedNumberOfChannels,
         for (std::uint32_t i = 0; i < length_; ++i) {
           channelData_[0][i] =
               channelData_[0][i] +
-              std::sqrtf(0.5f) * (channelData_[2][i] + channelData_[4][i]);
+              std::sqrt(0.5f) * (channelData_[2][i] + channelData_[4][i]);
           channelData_[1][i] =
               channelData_[1][i] +
-              std::sqrtf(0.5f) * (channelData_[2][i] + channelData_[5][i]);
+              std::sqrt(0.5f) * (channelData_[2][i] + channelData_[5][i]);
         }
 
         channelData_.resize(2);
@@ -191,9 +191,9 @@ void RenderQuantum::mix(std::uint32_t computedNumberOfChannels,
          */
         for (std::uint32_t i = 0; i < length_; ++i) {
           channelData_[0][i] =
-              channelData_[0][i] + std::sqrtf(0.5f) * channelData_[2][i];
+              channelData_[0][i] + std::sqrt(0.5f) * channelData_[2][i];
           channelData_[1][i] =
-              channelData_[1][i] + std::sqrtf(0.5f) * channelData_[2][i];
+              channelData_[1][i] + std::sqrt(0.5f) * channelData_[2][i];
         }
 
         channelData_.erase(channelData_.begin() + 2, channelData_.begin() + 4);
