@@ -18,6 +18,8 @@ namespace web_audio {
 class BaseAudioContext /* : EventTarget */ {
 protected:
   BaseAudioContext();
+
+public:
   virtual ~BaseAudioContext() noexcept = default;
 
 public:
@@ -60,6 +62,7 @@ protected:
 };
 } // namespace web_audio
 
+#ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
 BaseAudioContext::BaseAudioContext() {
   destination_.reset(new AudioDestinationNode());
@@ -102,3 +105,4 @@ void BaseAudioContext::setOnstatechange(EventHandler *value) {
 
 void BaseAudioContext::processEvents() { eventQueue_.poll(); }
 } // namespace web_audio
+#endif

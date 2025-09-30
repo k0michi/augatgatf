@@ -1,6 +1,6 @@
-#define WEB_AUDIO_IMPLEMENTATION
-#include "web_audio/details/render_quantum.h"
 #include <gtest/gtest.h>
+
+#include "web_audio/details/render_quantum.h"
 
 using namespace web_audio;
 

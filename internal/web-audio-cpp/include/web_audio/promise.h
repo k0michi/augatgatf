@@ -80,8 +80,10 @@ private:
   std::exception_ptr exception_;
   PromiseState state_ = PromiseState::ePending;
 };
+} // namespace web_audio
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
+namespace web_audio {
 template <typename T> class Promise : public PromiseBase {
 public:
   Promise(details::EventQueue &queue) {

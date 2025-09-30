@@ -1,12 +1,11 @@
-#define WEB_AUDIO_IMPLEMENTATION
+#include <gtest/gtest.h>
+
 #include "web_audio/periodic_wave.h"
 #include "web_audio/periodic_wave_options.h"
-#include <gtest/gtest.h>
-#include <memory>
 
 using namespace web_audio;
 
-class DummyContext : public BaseAudioContext {};
+class DummyContext : public web_audio::BaseAudioContext {};
 
 TEST(PeriodicWaveTest, DefaultConstructor) {
   auto ctx = std::make_shared<DummyContext>();

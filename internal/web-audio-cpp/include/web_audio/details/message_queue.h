@@ -22,6 +22,7 @@ private:
 };
 } // namespace web_audio::details
 
+#ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio::details {
 void MessageQueue::push(const Message &value) {
   {
@@ -46,3 +47,4 @@ void MessageQueue::swap(MessageQueue &other) {
   queue_.swap(other.queue_);
 }
 } // namespace web_audio::details
+#endif // WEB_AUDIO_IMPLEMENTATION

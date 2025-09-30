@@ -23,6 +23,7 @@ enable_testing()
 
 set(WEB_AUDIO_TEST_SRC
 # include test/**/*.cc
+  test/impl.cc
   test/test_periodic_wave.cc
   test/test_render_quantum.cc
 # end

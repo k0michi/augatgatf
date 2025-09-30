@@ -21,6 +21,7 @@ private:
 };
 } // namespace web_audio::details
 
+#ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio::details {
 void EventQueue::push(std::function<void()> func) {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -36,3 +37,4 @@ void EventQueue::poll() {
   }
 }
 } // namespace web_audio::details
+#endif // WEB_AUDIO_IMPLEMENTATION
