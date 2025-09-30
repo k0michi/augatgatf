@@ -1,0 +1,14 @@
+{
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "CMakeLists\\.txt$",
+                "cmd": "node ./tools/generate_cmake.mjs ${file}"
+            },
+            {
+                "match": "(.h|.hh|.hpp)$",
+                "cmd": "node ./tools/generate_header.mjs ${file}"
+            }
+        ]
+    }
+}

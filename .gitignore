@@ -142,6 +142,5 @@ CMakeUserPresets.json
 # end https://raw.githubusercontent.com/github/gitignore/refs/heads/main/CMake.gitignore
 
 build*/
-.vscode/
 .vs/
 _*
