@@ -15,7 +15,8 @@
 #include "promise.h"
 
 namespace web_audio {
-class BaseAudioContext /* : EventTarget */ {
+class BaseAudioContext : public std::enable_shared_from_this<
+                             BaseAudioContext> /* : EventTarget */ {
 protected:
   BaseAudioContext();
 
@@ -41,6 +42,9 @@ public:
   void processEvents();
 
 protected:
+  void initialize();
+
+protected:
   // [[pending promises]]
   std::vector<PromiseBase> pendingPromises_;
   // [[rendering thread state]]
@@ -64,14 +68,7 @@ protected:
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
-BaseAudioContext::BaseAudioContext() {
-  destination_.reset(new AudioDestinationNode());
-  destination_->context_ = this;
-  listener_.reset(new AudioListener());
-  // TODO
-  audioWorklet_.reset(new AudioWorklet());
-  // TODO
-}
+BaseAudioContext::BaseAudioContext() {}
 
 AudioDestinationNode *BaseAudioContext::getDestination() {
   return destination_.get();
@@ -104,5 +101,14 @@ void BaseAudioContext::setOnstatechange(EventHandler *value) {
 }
 
 void BaseAudioContext::processEvents() { eventQueue_.poll(); }
+
+void BaseAudioContext::initialize() {
+  destination_.reset(new AudioDestinationNode());
+  destination_->context_ = shared_from_this();
+  listener_.reset(new AudioListener());
+  // TODO
+  audioWorklet_.reset(new AudioWorklet());
+  // TODO
+}
 } // namespace web_audio
 #endif

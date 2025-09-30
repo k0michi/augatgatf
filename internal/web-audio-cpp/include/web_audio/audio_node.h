@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 #include "audio_param.h"
 #include "channel_count_mode.h"
@@ -19,18 +20,22 @@ protected:
 
 public:
   // TODO: shared_ptr?
-  AudioNode *connect(AudioNode *destinationNode, std::uint32_t output = 0,
-                     std::uint32_t input = 0);
-  void connect(AudioParam *destinationParam, std::uint32_t output = 0);
+  std::shared_ptr<AudioNode> connect(std::shared_ptr<AudioNode> destinationNode,
+                                     std::uint32_t output = 0,
+                                     std::uint32_t input = 0);
+  void connect(std::shared_ptr<AudioParam> destinationParam,
+               std::uint32_t output = 0);
   void disconnect();
   void disconnect(std::uint32_t output);
-  void disconnect(AudioNode *destinationNode, std::uint32_t output);
-  void disconnect(AudioNode *destinationNode, std::uint32_t output,
-                  std::uint32_t input);
-  void disconnect(AudioParam *destinationParam);
-  void disconnect(AudioParam *destinationParam, std::uint32_t output);
+  void disconnect(std::shared_ptr<AudioNode> destinationNode,
+                  std::uint32_t output);
+  void disconnect(std::shared_ptr<AudioNode> destinationNode,
+                  std::uint32_t output, std::uint32_t input);
+  void disconnect(std::shared_ptr<AudioParam> destinationParam);
+  void disconnect(std::shared_ptr<AudioParam> destinationParam,
+                  std::uint32_t output);
 
-  BaseAudioContext *getContext();
+  std::weak_ptr<BaseAudioContext> getContext();
 
   std::uint32_t getNumberOfInputs() const;
 
@@ -47,7 +52,7 @@ public:
   setChannelInterpretation(ChannelInterpretation channelInterpretation);
 
 protected:
-  BaseAudioContext *context_;
+  std::weak_ptr<BaseAudioContext> context_;
   std::uint32_t numberOfInputs_;
   std::uint32_t numberOfOutputs_;
   std::uint32_t channelCount_;
@@ -62,13 +67,15 @@ protected:
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
-AudioNode *AudioNode::connect(AudioNode *destinationNode, std::uint32_t output,
-                              std::uint32_t input) {
+std::shared_ptr<AudioNode>
+AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
+                   std::uint32_t output, std::uint32_t input) {
   // TODO
   return {};
 }
 
-void AudioNode::connect(AudioParam *destinationParam, std::uint32_t output) {
+void AudioNode::connect(std::shared_ptr<AudioParam> destinationParam,
+                        std::uint32_t output) {
   // TODO
 }
 
@@ -80,24 +87,26 @@ void AudioNode::disconnect(std::uint32_t output) {
   // TODO
 }
 
-void AudioNode::disconnect(AudioNode *destinationNode, std::uint32_t output) {
+void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode,
+                           std::uint32_t output) {
   // TODO
 }
 
-void AudioNode::disconnect(AudioNode *destinationNode, std::uint32_t output,
-                           std::uint32_t input) {
+void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode,
+                           std::uint32_t output, std::uint32_t input) {
   // TODO
 }
 
-void AudioNode::disconnect(AudioParam *destinationParam) {
+void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam) {
   // TODO
 }
 
-void AudioNode::disconnect(AudioParam *destinationParam, std::uint32_t output) {
+void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam,
+                           std::uint32_t output) {
   // TODO
 }
 
-BaseAudioContext *AudioNode::getContext() { return context_; }
+std::weak_ptr<BaseAudioContext> AudioNode::getContext() { return context_; }
 
 std::uint32_t AudioNode::getNumberOfInputs() const { return numberOfInputs_; }
 
