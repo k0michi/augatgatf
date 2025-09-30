@@ -2,15 +2,18 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "audio_buffer_options.h"
 #include "dom_exception.h"
 
 namespace web_audio {
-class AudioBuffer {
+class AudioBuffer : public std::enable_shared_from_this<AudioBuffer> {
+private:
+  AudioBuffer();
+
 public:
-  AudioBuffer(const AudioBufferOptions &options);
   virtual ~AudioBuffer() noexcept = default;
 
   float getSampleRate() const;
@@ -35,6 +38,8 @@ public:
                      std::uint32_t channelNumber,
                      std::uint32_t bufferOffset = 0);
 
+  static std::shared_ptr<AudioBuffer> create(const AudioBufferOptions &options);
+
 private:
   // [[number of channels]]
   std::uint32_t numberOfChannels_;
@@ -49,31 +54,7 @@ private:
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
-AudioBuffer::AudioBuffer(const AudioBufferOptions &options) {
-  if (options.numberOfChannels == 0) {
-    throw DOMException("AudioBuffer: numberOfChannels must be at least 1",
-                       "NotSupportedError");
-  }
-
-  if (options.length == 0) {
-    throw DOMException("AudioBuffer: length must be at least 1",
-                       "NotSupportedError");
-  }
-
-  if (options.sampleRate <= 0) {
-    throw DOMException("AudioBuffer: sampleRate must be greater than 0",
-                       "NotSupportedError");
-  }
-
-  numberOfChannels_ = options.numberOfChannels;
-  length_ = options.length;
-  sampleRate_ = options.sampleRate;
-
-  channelData_.resize(numberOfChannels_);
-  for (auto &channel : channelData_) {
-    channel.resize(length_, 0.0f);
-  }
-}
+AudioBuffer::AudioBuffer() {}
 
 float AudioBuffer::getSampleRate() const { return sampleRate_; }
 
@@ -147,6 +128,37 @@ void AudioBuffer::copyToChannel(const std::vector<float> &source,
 
   std::copy_n(source.data(), copyLength,
               channelData_[channelNumber].data() + bufferOffset);
+}
+
+std::shared_ptr<AudioBuffer>
+AudioBuffer::create(const AudioBufferOptions &options) {
+  auto buffer = std::shared_ptr<AudioBuffer>(new AudioBuffer());
+
+  if (options.numberOfChannels == 0) {
+    throw DOMException("AudioBuffer: numberOfChannels must be at least 1",
+                       "NotSupportedError");
+  }
+
+  if (options.length == 0) {
+    throw DOMException("AudioBuffer: length must be at least 1",
+                       "NotSupportedError");
+  }
+
+  if (options.sampleRate <= 0) {
+    throw DOMException("AudioBuffer: sampleRate must be greater than 0",
+                       "NotSupportedError");
+  }
+
+  buffer->numberOfChannels_ = options.numberOfChannels;
+  buffer->length_ = options.length;
+  buffer->sampleRate_ = options.sampleRate;
+
+  buffer->channelData_.resize(buffer->numberOfChannels_);
+  for (auto &channel : buffer->channelData_) {
+    channel.resize(buffer->length_, 0.0f);
+  }
+
+  return buffer;
 }
 } // namespace web_audio
 #endif
