@@ -6,8 +6,6 @@
 
 using namespace web_audio;
 
-class web_audio::BaseAudioContext {};
-
 class DummyContext : public BaseAudioContext {};
 
 TEST(PeriodicWaveTest, DefaultConstructor) {

@@ -6,6 +6,8 @@ namespace web_audio {
 class AudioListener {
 private:
   AudioListener() = default;
+
+public:
   ~AudioListener() = default;
 
 public:
@@ -38,6 +40,10 @@ private:
   AudioParam upX;
   AudioParam upY;
   AudioParam upZ;
+
+  friend class BaseAudioContext;
+  friend class AudioContext;
+  friend class OfflineAudioContext;
 };
 } // namespace web_audio
 

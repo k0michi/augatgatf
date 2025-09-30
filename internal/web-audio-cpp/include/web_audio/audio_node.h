@@ -1,0 +1,134 @@
+#pragma once
+
+#include <cstdint>
+
+#include "audio_param.h"
+#include "channel_count_mode.h"
+#include "channel_interpretation.h"
+#include "dom_exception.h"
+
+namespace web_audio {
+class BaseAudioContext;
+class AudioContext;
+class OfflineAudioContext;
+
+class AudioNode /* : EventTarget */ {
+protected:
+  AudioNode() = default;
+  virtual ~AudioNode() noexcept = default;
+
+public:
+  // TODO: shared_ptr?
+  AudioNode *connect(AudioNode *destinationNode, std::uint32_t output = 0,
+                     std::uint32_t input = 0);
+  void connect(AudioParam *destinationParam, std::uint32_t output = 0);
+  void disconnect();
+  void disconnect(std::uint32_t output);
+  void disconnect(AudioNode *destinationNode, std::uint32_t output);
+  void disconnect(AudioNode *destinationNode, std::uint32_t output,
+                  std::uint32_t input);
+  void disconnect(AudioParam *destinationParam);
+  void disconnect(AudioParam *destinationParam, std::uint32_t output);
+
+  BaseAudioContext *getContext();
+
+  std::uint32_t getNumberOfInputs() const;
+
+  std::uint32_t getNumberOfOutputs() const;
+
+  std::uint32_t getChannelCount() const;
+  virtual void setChannelCount(std::uint32_t channelCount);
+
+  ChannelCountMode getChannelCountMode() const;
+  virtual void setChannelCountMode(ChannelCountMode channelCountMode);
+
+  ChannelInterpretation getChannelInterpretation() const;
+  virtual void
+  setChannelInterpretation(ChannelInterpretation channelInterpretation);
+
+protected:
+  BaseAudioContext *context_;
+  std::uint32_t numberOfInputs_;
+  std::uint32_t numberOfOutputs_;
+  std::uint32_t channelCount_;
+  ChannelCountMode channelCountMode_;
+  ChannelInterpretation channelInterpretation_;
+
+  friend class BaseAudioContext;
+  friend class AudioContext;
+  friend class OfflineAudioContext;
+};
+} // namespace web_audio
+
+#ifdef WEB_AUDIO_IMPLEMENTATION
+namespace web_audio {
+AudioNode *AudioNode::connect(AudioNode *destinationNode, std::uint32_t output,
+                              std::uint32_t input) {
+  // TODO
+  return {};
+}
+
+void AudioNode::connect(AudioParam *destinationParam, std::uint32_t output) {
+  // TODO
+}
+
+void AudioNode::disconnect() {
+  // TODO
+}
+
+void AudioNode::disconnect(std::uint32_t output) {
+  // TODO
+}
+
+void AudioNode::disconnect(AudioNode *destinationNode, std::uint32_t output) {
+  // TODO
+}
+
+void AudioNode::disconnect(AudioNode *destinationNode, std::uint32_t output,
+                           std::uint32_t input) {
+  // TODO
+}
+
+void AudioNode::disconnect(AudioParam *destinationParam) {
+  // TODO
+}
+
+void AudioNode::disconnect(AudioParam *destinationParam, std::uint32_t output) {
+  // TODO
+}
+
+BaseAudioContext *AudioNode::getContext() { return context_; }
+
+std::uint32_t AudioNode::getNumberOfInputs() const { return numberOfInputs_; }
+
+std::uint32_t AudioNode::getNumberOfOutputs() const { return numberOfOutputs_; }
+
+std::uint32_t AudioNode::getChannelCount() const { return channelCount_; }
+
+void AudioNode::setChannelCount(std::uint32_t channelCount) {
+  if (channelCount == 0) {
+    throw DOMException("AudioNode: channelCount must be at least 1",
+                       "NotSupportedError");
+  }
+
+  channelCount_ = channelCount;
+}
+
+ChannelCountMode AudioNode::getChannelCountMode() const {
+  return channelCountMode_;
+}
+
+void AudioNode::setChannelCountMode(ChannelCountMode channelCountMode) {
+  channelCountMode_ = channelCountMode;
+}
+
+ChannelInterpretation AudioNode::getChannelInterpretation() const {
+  return channelInterpretation_;
+}
+
+void AudioNode::setChannelInterpretation(
+    ChannelInterpretation channelInterpretation) {
+  channelInterpretation_ = channelInterpretation;
+}
+} // namespace web_audio
+#endif
