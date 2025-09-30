@@ -42,6 +42,7 @@ private:
 };
 } // namespace web_audio
 
+#ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
 OfflineAudioContext::OfflineAudioContext() : BaseAudioContext() {}
 
@@ -59,14 +60,14 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
   Promise<std::shared_ptr<AudioBuffer>> promise(eventQueue_);
 
   try {
-    this->renderedBuffer_ = std::make_shared<AudioBuffer>(
+    this->renderedBuffer_ = AudioBuffer::create(
         AudioBufferOptions{destination_->channelCount_, length_, sampleRate_});
   } catch (const DOMException &e) {
     promise.getInternal()->reject(std::make_exception_ptr(e));
     return std::move(promise);
   }
 
-  auto internal = promise->getInternal();
+  auto internal = promise.getInternal();
 
   renderingThread_ = std::make_unique<std::thread>([this, internal]() {
     {
@@ -133,7 +134,8 @@ OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   context->renderThreadState_ = AudioContextState::eSuspended;
   // TODO: renderSizehint
   context->renderQuantumSize_ = 128;
-  context->destination_ = std::make_unique<AudioDestinationNode>();
+  context->destination_ =
+      std::shared_ptr<AudioDestinationNode>(new AudioDestinationNode());
   context->destination_->channelCount_ = options.numberOfChannels;
 
   // TODO: worklet
@@ -143,3 +145,4 @@ OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   return context;
 }
 } // namespace web_audio
+#endif // WEB_AUDIO_IMPLEMENTATION
