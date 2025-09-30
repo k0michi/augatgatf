@@ -10,6 +10,10 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 include(FetchContent)
 
+# web-audio-cpp
+
+add_subdirectory(../web-audio-cpp ${CMAKE_CURRENT_BINARY_DIR}/web-audio-cpp)
+
 # SDL3
 
 FetchContent_Declare(
@@ -21,7 +25,7 @@ FetchContent_MakeAvailable(SDL3)
 
 # glad
 
-add_subdirectory(../../external/glad ${CMAKE_BINARY_DIR}/glad)
+add_subdirectory(../../external/glad ${CMAKE_CURRENT_BINARY_DIR}/glad)
 
 # SPIRV-Cross
 
@@ -90,6 +94,7 @@ add_library(keel STATIC
 )
 
 target_include_directories(keel PUBLIC include)
+target_link_libraries(keel PUBLIC web-audio-cpp)
 target_link_libraries(keel PUBLIC SDL3::SDL3)
 target_link_libraries(keel PUBLIC glad)
 target_link_libraries(keel PUBLIC spirv-cross-core spirv-cross-glsl)
@@ -113,7 +118,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(test_main
+add_executable(test_keel
 # include test/**/*.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
@@ -122,6 +127,6 @@ add_executable(test_main
 # end
 )
 
-add_test(NAME Tests COMMAND test_main)
-target_link_libraries(test_main PRIVATE coverage_config gtest_main keel)
-set_property(TARGET test_main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+add_test(NAME test_keel COMMAND test_keel)
+target_link_libraries(test_keel PRIVATE coverage_config gtest_main keel)
+set_property(TARGET test_keel PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")

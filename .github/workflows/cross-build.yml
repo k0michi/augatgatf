@@ -71,7 +71,7 @@ jobs:
 
       - name: Run Tests (ctest)
         run: |
-          cd build
+          cd build/internal/keel
           ctest --output-on-failure -C Debug
 
       - name: Generate coverage report (Ubuntu)
