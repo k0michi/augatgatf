@@ -14,9 +14,6 @@
 namespace web_audio {
 class OfflineAudioContext : public BaseAudioContext {
 public:
-  // OfflineAudioContext(const OfflineAudioContextOptions &options);
-  // OfflineAudioContext(std::uint32_t numberOfChannels, std::uint32_t length,
-  //                     float sampleRate);
   OfflineAudioContext();
   virtual ~OfflineAudioContext() noexcept = default;
 
@@ -47,43 +44,6 @@ private:
 
 namespace web_audio {
 OfflineAudioContext::OfflineAudioContext() : BaseAudioContext() {}
-
-// OfflineAudioContext::OfflineAudioContext(
-//     const OfflineAudioContextOptions &options)
-//     : BaseAudioContext() {
-//   if (options.numberOfChannels == 0) {
-//     throw DOMException(
-//         "OfflineAudioContext: numberOfChannels must be at least 1",
-//         "NotSupportedError");
-//   }
-
-//   if (options.length == 0) {
-//     throw DOMException("OfflineAudioContext: length must be at least 1",
-//                        "NotSupportedError");
-//   }
-
-//   if (options.sampleRate <= 0) {
-//     throw DOMException("OfflineAudioContext: sampleRate must be greater than
-//     0",
-//                        "NotSupportedError");
-//   }
-
-//   this->controlThreadState_ = AudioContextState::eSuspended;
-//   this->renderThreadState_ = AudioContextState::eSuspended;
-//   // TODO: renderSizehint
-//   this->renderQuantumSize_ = 128;
-//   this->destination_ = std::make_unique<AudioDestinationNode>();
-//   this->destination_->channelCount_ = options.numberOfChannels;
-
-//   // TODO: worklet
-// }
-
-// OfflineAudioContext::OfflineAudioContext(std::uint32_t numberOfChannels,
-//                                          std::uint32_t length, float
-//                                          sampleRate)
-//     : OfflineAudioContext(
-//           OfflineAudioContextOptions{numberOfChannels, length, sampleRate})
-//           {}
 
 Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
   if (renderingStarted_) {
