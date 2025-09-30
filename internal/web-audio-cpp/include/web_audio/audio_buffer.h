@@ -27,7 +27,7 @@ public:
 
   std::vector<float> &&getChannelData(std::uint32_t channel) &&;
 
-  void copyFromChannel(const std::vector<float> &destination,
+  void copyFromChannel(std::vector<float> &destination,
                        std::uint32_t channelNumber,
                        std::uint32_t bufferOffset = 0);
 
@@ -115,7 +115,7 @@ std::vector<float> &&AudioBuffer::getChannelData(std::uint32_t channel) && {
   return std::move(channelData_[channel]);
 }
 
-void AudioBuffer::copyFromChannel(const std::vector<float> &destination,
+void AudioBuffer::copyFromChannel(std::vector<float> &destination,
                                   std::uint32_t channelNumber,
                                   std::uint32_t bufferOffset) {
   if (channelNumber >= numberOfChannels_) {
@@ -127,8 +127,10 @@ void AudioBuffer::copyFromChannel(const std::vector<float> &destination,
       std::max(0u, std::min(static_cast<std::uint32_t>(destination.size()),
                             length_ - bufferOffset));
 
-  std::copy_n(channelData_[channelNumber].data() + bufferOffset, copyLength,
-              destination.data());
+  auto srcBegin = channelData_[channelNumber].begin() + bufferOffset;
+  auto srcEnd = srcBegin + copyLength;
+  auto dstBegin = destination.begin();
+  std::copy(srcBegin, srcEnd, dstBegin);
 }
 
 void AudioBuffer::copyToChannel(const std::vector<float> &source,
