@@ -1,8 +1,15 @@
 import fsPromises from "fs/promises";
 import path from "path";
+import util from "util";
 
 const args = process.argv.slice(2);
-const outputPath = args[0] || "CMakeLists.txt";
+
+const parsedArgs = util.parseArgs({
+    args,
+    allowPositionals: true,
+});
+
+const outputPath = parsedArgs.positionals[0] || "CMakeLists.txt";
 const parent = path.dirname(outputPath);
 
 let content = await fsPromises.readFile(outputPath, "utf-8");
