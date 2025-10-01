@@ -13,7 +13,8 @@ class BaseAudioContext;
 class AudioContext;
 class OfflineAudioContext;
 
-class AudioNode /* : EventTarget */ {
+class AudioNode
+    : public std::enable_shared_from_this<AudioNode> /* EventTarget */ {
 protected:
   AudioNode() = default;
   virtual ~AudioNode() noexcept = default;
