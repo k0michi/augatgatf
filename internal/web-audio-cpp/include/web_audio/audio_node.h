@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <variant>
+#include <vector>
 
 #include "audio_param.h"
 #include "channel_count_mode.h"
@@ -12,6 +14,20 @@ namespace web_audio {
 class BaseAudioContext;
 class AudioContext;
 class OfflineAudioContext;
+
+class AudioNode;
+
+struct AudioNodeInput {
+  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioParam>> source;
+  std::uint32_t sourceIndex;
+  std::uint32_t destinationIndex;
+};
+
+struct AudioNodeOutput {
+  std::uint32_t sourceIndex;
+  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioParam>> destination;
+  std::uint32_t destinationIndex;
+};
 
 class AudioNode
     : public std::enable_shared_from_this<AudioNode> /* EventTarget */ {
@@ -60,6 +76,9 @@ protected:
   ChannelCountMode channelCountMode_;
   ChannelInterpretation channelInterpretation_;
 
+  std::vector<AudioNodeInput> inputs_;
+  std::vector<AudioNodeOutput> outputs_;
+
   friend class BaseAudioContext;
   friend class AudioContext;
   friend class OfflineAudioContext;
@@ -71,8 +90,39 @@ namespace web_audio {
 std::shared_ptr<AudioNode>
 AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
                    std::uint32_t output, std::uint32_t input) {
-  // TODO
-  return {};
+  if (context_.lock() != destinationNode->context_.lock()) {
+    throw DOMException("AudioNode: cannot connect nodes from different context",
+                       "InvalidAccessError");
+  }
+
+  if (output >= numberOfOutputs_) {
+    throw DOMException("AudioNode: output index is out of range",
+                       "IndexSizeError");
+  }
+
+  if (input >= destinationNode->numberOfInputs_) {
+    throw DOMException("AudioNode: input index is out of range",
+                       "IndexSizeError");
+  }
+
+  for (auto &out : outputs_) {
+    if (out.sourceIndex == output) {
+      if (auto dest = std::get_if<std::weak_ptr<AudioNode>>(&out.destination)) {
+        if (auto destNode = dest->lock()) {
+          if (destNode == destinationNode && out.destinationIndex == input) {
+            // already connected
+            return destinationNode;
+          }
+        }
+      }
+    }
+  }
+
+  outputs_.push_back(AudioNodeOutput{output, destinationNode, input});
+  destinationNode->inputs_.push_back(
+      AudioNodeInput{shared_from_this(), output, input});
+
+  return destinationNode;
 }
 
 void AudioNode::connect(std::shared_ptr<AudioParam> destinationParam,
