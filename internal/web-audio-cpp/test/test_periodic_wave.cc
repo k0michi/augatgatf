@@ -6,9 +6,11 @@
 
 using namespace web_audio;
 
+namespace {
 std::shared_ptr<OfflineAudioContext> createOfflineContext() {
   return OfflineAudioContext::create(2, 128, 44100.0f);
 }
+} // namespace
 
 TEST(PeriodicWaveTest, DefaultConstructor) {
   auto ctx = createOfflineContext();
@@ -17,7 +19,7 @@ TEST(PeriodicWaveTest, DefaultConstructor) {
 }
 
 TEST(PeriodicWaveTest, RealImagConstructor) {
-  auto ctx = OfflineAudioContext::create(2, 128, 44100.0f);
+  auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 2, 3};
   opts.imag = std::vector<float>{0, 4, 5};
@@ -26,7 +28,7 @@ TEST(PeriodicWaveTest, RealImagConstructor) {
 }
 
 TEST(PeriodicWaveTest, RealOnly) {
-  auto ctx = std::make_shared<DummyContext>();
+  auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 2, 3};
   auto wave = PeriodicWave::create(ctx, opts);
@@ -34,7 +36,7 @@ TEST(PeriodicWaveTest, RealOnly) {
 }
 
 TEST(PeriodicWaveTest, ImagOnly) {
-  auto ctx = std::make_shared<DummyContext>();
+  auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.imag = std::vector<float>{0, 4, 5};
   auto wave = PeriodicWave::create(ctx, opts);
@@ -42,7 +44,7 @@ TEST(PeriodicWaveTest, ImagOnly) {
 }
 
 TEST(PeriodicWaveTest, InvalidLength) {
-  auto ctx = std::make_shared<DummyContext>();
+  auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0};
   opts.imag = std::vector<float>{0, 0};
@@ -50,7 +52,7 @@ TEST(PeriodicWaveTest, InvalidLength) {
 }
 
 TEST(PeriodicWaveTest, InvalidLength2) {
-  auto ctx = std::make_shared<DummyContext>();
+  auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 0};
   opts.imag = std::vector<float>{0};
@@ -58,7 +60,7 @@ TEST(PeriodicWaveTest, InvalidLength2) {
 }
 
 TEST(PeriodicWaveTest, InvalidLengthMismatch) {
-  auto ctx = std::make_shared<DummyContext>();
+  auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 2};
   opts.imag = std::vector<float>{0, 4, 5};
