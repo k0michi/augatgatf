@@ -6,8 +6,6 @@
 
 using namespace web_audio;
 
-class DummyContext : public web_audio::BaseAudioContext {};
-
 std::shared_ptr<OfflineAudioContext> createOfflineContext() {
   return OfflineAudioContext::create(2, 128, 44100.0f);
 }
