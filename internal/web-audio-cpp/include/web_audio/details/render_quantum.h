@@ -11,7 +11,15 @@ class RenderQuantum {
 public:
   RenderQuantum(std::uint32_t numberOfChannels, std::uint32_t length);
 
-  std::vector<std::vector<float>> &getChannelData() { return channelData_; }
+  std::uint32_t getLength() const;
+
+  std::uint32_t getNumberOfChannels() const;
+
+  std::size_t size() const;
+
+  std::vector<float> &operator[](std::uint32_t channel);
+
+  const std::vector<float> &operator[](std::uint32_t channel) const;
 
   void mix(std::uint32_t computedNumberOfChannels,
            ChannelInterpretation channelInterpretation);
@@ -28,6 +36,23 @@ RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels,
                              std::uint32_t length)
     : length_(length),
       channelData_(numberOfChannels, std::vector<float>(length, 0.0f)) {}
+
+std::uint32_t RenderQuantum::getLength() const { return length_; }
+
+std::uint32_t RenderQuantum::getNumberOfChannels() const {
+  return channelData_.size();
+}
+
+std::size_t RenderQuantum::size() const { return channelData_.size(); }
+
+std::vector<float> &RenderQuantum::operator[](std::uint32_t channel) {
+  return channelData_[channel];
+}
+
+const std::vector<float> &
+RenderQuantum::operator[](std::uint32_t channel) const {
+  return channelData_[channel];
+}
 
 void RenderQuantum::mix(std::uint32_t computedNumberOfChannels,
                         ChannelInterpretation channelInterpretation) {
