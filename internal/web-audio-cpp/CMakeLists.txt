@@ -26,6 +26,7 @@ set(WEB_AUDIO_TEST_SRC
   test/impl.cc
   test/test_audio_buffer.cc
   test/test_audio_node.cc
+  test/test_delay_node.cc
   test/test_offline_audio_context.cc
   test/test_periodic_wave.cc
   test/test_render_quantum.cc
@@ -53,4 +54,5 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
+target_compile_definitions(test_web_audio PRIVATE WEB_AUDIO_TEST)
 target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)

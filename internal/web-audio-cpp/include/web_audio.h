@@ -1,5 +1,6 @@
 #include "web_audio/audio_buffer.h"
 #include "web_audio/audio_node.h"
+#include "web_audio/delay_node.h"
 #include "web_audio/details/render_quantum.h"
 #include "web_audio/offline_audio_context.h"
 #include "web_audio/periodic_wave.h"
