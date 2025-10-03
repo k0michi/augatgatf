@@ -2,6 +2,8 @@
 
 #include "audio_node.h"
 
+#include <stdexcept>
+
 namespace web_audio {
 class AudioDestinationNode : public AudioNode {
 private:
