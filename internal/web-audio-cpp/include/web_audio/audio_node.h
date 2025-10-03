@@ -2,12 +2,15 @@
 
 #include <cstdint>
 #include <memory>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
 #include "audio_param.h"
 #include "channel_count_mode.h"
 #include "channel_interpretation.h"
+#include "details/param_collection.h"
+#include "details/render_quantum.h"
 #include "dom_exception.h"
 
 namespace web_audio {
@@ -36,7 +39,6 @@ protected:
   virtual ~AudioNode() noexcept = default;
 
 public:
-  // TODO: shared_ptr?
   std::shared_ptr<AudioNode> connect(std::shared_ptr<AudioNode> destinationNode,
                                      std::uint32_t output = 0,
                                      std::uint32_t input = 0);
@@ -67,6 +69,10 @@ public:
   ChannelInterpretation getChannelInterpretation() const;
   virtual void
   setChannelInterpretation(ChannelInterpretation channelInterpretation);
+
+  virtual void process(const std::vector<details::RenderQuantum> &inputs,
+                       std::vector<details::RenderQuantum> &outputs,
+                       const details::ParamCollection &params) = 0;
 
 protected:
   std::weak_ptr<BaseAudioContext> context_;
