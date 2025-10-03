@@ -8,30 +8,28 @@
 
 namespace web_audio::details {
 class MessageQueue {
-public:
-  void push(const Message &value);
-
-  Message pop();
-
-  void swap(MessageQueue &other);
-
 private:
   std::queue<Message> queue_;
   std::mutex mtx_;
   std::condition_variable cv_;
+
+public:
+  template <typename MessageType> void push(MessageType &&value) {
+    {
+      std::lock_guard<std::mutex> lock(mtx_);
+      queue_.emplace(std::forward<MessageType>(value));
+      cv_.notify_one();
+    }
+  }
+
+  Message pop();
+
+  void swap(MessageQueue &other);
 };
 } // namespace web_audio::details
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio::details {
-void MessageQueue::push(const Message &value) {
-  {
-    std::lock_guard<std::mutex> lock(mtx_);
-    queue_.push(value);
-    cv_.notify_one();
-  }
-}
-
 Message MessageQueue::pop() {
   std::unique_lock<std::mutex> lock(mtx_);
   cv_.wait(lock, [this] { return !queue_.empty(); });

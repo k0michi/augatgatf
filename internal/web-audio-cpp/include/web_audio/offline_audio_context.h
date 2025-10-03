@@ -94,10 +94,12 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
 
 Promise<void> OfflineAudioContext::resume() {
   // TODO
+  throw "";
 }
 
 Promise<void> OfflineAudioContext::suspend(double suspendTime) {
   // TODO
+  throw "";
 }
 
 std::uint32_t OfflineAudioContext::getLength() const { return length_; }

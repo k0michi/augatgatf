@@ -41,6 +41,10 @@ public:
    */
   void processEvents();
 
+  template <typename MessageType> void queueMessage(MessageType &&message) {
+    controlMessageQueue_.push(std::forward<MessageType>(message));
+  }
+
 protected:
   void initialize();
 
@@ -63,6 +67,7 @@ protected:
 
   details::EventQueue eventQueue_;
   details::MessageQueue controlMessageQueue_;
+  std::vector<std::shared_ptr<AudioNode>> nodes_;
 };
 } // namespace web_audio
 
