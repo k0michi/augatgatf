@@ -1,8 +1,10 @@
 #pragma once
 
-#include "audio_param.h"
+#include <memory>
 
 namespace web_audio {
+class AudioParam;
+
 class AudioListener {
 private:
   AudioListener() = default;
@@ -11,35 +13,35 @@ public:
   ~AudioListener() = default;
 
 public:
-  AudioParam &getPositionX();
-  const AudioParam &getPositionX() const;
-  AudioParam &getPositionY();
-  const AudioParam &getPositionY() const;
-  AudioParam &getPositionZ();
-  const AudioParam &getPositionZ() const;
-  AudioParam &getForwardX();
-  const AudioParam &getForwardX() const;
-  AudioParam &getForwardY();
-  const AudioParam &getForwardY() const;
-  AudioParam &getForwardZ();
-  const AudioParam &getForwardZ() const;
-  AudioParam &getUpX();
-  const AudioParam &getUpX() const;
-  AudioParam &getUpY();
-  const AudioParam &getUpY() const;
-  AudioParam &getUpZ();
-  const AudioParam &getUpZ() const;
+  std::shared_ptr<AudioParam> &getPositionX();
+  const std::shared_ptr<AudioParam> &getPositionX() const;
+  std::shared_ptr<AudioParam> &getPositionY();
+  const std::shared_ptr<AudioParam> &getPositionY() const;
+  std::shared_ptr<AudioParam> &getPositionZ();
+  const std::shared_ptr<AudioParam> &getPositionZ() const;
+  std::shared_ptr<AudioParam> &getForwardX();
+  const std::shared_ptr<AudioParam> &getForwardX() const;
+  std::shared_ptr<AudioParam> &getForwardY();
+  const std::shared_ptr<AudioParam> &getForwardY() const;
+  std::shared_ptr<AudioParam> &getForwardZ();
+  const std::shared_ptr<AudioParam> &getForwardZ() const;
+  std::shared_ptr<AudioParam> &getUpX();
+  const std::shared_ptr<AudioParam> &getUpX() const;
+  std::shared_ptr<AudioParam> &getUpY();
+  const std::shared_ptr<AudioParam> &getUpY() const;
+  std::shared_ptr<AudioParam> &getUpZ();
+  const std::shared_ptr<AudioParam> &getUpZ() const;
 
 private:
-  AudioParam positionX;
-  AudioParam positionY;
-  AudioParam positionZ;
-  AudioParam forwardX;
-  AudioParam forwardY;
-  AudioParam forwardZ;
-  AudioParam upX;
-  AudioParam upY;
-  AudioParam upZ;
+  std::shared_ptr<AudioParam> positionX;
+  std::shared_ptr<AudioParam> positionY;
+  std::shared_ptr<AudioParam> positionZ;
+  std::shared_ptr<AudioParam> forwardX;
+  std::shared_ptr<AudioParam> forwardY;
+  std::shared_ptr<AudioParam> forwardZ;
+  std::shared_ptr<AudioParam> upX;
+  std::shared_ptr<AudioParam> upY;
+  std::shared_ptr<AudioParam> upZ;
 
   friend class BaseAudioContext;
   friend class AudioContext;
@@ -49,40 +51,52 @@ private:
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
-AudioParam &AudioListener::getPositionX() { return positionX; }
+std::shared_ptr<AudioParam> &AudioListener::getPositionX() { return positionX; }
 
-const AudioParam &AudioListener::getPositionX() const { return positionX; }
+const std::shared_ptr<AudioParam> &AudioListener::getPositionX() const {
+  return positionX;
+}
 
-AudioParam &AudioListener::getPositionY() { return positionY; }
+std::shared_ptr<AudioParam> &AudioListener::getPositionY() { return positionY; }
 
-const AudioParam &AudioListener::getPositionY() const { return positionY; }
+const std::shared_ptr<AudioParam> &AudioListener::getPositionY() const {
+  return positionY;
+}
 
-AudioParam &AudioListener::getPositionZ() { return positionZ; }
+std::shared_ptr<AudioParam> &AudioListener::getPositionZ() { return positionZ; }
 
-const AudioParam &AudioListener::getPositionZ() const { return positionZ; }
+const std::shared_ptr<AudioParam> &AudioListener::getPositionZ() const {
+  return positionZ;
+}
 
-AudioParam &AudioListener::getForwardX() { return forwardX; }
+std::shared_ptr<AudioParam> &AudioListener::getForwardX() { return forwardX; }
 
-const AudioParam &AudioListener::getForwardX() const { return forwardX; }
+const std::shared_ptr<AudioParam> &AudioListener::getForwardX() const {
+  return forwardX;
+}
 
-AudioParam &AudioListener::getForwardY() { return forwardY; }
+std::shared_ptr<AudioParam> &AudioListener::getForwardY() { return forwardY; }
 
-const AudioParam &AudioListener::getForwardY() const { return forwardY; }
+const std::shared_ptr<AudioParam> &AudioListener::getForwardY() const {
+  return forwardY;
+}
 
-AudioParam &AudioListener::getForwardZ() { return forwardZ; }
+std::shared_ptr<AudioParam> &AudioListener::getForwardZ() { return forwardZ; }
 
-const AudioParam &AudioListener::getForwardZ() const { return forwardZ; }
+const std::shared_ptr<AudioParam> &AudioListener::getForwardZ() const {
+  return forwardZ;
+}
 
-AudioParam &AudioListener::getUpX() { return upX; }
+std::shared_ptr<AudioParam> &AudioListener::getUpX() { return upX; }
 
-const AudioParam &AudioListener::getUpX() const { return upX; }
+const std::shared_ptr<AudioParam> &AudioListener::getUpX() const { return upX; }
 
-AudioParam &AudioListener::getUpY() { return upY; }
+std::shared_ptr<AudioParam> &AudioListener::getUpY() { return upY; }
 
-const AudioParam &AudioListener::getUpY() const { return upY; }
+const std::shared_ptr<AudioParam> &AudioListener::getUpY() const { return upY; }
 
-AudioParam &AudioListener::getUpZ() { return upZ; }
+std::shared_ptr<AudioParam> &AudioListener::getUpZ() { return upZ; }
 
-const AudioParam &AudioListener::getUpZ() const { return upZ; }
+const std::shared_ptr<AudioParam> &AudioListener::getUpZ() const { return upZ; }
 } // namespace web_audio
 #endif

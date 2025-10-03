@@ -6,7 +6,6 @@
 #include <variant>
 #include <vector>
 
-#include "audio_param.h"
 #include "channel_count_mode.h"
 #include "channel_interpretation.h"
 #include "details/param_collection.h"
@@ -19,6 +18,7 @@ class AudioContext;
 class OfflineAudioContext;
 
 class AudioNode;
+class AudioParam;
 
 struct AudioNodeInput {
   std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioParam>> source;

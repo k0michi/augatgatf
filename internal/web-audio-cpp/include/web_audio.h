@@ -38,6 +38,7 @@
 #include "web_audio/details/message.h"
 #include "web_audio/details/message_queue.h"
 #include "web_audio/details/param_collection.h"
+#include "web_audio/details/param_event.h"
 #include "web_audio/details/render_quantum.h"
 #include "web_audio/distance_model_type.h"
 #include "web_audio/dom_exception.h"
