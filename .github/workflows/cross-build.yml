@@ -67,7 +67,7 @@ jobs:
       - name: Build
         run: |
           cd build
-          cmake --build . --config Debug
+          cmake --build . --config Debug --parallel
 
       - name: Run Tests (ctest)
         run: |
