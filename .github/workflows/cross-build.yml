@@ -78,7 +78,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           cd build
-          gcovr -r .. --xml -o coverage.xml
+          gcovr -r .. --exclude 'test/' --xml -o coverage.xml
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
