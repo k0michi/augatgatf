@@ -20,6 +20,7 @@
 #include "web_audio/audio_scheduled_source_node.h"
 #include "web_audio/audio_sink_options.h"
 #include "web_audio/audio_sink_type.h"
+#include "web_audio/audio_timestamp.h"
 #include "web_audio/audio_worklet.h"
 #include "web_audio/audio_worklet_node_options.h"
 #include "web_audio/automation_rate.h"
