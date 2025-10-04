@@ -87,3 +87,17 @@ TEST(AudioParamTest, GetLastValue_SetValueCurve) {
   auto e = param->events_.begin();
   EXPECT_EQ(param->getLastValue(e), 2.0f);
 }
+
+TEST(AudioParamTest, EventInValueCurve) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0, 2);
+  EXPECT_THROW(param->setValueAtTime(1.0f, 1), web_audio::DOMException);
+  EXPECT_THROW(param->linearRampToValueAtTime(1.0f, 1),
+               web_audio::DOMException);
+  EXPECT_THROW(param->exponentialRampToValueAtTime(1.0f, 1),
+               web_audio::DOMException);
+  EXPECT_THROW(param->setTargetAtTime(1.0f, 1, 1.0f), web_audio::DOMException);
+  EXPECT_THROW(param->setValueCurveAtTime({0.0f, 1.0f}, 1, 2),
+               web_audio::DOMException);
+}

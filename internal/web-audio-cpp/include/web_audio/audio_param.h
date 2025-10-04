@@ -87,6 +87,11 @@ public:
   higherEvent(double time);
 
   /**
+   * Throws NotSupportedError if time is included in a value curve event.
+   */
+  void checkValueCurve(double time) const;
+
+  /**
    * Get the value at the end of the given event.
    */
   float getLastValue(std::set<details::ParamEvent,
@@ -166,6 +171,8 @@ std::shared_ptr<AudioParam> AudioParam::setValueAtTime(float value,
         "RangeError");
   }
 
+  checkValueCurve(startTime);
+
   events_.emplace(details::ParamEventSetValue{eventIndex_, value, startTime});
   return shared_from_this();
 }
@@ -178,6 +185,8 @@ AudioParam::linearRampToValueAtTime(float value, double endTime) {
         "non-negative",
         "RangeError");
   }
+
+  checkValueCurve(endTime);
 
   events_.emplace(details::ParamEventLinearRamp{eventIndex_, value, endTime});
   return shared_from_this();
@@ -198,6 +207,8 @@ AudioParam::exponentialRampToValueAtTime(float value, double endTime) {
         "non-negative",
         "RangeError");
   }
+
+  checkValueCurve(endTime);
 
   auto currentTime = context_.lock()->getCurrentTime();
   endTime = std::max(endTime, currentTime);
@@ -221,6 +232,8 @@ std::shared_ptr<AudioParam> AudioParam::setTargetAtTime(float target,
                        "must be non-negative",
                        "RangeError");
   }
+
+  checkValueCurve(startTime);
 
   events_.emplace(details::ParamEventSetTarget{
       eventIndex_,
@@ -254,6 +267,8 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
                        "must be greater than 0",
                        "RangeError");
   }
+
+  checkValueCurve(startTime);
 
   events_.emplace(details::ParamEventSetValueCurve{
       eventIndex_, values, startTime, duration, std::nullopt});
@@ -307,6 +322,28 @@ AudioParam::floorEvent(double time) {
 std::set<details::ParamEvent, details::ParamEventLess>::iterator
 AudioParam::higherEvent(double time) {
   return events_.upper_bound(details::ParamEventSetValue{0, 0, time});
+}
+
+void AudioParam::checkValueCurve(double time) const {
+  // SPEC: Similarly a NotSupportedError exception MUST be thrown if any
+  // automation method is called at a time which is contained in [T,T+D), T
+  // being the time of the curve and D its duration.
+
+  auto it = events_.lower_bound(details::ParamEventSetValue{0, 0, time});
+
+  if (it != events_.begin()) {
+    auto prev = std::prev(it);
+
+    if (std::holds_alternative<details::ParamEventSetValueCurve>(*prev)) {
+      auto &e = std::get<details::ParamEventSetValueCurve>(*prev);
+
+      if (e.startTime <= time && time < e.startTime + e.duration) {
+        throw DOMException(
+            "AudioParam: cannot schedule event in the middle of a value curve",
+            "NotSupportedError");
+      }
+    }
+  }
 }
 
 float AudioParam::getLastValue(
