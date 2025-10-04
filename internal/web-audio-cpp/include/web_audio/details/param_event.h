@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <variant>
@@ -7,45 +8,57 @@
 
 namespace web_audio::details {
 struct ParamEventExponentialRamp {
+  std::uint32_t index;
   float value;
   double endTime;
 
-  double getEndTime() const { return endTime; }
+  double getTime() const { return endTime; }
+
+  std::uint32_t getIndex() const { return index; }
 };
 
 struct ParamEventLinearRamp {
+  std::uint32_t index;
   float value;
   double endTime;
 
-  double getEndTime() const { return endTime; }
+  double getTime() const { return endTime; }
+
+  std::uint32_t getIndex() const { return index; }
 };
 
 struct ParamEventSetTarget {
+  std::uint32_t index;
   float target;
   double startTime;
   float timeConstant;
+  float initialValue;
 
-  double getEndTime() const { return startTime; }
+  double getTime() const { return startTime; }
+
+  std::uint32_t getIndex() const { return index; }
 };
 
 struct ParamEventSetValue {
+  std::uint32_t index;
   float value;
   double startTime;
 
-  double getEndTime() const { return startTime; }
+  double getTime() const { return startTime; }
+
+  std::uint32_t getIndex() const { return index; }
 };
 
 struct ParamEventSetValueCurve {
+  std::uint32_t index;
   std::vector<float> values;
   double startTime;
   double duration;
   std::optional<double> canceledTime;
 
-  double getBeginTime() const { return startTime; }
+  double getTime() const { return startTime; }
 
-  double getEndTime() const {
-    return canceledTime.value_or(startTime + duration);
-  }
+  std::uint32_t getIndex() const { return index; }
 };
 
 using ParamEvent = std::variant<ParamEventExponentialRamp, ParamEventLinearRamp,
@@ -56,7 +69,8 @@ struct ParamEventLess {
   bool operator()(const ParamEvent &a, const ParamEvent &b) const {
     return std::visit(
         [](const auto &x, const auto &y) {
-          return x.getEndTime() < y.getEndTime();
+          return x.getTime() < y.getTime() ||
+                 (x.getTime() == y.getTime() && x.getIndex() < y.getIndex());
         },
         a, b);
   }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <set>
@@ -13,7 +14,11 @@ namespace web_audio {
 class BaseAudioContext;
 
 class AudioParam : public std::enable_shared_from_this<AudioParam> {
+#ifdef WEB_AUDIO_TEST
+public:
+#else
 private:
+#endif
   AudioParam() = default;
 
   static std::shared_ptr<AudioParam>
@@ -81,6 +86,12 @@ public:
   std::set<details::ParamEvent, details::ParamEventLess>::iterator
   higherEvent(double time);
 
+  /**
+   * Get the value at the end of the given event.
+   */
+  float getLastValue(std::set<details::ParamEvent,
+                              details::ParamEventLess>::iterator event) const;
+
 private:
   // [[current value]]
   float currentValue_;
@@ -91,6 +102,7 @@ private:
   float maxValue_;
   bool allowARate_;
   std::set<details::ParamEvent, details::ParamEventLess> events_;
+  std::uint32_t eventIndex_ = 0;
 
   friend class DelayNode;
 };
@@ -105,6 +117,7 @@ AudioParam::create(std::shared_ptr<BaseAudioContext> context,
                    float defaultValue, float minValue, float maxValue,
                    AutomationRate automationRate, bool allowARate) {
   auto instance = std::shared_ptr<AudioParam>(new AudioParam());
+  instance->context_ = context;
   instance->defaultValue_ = defaultValue;
   instance->minValue_ = minValue;
   instance->maxValue_ = maxValue;
@@ -149,7 +162,7 @@ std::shared_ptr<AudioParam> AudioParam::setValueAtTime(float value,
         "RangeError");
   }
 
-  events_.emplace(details::ParamEventSetValue{value, startTime});
+  events_.emplace(details::ParamEventSetValue{eventIndex_, value, startTime});
   return shared_from_this();
 }
 
@@ -162,7 +175,7 @@ AudioParam::linearRampToValueAtTime(float value, double endTime) {
         "RangeError");
   }
 
-  events_.emplace(details::ParamEventLinearRamp{value, endTime});
+  events_.emplace(details::ParamEventLinearRamp{eventIndex_, value, endTime});
   return shared_from_this();
 }
 
@@ -185,7 +198,8 @@ AudioParam::exponentialRampToValueAtTime(float value, double endTime) {
   auto currentTime = context_.lock()->getCurrentTime();
   endTime = std::max(endTime, currentTime);
 
-  events_.emplace(details::ParamEventExponentialRamp{value, endTime});
+  events_.emplace(
+      details::ParamEventExponentialRamp{eventIndex_, value, endTime});
   return shared_from_this();
 }
 
@@ -204,8 +218,12 @@ std::shared_ptr<AudioParam> AudioParam::setTargetAtTime(float target,
                        "RangeError");
   }
 
-  events_.emplace(
-      details::ParamEventSetTarget{target, startTime, timeConstant});
+  events_.emplace(details::ParamEventSetTarget{
+      eventIndex_,
+      target,
+      startTime,
+      timeConstant,
+  });
   return shared_from_this();
 }
 
@@ -233,8 +251,8 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
                        "RangeError");
   }
 
-  events_.emplace(details::ParamEventSetValueCurve{values, startTime, duration,
-                                                   std::nullopt});
+  events_.emplace(details::ParamEventSetValueCurve{
+      eventIndex_, values, startTime, duration, std::nullopt});
 }
 
 std::shared_ptr<AudioParam>
@@ -247,7 +265,7 @@ AudioParam::cancelScheduledValues(double cancelTime) {
   }
 
   cancelTime = std::max(cancelTime, context_.lock()->getCurrentTime());
-  auto it = events_.lower_bound(details::ParamEventSetValue{0, cancelTime});
+  auto it = events_.lower_bound(details::ParamEventSetValue{0, 0, cancelTime});
   events_.erase(it, events_.end());
   return shared_from_this();
 }
@@ -270,7 +288,7 @@ std::shared_ptr<AudioParam> AudioParam::cancelAndHoldAtTime(double cancelTime) {
 
 std::set<details::ParamEvent, details::ParamEventLess>::iterator
 AudioParam::floorEvent(double time) {
-  auto it = events_.upper_bound(details::ParamEventSetValue{0, time});
+  auto it = events_.upper_bound(details::ParamEventSetValue{0, 0, time});
 
   if (it == events_.begin()) {
     return events_.end();
@@ -282,7 +300,59 @@ AudioParam::floorEvent(double time) {
 
 std::set<details::ParamEvent, details::ParamEventLess>::iterator
 AudioParam::higherEvent(double time) {
-  return events_.upper_bound(details::ParamEventSetValue{0, time});
+  return events_.upper_bound(details::ParamEventSetValue{0, 0, time});
+}
+
+float AudioParam::getLastValue(
+    std::set<details::ParamEvent, details::ParamEventLess>::iterator event)
+    const {
+  if (event == events_.end()) {
+    return defaultValue_;
+  }
+
+  if (std::holds_alternative<details::ParamEventSetValue>(*event)) {
+    return std::get<details::ParamEventSetValue>(*event).value;
+  }
+
+  if (std::holds_alternative<details::ParamEventLinearRamp>(*event)) {
+    return std::get<details::ParamEventLinearRamp>(*event).value;
+  }
+
+  if (std::holds_alternative<details::ParamEventExponentialRamp>(*event)) {
+    return std::get<details::ParamEventExponentialRamp>(*event).value;
+  }
+
+  if (std::holds_alternative<details::ParamEventSetTarget>(*event)) {
+    auto &e = std::get<details::ParamEventSetTarget>(*event);
+    float prevValue;
+
+    if (event == events_.begin()) {
+      prevValue = defaultValue_;
+    } else {
+      auto prev = std::prev(event);
+      prevValue = getLastValue(prev);
+    }
+
+    auto nextEvent = std::next(event);
+    double nextTime;
+
+    if (nextEvent == events_.end()) {
+      return e.target;
+    } else {
+      nextTime =
+          std::visit([](const auto &x) { return x.getTime(); }, *nextEvent);
+    }
+
+    return e.target + (prevValue - e.target) *
+                          std::exp((e.startTime - nextTime) / e.timeConstant);
+  }
+
+  if (std::holds_alternative<details::ParamEventSetValueCurve>(*event)) {
+    auto &e = std::get<details::ParamEventSetValueCurve>(*event);
+    return e.values.back();
+  }
+
+  return currentValue_;
 }
 } // namespace web_audio
 #endif
