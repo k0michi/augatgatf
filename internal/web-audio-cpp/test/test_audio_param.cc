@@ -101,3 +101,15 @@ TEST(AudioParamTest, EventInValueCurve) {
   EXPECT_THROW(param->setValueCurveAtTime({0.0f, 1.0f}, 1, 2),
                web_audio::DOMException);
 }
+
+TEST(AudioParamTest, EventOverlapValueCurve) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueAtTime(1.0f, 1.0);
+  EXPECT_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0.0, 2.0),
+               web_audio::DOMException);
+  EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0.0, 1.0),
+                  web_audio::DOMException);
+  EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 1.0, 1.0),
+                  web_audio::DOMException);
+}

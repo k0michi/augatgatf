@@ -270,6 +270,24 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
 
   checkValueCurve(startTime);
 
+  // SPEC: If setValueCurveAtTime() is called for time T and duration D and
+  // there are any events having a time strictly greater than T, but strictly
+  // less than T+D, then a NotSupportedError exception MUST be thrown.
+  auto it = events_.upper_bound(details::ParamEventSetValue{0, 0, startTime});
+
+  if (it != events_.end()) {
+    auto next = it;
+    double nextTime =
+        std::visit([](const auto &x) { return x.getTime(); }, *next);
+
+    if (startTime < nextTime && nextTime < startTime + duration) {
+      throw DOMException(
+          "AudioParam: cannot schedule value curve overlapping with another "
+          "event",
+          "NotSupportedError");
+    }
+  }
+
   events_.emplace(details::ParamEventSetValueCurve{
       eventIndex_, values, startTime, duration, std::nullopt});
 
