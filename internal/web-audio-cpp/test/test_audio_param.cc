@@ -167,3 +167,17 @@ TEST(AudioParamTest, ComputeIntrinsicValues_SetTarget) {
     EXPECT_NEAR(outputs[i], expected, 0.01f);
   }
 }
+
+TEST(AudioParamTest, ComputeIntrinsicValues_SetValueCurve) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueCurveAtTime({0.0f, 1.0f, 0.0f}, 0.0, 1.0);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (std::size_t i = 0; i < outputs.size(); ++i) {
+    auto t = static_cast<double>(i) / context->getSampleRate();
+    auto expected = (t < 0.5) ? (2.0f * t) : (-2.0f * t + 2.0f);
+    EXPECT_NEAR(outputs[i], expected, 0.01f);
+  }
+}
