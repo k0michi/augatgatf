@@ -4,7 +4,7 @@
 
 namespace web_audio {
 struct DynamicsCompressorOptions : public AudioNodeOptions {
-  float attack = 0.003;
+  float attack = 0.003f;
   float knee = 30;
   float ratio = 12;
   float release = 0.25;

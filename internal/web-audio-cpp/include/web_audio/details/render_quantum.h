@@ -40,7 +40,7 @@ RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels,
 std::uint32_t RenderQuantum::getLength() const { return length_; }
 
 std::uint32_t RenderQuantum::getNumberOfChannels() const {
-  return channelData_.size();
+  return static_cast<std::uint32_t>(channelData_.size());
 }
 
 std::size_t RenderQuantum::size() const { return channelData_.size(); }

@@ -104,10 +104,10 @@ DelayNode::create(std::shared_ptr<BaseAudioContext> context,
   node->channelInterpretation_ =
       options.channelInterpretation.value_or(ChannelInterpretation::eSpeakers);
 
-  auto quantums =
+  auto quantums = static_cast<std::uint32_t>(
       std::ceil(context->getSampleRate() * node->maxDelayTime_ /
                 static_cast<float>(context->getRenderQuantumSize())) +
-      1;
+      1);
   node->delayBuffers_.resize(
       quantums, details::RenderQuantum(node->channelCount_,
                                        context->getRenderQuantumSize()));

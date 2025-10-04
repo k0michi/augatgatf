@@ -350,8 +350,9 @@ float AudioParam::getLastValue(
           std::visit([](const auto &x) { return x.getTime(); }, *nextEvent);
     }
 
-    return e.target + (prevValue - e.target) *
-                          std::exp((e.startTime - nextTime) / e.timeConstant);
+    return static_cast<float>(
+        e.target + (prevValue - e.target) *
+                       std::exp((e.startTime - nextTime) / e.timeConstant));
   }
 
   if (std::holds_alternative<details::ParamEventSetValueCurve>(*event)) {
