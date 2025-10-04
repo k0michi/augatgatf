@@ -436,7 +436,7 @@ void AudioParam::computeIntrinsicValues(double startTime,
     } else if (std::holds_alternative<details::ParamEventSetTarget>(
                    *prevEvent)) {
       auto &e = std::get<details::ParamEventSetTarget>(*prevEvent);
-      auto lastValue = getLastValue(prevEvent);
+      auto lastValue = getLastValue(std::prev(prevEvent));
       outputs[i] = static_cast<float>(
           e.target + (lastValue - e.target) *
                          std::exp((e.startTime - time) / e.timeConstant));

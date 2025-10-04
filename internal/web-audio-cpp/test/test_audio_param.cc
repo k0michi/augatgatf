@@ -153,3 +153,17 @@ TEST(AudioParamTest, ComputeIntrinsicValues_ExponentialRamp) {
     EXPECT_NEAR(outputs[i], expected, 0.01f);
   }
 }
+
+TEST(AudioParamTest, ComputeIntrinsicValues_SetTarget) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setTargetAtTime(1.0f, 0.0, 0.5f);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (std::size_t i = 0; i < 200; ++i) {
+    auto t = static_cast<double>(i) / context->getSampleRate();
+    auto expected = 1.0f + (0.0f - 1.0f) * std::exp(-t / 0.5f);
+    EXPECT_NEAR(outputs[i], expected, 0.01f);
+  }
+}
