@@ -97,6 +97,9 @@ public:
   float getLastValue(std::set<details::ParamEvent,
                               details::ParamEventLess>::iterator event) const;
 
+  float getBeginValue(std::set<details::ParamEvent,
+                               details::ParamEventLess>::iterator event) const;
+
   void computeIntrinsicValues(double startTime, std::vector<float> &outputs);
 
 #ifdef WEB_AUDIO_TEST
@@ -420,6 +423,16 @@ float AudioParam::getLastValue(
   return currentValue_;
 }
 
+float AudioParam::getBeginValue(
+    std::set<details::ParamEvent, details::ParamEventLess>::iterator event)
+    const {
+  if (event == events_.begin()) {
+    return defaultValue_;
+  } else {
+    return getLastValue(std::prev(event));
+  }
+}
+
 void AudioParam::computeIntrinsicValues(double startTime,
                                         std::vector<float> &outputs) {
   auto context = context_.lock();
@@ -436,7 +449,7 @@ void AudioParam::computeIntrinsicValues(double startTime,
     } else if (std::holds_alternative<details::ParamEventSetTarget>(
                    *prevEvent)) {
       auto &e = std::get<details::ParamEventSetTarget>(*prevEvent);
-      auto lastValue = getLastValue(std::prev(prevEvent));
+      auto lastValue = getBeginValue(prevEvent);
       outputs[i] = static_cast<float>(
           e.target + (lastValue - e.target) *
                          std::exp((e.startTime - time) / e.timeConstant));
