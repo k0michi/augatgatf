@@ -108,8 +108,48 @@ TEST(AudioParamTest, EventOverlapValueCurve) {
   param->setValueAtTime(1.0f, 1.0);
   EXPECT_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0.0, 2.0),
                web_audio::DOMException);
-  EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0.0, 1.0),
-                  web_audio::DOMException);
-  EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 1.0, 1.0),
-                  web_audio::DOMException);
+  EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0.0, 1.0));
+  EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 1.0, 1.0));
+}
+
+TEST(AudioParamTest, ComputeIntrinsicValues_SetValue) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueAtTime(1.0f, 0.0);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (auto v : outputs) {
+    EXPECT_FLOAT_EQ(v, 1.0f);
+  }
+}
+
+TEST(AudioParamTest, ComputeIntrinsicValues_LinearRamp) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueAtTime(1.0f, 0.0);
+  param->linearRampToValueAtTime(2.0f, 1.0);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (std::size_t i = 0; i < outputs.size(); ++i) {
+    auto expected =
+        1.0f + (2.0f - 1.0f) * (static_cast<float>(i) / outputs.size());
+    EXPECT_NEAR(outputs[i], expected, 0.01f);
+  }
+}
+
+TEST(AudioParamTest, ComputeIntrinsicValues_ExponentialRamp) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueAtTime(1.0f, 0.0);
+  param->exponentialRampToValueAtTime(2.0f, 1.0);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (std::size_t i = 0; i < outputs.size(); ++i) {
+    auto expected =
+        1.0f * std::pow(2.0f / 1.0f, static_cast<float>(i) / outputs.size());
+    EXPECT_NEAR(outputs[i], expected, 0.01f);
+  }
 }

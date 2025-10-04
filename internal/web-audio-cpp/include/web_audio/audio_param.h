@@ -97,6 +97,8 @@ public:
   float getLastValue(std::set<details::ParamEvent,
                               details::ParamEventLess>::iterator event) const;
 
+  void computeIntrinsicValues(double startTime, std::vector<float> &outputs);
+
 #ifdef WEB_AUDIO_TEST
 public:
 #else
@@ -416,6 +418,69 @@ float AudioParam::getLastValue(
   }
 
   return currentValue_;
+}
+
+void AudioParam::computeIntrinsicValues(double startTime,
+                                        std::vector<float> &outputs) {
+  auto context = context_.lock();
+  auto sampleRate = context->getSampleRate();
+  auto delta = 1.0 / sampleRate;
+
+  for (uint32_t i = 0; i < outputs.size(); ++i) {
+    auto time = startTime + i * delta;
+    auto prevEvent = floorEvent(startTime);
+    auto nextEvent = higherEvent(startTime);
+
+    if (prevEvent == events_.end()) {
+      outputs[i] = defaultValue_;
+    } else if (std::holds_alternative<details::ParamEventSetTarget>(
+                   *prevEvent)) {
+      auto &e = std::get<details::ParamEventSetTarget>(*prevEvent);
+      auto lastValue = getLastValue(prevEvent);
+      outputs[i] = static_cast<float>(
+          e.target + (lastValue - e.target) *
+                         std::exp((e.startTime - time) / e.timeConstant));
+    } else if (std::holds_alternative<details::ParamEventSetValueCurve>(
+                   *prevEvent)) {
+      auto &e = std::get<details::ParamEventSetValueCurve>(*prevEvent);
+      auto k = static_cast<std::size_t>(std::floor(
+          (e.values.size() - 1.0) / e.duration * (time - e.startTime)));
+
+      if (k + 1 < e.values.size()) {
+        auto t0 = e.startTime + e.duration * k / (e.values.size() - 1.0);
+        auto t1 = e.startTime + e.duration * (k + 1) / (e.values.size() - 1.0);
+        auto v0 = e.values[k];
+        auto v1 = e.values[k + 1];
+        outputs[i] = v0 + (v1 - v0) * (time - t0) / (t1 - t0);
+      } else {
+        outputs[i] = e.values.back();
+      }
+    } else {
+      auto lastValue = getLastValue(prevEvent);
+
+      if (nextEvent == events_.end()) {
+        outputs[i] = lastValue;
+      } else if (std::holds_alternative<details::ParamEventLinearRamp>(
+                     *nextEvent)) {
+        auto prevTime =
+            std::visit([](const auto &x) { return x.getTime(); }, *prevEvent);
+        auto &e = std::get<details::ParamEventLinearRamp>(*nextEvent);
+        outputs[i] = lastValue + (e.value - lastValue) * (time - prevTime) /
+                                     (e.endTime - prevTime);
+      } else if (std::holds_alternative<details::ParamEventExponentialRamp>(
+                     *nextEvent)) {
+        auto prevTime =
+            std::visit([](const auto &x) { return x.getTime(); }, *prevEvent);
+        auto &e = std::get<details::ParamEventExponentialRamp>(*nextEvent);
+
+        outputs[i] =
+            lastValue * std::pow(e.value / lastValue,
+                                 (time - prevTime) / (e.endTime - prevTime));
+      } else {
+        outputs[i] = lastValue;
+      }
+    }
+  }
 }
 } // namespace web_audio
 #endif
