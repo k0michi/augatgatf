@@ -14,6 +14,14 @@ createAudioParam(std::shared_ptr<web_audio::OfflineAudioContext> context) {
                                        std::numeric_limits<float>::infinity(),
                                        web_audio::AutomationRate::eARate, true);
 }
+
+std::shared_ptr<web_audio::AudioParam>
+createAudioParam1(std::shared_ptr<web_audio::OfflineAudioContext> context) {
+  return web_audio::AudioParam::create(context, 1.0f,
+                                       -std::numeric_limits<float>::infinity(),
+                                       std::numeric_limits<float>::infinity(),
+                                       web_audio::AutomationRate::eARate, true);
+}
 } // namespace
 
 TEST(AudioParamTest, Create) {
@@ -192,5 +200,16 @@ TEST(AudioParamTest, ComputeIntrinsicValues_DuplicateEvents) {
 
   for (auto v : outputs) {
     EXPECT_FLOAT_EQ(v, 2.0f);
+  }
+}
+
+TEST(AudioParamTest, ComputeIntrinsicValues_NoEvents) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam1(context);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (auto v : outputs) {
+    EXPECT_FLOAT_EQ(v, 1.0f);
   }
 }
