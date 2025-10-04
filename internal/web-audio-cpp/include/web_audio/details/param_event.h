@@ -32,7 +32,6 @@ struct ParamEventSetTarget {
   float target;
   double startTime;
   float timeConstant;
-  float initialValue;
 
   double getTime() const { return startTime; }
 
