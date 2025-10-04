@@ -26,6 +26,7 @@ set(WEB_AUDIO_TEST_SRC
   test/impl.cc
   test/test_audio_buffer.cc
   test/test_audio_node.cc
+  test/test_audio_param.cc
   test/test_delay_node.cc
   test/test_message_queue.cc
   test/test_offline_audio_context.cc

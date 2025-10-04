@@ -92,7 +92,11 @@ public:
   float getLastValue(std::set<details::ParamEvent,
                               details::ParamEventLess>::iterator event) const;
 
+#ifdef WEB_AUDIO_TEST
+public:
+#else
 private:
+#endif
   // [[current value]]
   float currentValue_;
   std::weak_ptr<BaseAudioContext> context_;
@@ -253,6 +257,8 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
 
   events_.emplace(details::ParamEventSetValueCurve{
       eventIndex_, values, startTime, duration, std::nullopt});
+
+  return shared_from_this();
 }
 
 std::shared_ptr<AudioParam>
