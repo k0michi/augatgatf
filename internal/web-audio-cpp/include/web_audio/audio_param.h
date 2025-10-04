@@ -337,6 +337,7 @@ float AudioParam::getLastValue(
     double nextTime;
 
     if (nextEvent == events_.end()) {
+      // No next event, asymptotically approach the target
       return e.target;
     } else {
       nextTime =
