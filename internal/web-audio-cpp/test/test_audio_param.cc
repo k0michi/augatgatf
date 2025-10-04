@@ -181,3 +181,16 @@ TEST(AudioParamTest, ComputeIntrinsicValues_SetValueCurve) {
     EXPECT_NEAR(outputs[i], expected, 0.01f);
   }
 }
+
+TEST(AudioParamTest, ComputeIntrinsicValues_DuplicateEvents) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueAtTime(1.0f, 0.0);
+  param->setValueAtTime(2.0f, 0.0);
+  std::vector<float> outputs(context->getSampleRate(), 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (auto v : outputs) {
+    EXPECT_FLOAT_EQ(v, 2.0f);
+  }
+}

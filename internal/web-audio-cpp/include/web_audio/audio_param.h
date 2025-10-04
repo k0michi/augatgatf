@@ -178,7 +178,7 @@ std::shared_ptr<AudioParam> AudioParam::setValueAtTime(float value,
 
   checkValueCurve(startTime);
 
-  events_.emplace(details::ParamEventSetValue{eventIndex_, value, startTime});
+  events_.emplace(details::ParamEventSetValue{eventIndex_++, value, startTime});
   return shared_from_this();
 }
 
@@ -193,7 +193,7 @@ AudioParam::linearRampToValueAtTime(float value, double endTime) {
 
   checkValueCurve(endTime);
 
-  events_.emplace(details::ParamEventLinearRamp{eventIndex_, value, endTime});
+  events_.emplace(details::ParamEventLinearRamp{eventIndex_++, value, endTime});
   return shared_from_this();
 }
 
@@ -219,7 +219,7 @@ AudioParam::exponentialRampToValueAtTime(float value, double endTime) {
   endTime = std::max(endTime, currentTime);
 
   events_.emplace(
-      details::ParamEventExponentialRamp{eventIndex_, value, endTime});
+      details::ParamEventExponentialRamp{eventIndex_++, value, endTime});
   return shared_from_this();
 }
 
@@ -241,7 +241,7 @@ std::shared_ptr<AudioParam> AudioParam::setTargetAtTime(float target,
   checkValueCurve(startTime);
 
   events_.emplace(details::ParamEventSetTarget{
-      eventIndex_,
+      eventIndex_++,
       target,
       startTime,
       timeConstant,
@@ -294,7 +294,7 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
   }
 
   events_.emplace(details::ParamEventSetValueCurve{
-      eventIndex_, values, startTime, duration, std::nullopt});
+      eventIndex_++, values, startTime, duration, std::nullopt});
 
   return shared_from_this();
 }
@@ -332,7 +332,8 @@ std::shared_ptr<AudioParam> AudioParam::cancelAndHoldAtTime(double cancelTime) {
 
 std::set<details::ParamEvent, details::ParamEventLess>::iterator
 AudioParam::floorEvent(double time) {
-  auto it = events_.upper_bound(details::ParamEventSetValue{0, 0, time});
+  auto it = events_.upper_bound(details::ParamEventSetValue{
+      std::numeric_limits<std::uint32_t>::max(), 0, time});
 
   if (it == events_.begin()) {
     return events_.end();
@@ -344,7 +345,8 @@ AudioParam::floorEvent(double time) {
 
 std::set<details::ParamEvent, details::ParamEventLess>::iterator
 AudioParam::higherEvent(double time) {
-  return events_.upper_bound(details::ParamEventSetValue{0, 0, time});
+  return events_.upper_bound(details::ParamEventSetValue{
+      std::numeric_limits<std::uint32_t>::max(), 0, time});
 }
 
 void AudioParam::checkValueCurve(double time) const {
