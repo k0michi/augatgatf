@@ -9,8 +9,8 @@
 #include "audio_destination_node.hh"
 #include "audio_listener.hh"
 #include "audio_worklet.hh"
-#include "details/event_queue.hh"
-#include "details/message_queue.hh"
+#include "detail/event_queue.hh"
+#include "detail/message_queue.hh"
 #include "event_handler.hh"
 #include "promise.hh"
 

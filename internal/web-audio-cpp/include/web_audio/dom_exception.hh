@@ -4,7 +4,7 @@
 #include <exception>
 #include <string>
 
-#include "details/common.hh"
+#include "detail/common.hh"
 
 namespace web_audio {
 class DOMException : public std::exception {

@@ -1,4 +1,4 @@
-#include "web_audio/details/audio_graph.hh"
+#include "web_audio/detail/audio_graph.hh"
 
 #include "web_audio/audio_param.hh"
 

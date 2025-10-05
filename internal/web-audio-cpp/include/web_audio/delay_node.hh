@@ -5,9 +5,9 @@
 #include "audio_node.hh"
 #include "audio_param.hh"
 #include "delay_options.hh"
-#include "details/common.hh"
-#include "details/param_collection.hh"
-#include "details/render_quantum.hh"
+#include "detail/common.hh"
+#include "detail/param_collection.hh"
+#include "detail/render_quantum.hh"
 
 namespace web_audio {
 class DelayNode : public AudioNode {

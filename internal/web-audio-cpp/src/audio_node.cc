@@ -2,7 +2,7 @@
 
 #include "web_audio/audio_listener.hh"
 #include "web_audio/audio_param.hh"
-#include "web_audio/details/weak_ptr_helper.hh"
+#include "web_audio/detail/weak_ptr_helper.hh"
 
 namespace web_audio {
 std::shared_ptr<AudioNode>

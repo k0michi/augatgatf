@@ -15,11 +15,11 @@ add_library(web-audio-cpp STATIC
   src/audio_scheduled_source_node.cc
   src/base_audio_context.cc
   src/delay_node.cc
-  src/details/audio_graph.cc
-  src/details/event_queue.cc
-  src/details/message_queue.cc
-  src/details/param_collection.cc
-  src/details/render_quantum.cc
+  src/detail/audio_graph.cc
+  src/detail/event_queue.cc
+  src/detail/message_queue.cc
+  src/detail/param_collection.cc
+  src/detail/render_quantum.cc
   src/dom_exception.cc
   src/offline_audio_context.cc
   src/periodic_wave.cc
@@ -50,11 +50,11 @@ set(WEB_AUDIO_TEST_SRC
   src/audio_scheduled_source_node.cc
   src/base_audio_context.cc
   src/delay_node.cc
-  src/details/audio_graph.cc
-  src/details/event_queue.cc
-  src/details/message_queue.cc
-  src/details/param_collection.cc
-  src/details/render_quantum.cc
+  src/detail/audio_graph.cc
+  src/detail/event_queue.cc
+  src/detail/message_queue.cc
+  src/detail/param_collection.cc
+  src/detail/render_quantum.cc
   src/dom_exception.cc
   src/offline_audio_context.cc
   src/periodic_wave.cc

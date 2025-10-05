@@ -9,10 +9,10 @@
 
 #include "channel_count_mode.hh"
 #include "channel_interpretation.hh"
-#include "details/audio_node_input.hh"
-#include "details/audio_node_output.hh"
-#include "details/param_collection.hh"
-#include "details/render_quantum.hh"
+#include "detail/audio_node_input.hh"
+#include "detail/audio_node_output.hh"
+#include "detail/param_collection.hh"
+#include "detail/render_quantum.hh"
 #include "dom_exception.hh"
 
 namespace web_audio::details {

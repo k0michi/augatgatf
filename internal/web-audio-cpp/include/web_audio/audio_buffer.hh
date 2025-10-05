@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "audio_buffer_options.hh"
-#include "details/common.hh"
+#include "detail/common.hh"
 #include "dom_exception.hh"
 
 namespace web_audio {

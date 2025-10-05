@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "web_audio/details/render_quantum.hh"
+#include "web_audio/detail/render_quantum.hh"
 
 using namespace web_audio;
 

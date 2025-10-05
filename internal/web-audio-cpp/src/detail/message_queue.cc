@@ -1,4 +1,4 @@
-#include "web_audio/details/message_queue.hh"
+#include "web_audio/detail/message_queue.hh"
 
 namespace web_audio::details {
 Message MessageQueue::pop() {

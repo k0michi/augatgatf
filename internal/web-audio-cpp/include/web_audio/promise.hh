@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "details/common.hh"
-#include "details/event_queue.hh"
+#include "detail/common.hh"
+#include "detail/event_queue.hh"
 
 namespace web_audio {
 class PromiseBase {

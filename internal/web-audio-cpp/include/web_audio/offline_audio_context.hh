@@ -6,8 +6,8 @@
 
 #include "audio_buffer.hh"
 #include "base_audio_context.hh"
-#include "details/common.hh"
-#include "details/message_queue.hh"
+#include "detail/common.hh"
+#include "detail/message_queue.hh"
 #include "event_handler.hh"
 #include "offline_audio_context_options.hh"
 #include "promise.hh"

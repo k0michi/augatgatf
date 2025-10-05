@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "automation_rate.hh"
-#include "details/audio_node_input.hh"
-#include "details/common.hh"
-#include "details/param_event.hh"
+#include "detail/audio_node_input.hh"
+#include "detail/common.hh"
+#include "detail/param_event.hh"
 
 namespace web_audio {
 class BaseAudioContext;

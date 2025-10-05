@@ -1,7 +1,7 @@
 #pragma once
 
 #include "audio_node.hh"
-#include "details/common.hh"
+#include "detail/common.hh"
 
 #include <stdexcept>
 

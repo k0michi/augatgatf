@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "base_audio_context.hh"
-#include "details/common.hh"
+#include "detail/common.hh"
 #include "dom_exception.hh"
 #include "periodic_wave_options.hh"
 
