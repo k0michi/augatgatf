@@ -100,13 +100,13 @@ public:
   /**
    * Get the value at the end of the given event.
    */
-  float getLastValue(std::set<details::ParamEvent,
-                              details::ParamEventLess>::iterator event) const;
+  float getEndValue(std::set<details::ParamEvent,
+                             details::ParamEventLess>::iterator event) const;
 
   /**
    * Get the value at the beginning of the given event.
    */
-  float getBeginValue(std::set<details::ParamEvent,
+  float getStartValue(std::set<details::ParamEvent,
                                details::ParamEventLess>::iterator event) const;
 
   void computeIntrinsicValues(double startTime, std::vector<float> &outputs);
@@ -382,7 +382,7 @@ void AudioParam::checkValueCurve(double time) const {
   }
 }
 
-float AudioParam::getLastValue(
+float AudioParam::getEndValue(
     std::set<details::ParamEvent, details::ParamEventLess>::iterator event)
     const {
   if (event == events_.end()) {
@@ -409,7 +409,7 @@ float AudioParam::getLastValue(
       prevValue = defaultValue_;
     } else {
       auto prev = std::prev(event);
-      prevValue = getLastValue(prev);
+      prevValue = getEndValue(prev);
     }
 
     auto nextEvent = std::next(event);
@@ -436,13 +436,13 @@ float AudioParam::getLastValue(
   return currentValue_;
 }
 
-float AudioParam::getBeginValue(
+float AudioParam::getStartValue(
     std::set<details::ParamEvent, details::ParamEventLess>::iterator event)
     const {
   if (event == events_.begin()) {
     return defaultValue_;
   } else {
-    return getLastValue(std::prev(event));
+    return getEndValue(std::prev(event));
   }
 }
 
@@ -462,9 +462,9 @@ void AudioParam::computeIntrinsicValues(double startTime,
     } else if (std::holds_alternative<details::ParamEventSetTarget>(
                    *prevEvent)) {
       auto &e = std::get<details::ParamEventSetTarget>(*prevEvent);
-      auto lastValue = getBeginValue(prevEvent);
+      auto startValue = getStartValue(prevEvent);
       outputs[i] = static_cast<float>(
-          e.target + (lastValue - e.target) *
+          e.target + (startValue - e.target) *
                          std::exp((e.startTime - time) / e.timeConstant));
     } else if (std::holds_alternative<details::ParamEventSetValueCurve>(
                    *prevEvent)) {
@@ -482,17 +482,17 @@ void AudioParam::computeIntrinsicValues(double startTime,
         outputs[i] = e.values.back();
       }
     } else {
-      auto lastValue = getLastValue(prevEvent);
+      auto endValue = getEndValue(prevEvent);
 
       if (nextEvent == events_.end()) {
-        outputs[i] = lastValue;
+        outputs[i] = endValue;
       } else if (std::holds_alternative<details::ParamEventLinearRamp>(
                      *nextEvent)) {
         auto prevTime =
             std::visit([](const auto &x) { return x.getTime(); }, *prevEvent);
         auto &e = std::get<details::ParamEventLinearRamp>(*nextEvent);
-        outputs[i] = lastValue + (e.value - lastValue) * (time - prevTime) /
-                                     (e.endTime - prevTime);
+        outputs[i] = endValue + (e.value - endValue) * (time - prevTime) /
+                                    (e.endTime - prevTime);
       } else if (std::holds_alternative<details::ParamEventExponentialRamp>(
                      *nextEvent)) {
         auto prevTime =
@@ -500,10 +500,10 @@ void AudioParam::computeIntrinsicValues(double startTime,
         auto &e = std::get<details::ParamEventExponentialRamp>(*nextEvent);
 
         outputs[i] =
-            lastValue * std::pow(e.value / lastValue,
-                                 (time - prevTime) / (e.endTime - prevTime));
+            endValue * std::pow(e.value / endValue,
+                                (time - prevTime) / (e.endTime - prevTime));
       } else {
-        outputs[i] = lastValue;
+        outputs[i] = endValue;
       }
     }
   }

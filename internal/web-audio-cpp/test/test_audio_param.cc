@@ -44,56 +44,56 @@ TEST(AudioParamTest, SetValue) {
   EXPECT_EQ(param->getValue(), 1.0f);
 }
 
-TEST(AudioParamTest, GetLastValue) {
+TEST(AudioParamTest, getEndValue) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1);
   auto e = param->events_.begin();
-  EXPECT_EQ(param->getLastValue(e), 1.0f);
+  EXPECT_EQ(param->getEndValue(e), 1.0f);
 }
 
-TEST(AudioParamTest, GetLastValue_LinearRamp) {
+TEST(AudioParamTest, getEndValue_LinearRamp) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1);
   param->linearRampToValueAtTime(2.0f, 2);
   auto e = std::next(param->events_.begin());
-  EXPECT_EQ(param->getLastValue(e), 2.0f);
+  EXPECT_EQ(param->getEndValue(e), 2.0f);
 }
 
-TEST(AudioParamTest, GetLastValue_ExponentialRamp) {
+TEST(AudioParamTest, getEndValue_ExponentialRamp) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1);
   param->exponentialRampToValueAtTime(2.0f, 2);
   auto e = std::next(param->events_.begin());
-  EXPECT_EQ(param->getLastValue(e), 2.0f);
+  EXPECT_EQ(param->getEndValue(e), 2.0f);
 }
 
-TEST(AudioParamTest, GetLastValue_SetTarget) {
+TEST(AudioParamTest, getEndValue_SetTarget) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setTargetAtTime(1.0f, 0, 1.0f);
   param->setValueAtTime(2.0f, 1);
   auto e = param->events_.begin();
-  EXPECT_NEAR(param->getLastValue(e), 1 + (-1.0 / std::exp(1.0)), 0.01);
+  EXPECT_NEAR(param->getEndValue(e), 1 + (-1.0 / std::exp(1.0)), 0.01);
 }
 
-TEST(AudioParamTest, GetLastValue_SetTarget_1) {
+TEST(AudioParamTest, getEndValue_SetTarget_1) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setTargetAtTime(1.0f, 0, 1.0f);
   param->setValueAtTime(2.0f, 2);
   auto e = param->events_.begin();
-  EXPECT_NEAR(param->getLastValue(e), 1 + (-1.0 / std::exp(2.0)), 0.01);
+  EXPECT_NEAR(param->getEndValue(e), 1 + (-1.0 / std::exp(2.0)), 0.01);
 }
 
-TEST(AudioParamTest, GetLastValue_SetValueCurve) {
+TEST(AudioParamTest, getEndValue_SetValueCurve) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0, 2);
   auto e = param->events_.begin();
-  EXPECT_EQ(param->getLastValue(e), 2.0f);
+  EXPECT_EQ(param->getEndValue(e), 2.0f);
 }
 
 TEST(AudioParamTest, EventInValueCurve) {
