@@ -61,11 +61,11 @@ set(WEB_AUDIO_TEST_SRC
 # end
 # include test/**/*.cc
   test/test_audio_buffer.cc
+  test/test_audio_graph.cc
   test/test_audio_node.cc
   test/test_audio_param.cc
   test/test_delay_node.cc
   test/test_message_queue.cc
-  test/test_node_graph.cc
   test/test_offline_audio_context.cc
   test/test_periodic_wave.cc
   test/test_render_quantum.cc
