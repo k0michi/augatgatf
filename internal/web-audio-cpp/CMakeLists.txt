@@ -74,6 +74,7 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
+# FIXME:
 target_compile_definitions(web-audio-cpp PUBLIC WEB_AUDIO_TEST)
 target_compile_definitions(test_web_audio PUBLIC WEB_AUDIO_TEST)
 target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)
