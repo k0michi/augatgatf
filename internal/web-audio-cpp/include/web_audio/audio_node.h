@@ -9,6 +9,8 @@
 
 #include "channel_count_mode.h"
 #include "channel_interpretation.h"
+#include "details/audio_node_input.h"
+#include "details/audio_node_output.h"
 #include "details/param_collection.h"
 #include "details/render_quantum.h"
 #include "dom_exception.h"
@@ -17,21 +19,6 @@ namespace web_audio {
 class BaseAudioContext;
 class AudioContext;
 class OfflineAudioContext;
-
-class AudioNode;
-class AudioParam;
-
-struct AudioNodeInput {
-  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioParam>> source;
-  std::uint32_t sourceIndex;
-  std::uint32_t destinationIndex;
-};
-
-struct AudioNodeOutput {
-  std::uint32_t sourceIndex;
-  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioParam>> destination;
-  std::uint32_t destinationIndex;
-};
 
 class AudioNode
     : public std::enable_shared_from_this<AudioNode> /* EventTarget */ {
@@ -83,8 +70,8 @@ protected:
   ChannelCountMode channelCountMode_;
   ChannelInterpretation channelInterpretation_;
 
-  std::vector<AudioNodeInput> inputs_;
-  std::vector<AudioNodeOutput> outputs_;
+  std::vector<details::AudioNodeInput> inputs_;
+  std::vector<details::AudioNodeOutput> outputs_;
 
   friend class BaseAudioContext;
   friend class AudioContext;
@@ -125,9 +112,9 @@ AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
     }
   }
 
-  outputs_.push_back(AudioNodeOutput{output, destinationNode, input});
+  outputs_.push_back(details::AudioNodeOutput{output, destinationNode, input});
   destinationNode->inputs_.push_back(
-      AudioNodeInput{shared_from_this(), output, input});
+      details::AudioNodeInput{shared_from_this(), output, input});
 
   return destinationNode;
 }
