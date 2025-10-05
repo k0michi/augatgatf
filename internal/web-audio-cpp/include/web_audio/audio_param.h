@@ -80,9 +80,15 @@ public:
   // SPEC: AudioParam cancelAndHoldAtTime (double cancelTime);
   std::shared_ptr<AudioParam> cancelAndHoldAtTime(double cancelTime);
 
+  /**
+   * Returns the last event whose time is less than or equal to `time`.
+   */
   std::set<details::ParamEvent, details::ParamEventLess>::iterator
   floorEvent(double time);
 
+  /**
+   * Returns the first event whose time is greater than `time`.
+   */
   std::set<details::ParamEvent, details::ParamEventLess>::iterator
   higherEvent(double time);
 
@@ -97,6 +103,9 @@ public:
   float getLastValue(std::set<details::ParamEvent,
                               details::ParamEventLess>::iterator event) const;
 
+  /**
+   * Get the value at the beginning of the given event.
+   */
   float getBeginValue(std::set<details::ParamEvent,
                                details::ParamEventLess>::iterator event) const;
 
