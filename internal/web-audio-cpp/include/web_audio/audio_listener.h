@@ -5,12 +5,15 @@
 namespace web_audio {
 class AudioParam;
 
-class AudioListener {
+class AudioListener : public std::enable_shared_from_this<AudioListener> {
 private:
   AudioListener() = default;
 
 public:
   ~AudioListener() = default;
+
+  static std::shared_ptr<AudioListener>
+  create(std::shared_ptr<BaseAudioContext> context);
 
 public:
   std::shared_ptr<AudioParam> &getPositionX();
@@ -32,6 +35,12 @@ public:
   std::shared_ptr<AudioParam> &getUpZ();
   const std::shared_ptr<AudioParam> &getUpZ() const;
 
+  /**
+   * Returns the context this AudioListener belongs to. Throws if the context
+   * has expired.
+   */
+  std::shared_ptr<BaseAudioContext> getContext() const;
+
 private:
   std::shared_ptr<AudioParam> positionX;
   std::shared_ptr<AudioParam> positionY;
@@ -43,6 +52,8 @@ private:
   std::shared_ptr<AudioParam> upY;
   std::shared_ptr<AudioParam> upZ;
 
+  std::weak_ptr<BaseAudioContext> context_;
+
   friend class BaseAudioContext;
   friend class AudioContext;
   friend class OfflineAudioContext;
@@ -51,6 +62,15 @@ private:
 
 #ifdef WEB_AUDIO_IMPLEMENTATION
 namespace web_audio {
+std::shared_ptr<AudioListener>
+AudioListener::create(std::shared_ptr<BaseAudioContext> context) {
+  auto listener = std::shared_ptr<AudioListener>(new AudioListener());
+
+  listener->context_ = context;
+
+  return listener;
+}
+
 std::shared_ptr<AudioParam> &AudioListener::getPositionX() { return positionX; }
 
 const std::shared_ptr<AudioParam> &AudioListener::getPositionX() const {
@@ -98,5 +118,13 @@ const std::shared_ptr<AudioParam> &AudioListener::getUpY() const { return upY; }
 std::shared_ptr<AudioParam> &AudioListener::getUpZ() { return upZ; }
 
 const std::shared_ptr<AudioParam> &AudioListener::getUpZ() const { return upZ; }
+
+std::shared_ptr<BaseAudioContext> AudioListener::getContext() const {
+  if (auto context = context_.lock()) {
+    return context;
+  } else {
+    throw std::runtime_error("AudioListener: context has expired");
+  }
+}
 } // namespace web_audio
 #endif

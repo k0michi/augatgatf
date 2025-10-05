@@ -135,7 +135,6 @@ private:
 #endif
   // [[current value]]
   float currentValue_;
-  std::weak_ptr<BaseAudioContext> context_;
   AutomationRate automationRate_;
   float defaultValue_;
   float minValue_;
@@ -153,12 +152,10 @@ private:
 #include "base_audio_context.h"
 
 namespace web_audio {
-std::shared_ptr<AudioParam>
-AudioParam::create(std::variant<std::weak_ptr<AudioNode>,
-                                  std::weak_ptr<AudioListener>>
-                       owner,
-                   float defaultValue, float minValue, float maxValue,
-                   AutomationRate automationRate, bool allowARate) {
+std::shared_ptr<AudioParam> AudioParam::create(
+    std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>> owner,
+    float defaultValue, float minValue, float maxValue,
+    AutomationRate automationRate, bool allowARate) {
   auto instance = std::shared_ptr<AudioParam>(new AudioParam());
   // SPEC: Each AudioParam has an internal slot [[current value]], initially set
   // to the AudioParam's defaultValue.
@@ -179,7 +176,7 @@ float AudioParam::getValue() const {
 
 void AudioParam::setValue(float value) {
   currentValue_ = value;
-  auto context = context_.lock();
+  auto context = getContext();
   auto currentTime = context->getCurrentTime();
   setValueAtTime(value, currentTime);
 }
@@ -248,7 +245,7 @@ AudioParam::exponentialRampToValueAtTime(float value, double endTime) {
 
   checkValueCurve(endTime);
 
-  auto currentTime = context_.lock()->getCurrentTime();
+  auto currentTime = getContext()->getCurrentTime();
   endTime = std::max(endTime, currentTime);
 
   events_.emplace(
@@ -298,7 +295,7 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
                        "RangeError");
   }
 
-  startTime = std::max(startTime, context_.lock()->getCurrentTime());
+  startTime = std::max(startTime, getContext()->getCurrentTime());
 
   if (duration <= 0 || std::isnan(duration) || std::isinf(duration)) {
     throw DOMException("AudioParam: setValueCurveAtTime parameter 'duration' "
@@ -343,7 +340,7 @@ AudioParam::cancelScheduledValues(double cancelTime) {
         "RangeError");
   }
 
-  cancelTime = std::max(cancelTime, context_.lock()->getCurrentTime());
+  cancelTime = std::max(cancelTime, getContext()->getCurrentTime());
   auto it = events_.lower_bound(details::ParamEventSetValue{0, 0, cancelTime});
   events_.erase(it, events_.end());
   return shared_from_this();
@@ -472,7 +469,7 @@ float AudioParam::getStartValue(
 
 void AudioParam::computeIntrinsicValues(double startTime,
                                         std::vector<float> &outputs) {
-  auto context = context_.lock();
+  auto context = getContext();
   auto sampleRate = context->getSampleRate();
   auto delta = 1.0 / sampleRate;
 
@@ -552,11 +549,17 @@ AudioParam::getOwner() const {
 }
 
 std::shared_ptr<BaseAudioContext> AudioParam::getContext() const {
-  if (auto context = context_.lock()) {
-    return context;
-  } else {
-    throw std::runtime_error("AudioParam: context has expired");
+  auto owner = getOwner();
+
+  if (auto node = std::get_if<std::shared_ptr<AudioNode>>(&owner)) {
+    return (*node)->getContext();
+  } else if (auto listener =
+                 std::get_if<std::shared_ptr<AudioListener>>(&owner)) {
+    return (*listener)->getContext();
   }
+
+  // unreachable
+  std::abort();
 }
 } // namespace web_audio
 #endif

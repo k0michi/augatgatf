@@ -54,7 +54,7 @@ public:
   void disconnect(std::shared_ptr<AudioParam> destinationParam,
                   std::uint32_t output);
 
-  std::weak_ptr<BaseAudioContext> getContext();
+  std::shared_ptr<BaseAudioContext> getContext() const;
 
   std::uint32_t getNumberOfInputs() const;
 
@@ -163,7 +163,13 @@ void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam,
   // TODO
 }
 
-std::weak_ptr<BaseAudioContext> AudioNode::getContext() { return context_; }
+std::shared_ptr<BaseAudioContext> AudioNode::getContext() const {
+  if (auto context = context_.lock()) {
+    return context;
+  } else {
+    throw std::runtime_error("AudioNode: context has expired");
+  }
+}
 
 std::uint32_t AudioNode::getNumberOfInputs() const { return numberOfInputs_; }
 
