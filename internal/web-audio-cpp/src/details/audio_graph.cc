@@ -1,4 +1,4 @@
-#include "web_audio/details/node_graph.h"
+#include "web_audio/details/audio_graph.h"
 
 #include "web_audio/audio_param.h"
 
