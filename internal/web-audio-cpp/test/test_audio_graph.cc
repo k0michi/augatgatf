@@ -79,3 +79,49 @@ TEST(NodeGraph, IsPartOfCycleSelfLoop) {
 
   EXPECT_TRUE(graph.isPartOfCycle(node1));
 }
+
+TEST(NodeGraph, GetNextVertices) {
+  auto context = createOfflineContext();
+  auto node1 = DummyNode::create(context);
+  auto node2 = DummyNode::create(context);
+  auto node3 = DummyNode::create(context);
+
+  node1->connect(node2);
+  node1->connect(node3);
+
+  web_audio::details::AudioGraph graph;
+  graph.addNode(node1);
+  graph.addNode(node2);
+  graph.addNode(node3);
+
+  auto next = graph.getNextVertices(
+      static_cast<std::shared_ptr<web_audio::AudioNode>>(node1));
+  EXPECT_EQ(next.size(), 2);
+  EXPECT_EQ(std::get<std::shared_ptr<web_audio::AudioNode>>(next[0]), node2);
+  EXPECT_EQ(std::get<std::shared_ptr<web_audio::AudioNode>>(next[1]), node3);
+}
+
+TEST(NodeGraph, GetPreviousVertices) {
+  auto context = createOfflineContext();
+  auto node1 = DummyNode::create(context);
+  auto node2 = DummyNode::create(context);
+  auto node3 = DummyNode::create(context);
+
+  node1->connect(node2);
+  node1->connect(node3);
+
+  web_audio::details::AudioGraph graph;
+  graph.addNode(node1);
+  graph.addNode(node2);
+  graph.addNode(node3);
+
+  auto prev = graph.getPreviousVertices(
+      static_cast<std::shared_ptr<web_audio::AudioNode>>(node2));
+  EXPECT_EQ(prev.size(), 1);
+  EXPECT_EQ(std::get<std::shared_ptr<web_audio::AudioNode>>(prev[0]), node1);
+
+  prev = graph.getPreviousVertices(
+      static_cast<std::shared_ptr<web_audio::AudioNode>>(node3));
+  EXPECT_EQ(prev.size(), 1);
+  EXPECT_EQ(std::get<std::shared_ptr<web_audio::AudioNode>>(prev[0]), node1);
+}

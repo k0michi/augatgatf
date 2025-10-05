@@ -62,8 +62,36 @@ AudioGraph::getNextVertices(Vertex vertex) const {
 
 std::vector<AudioGraph::Vertex>
 AudioGraph::getPreviousVertices(Vertex vertex) const {
-  // TODO
-  return {};
+  if (auto node = std::get_if<std::shared_ptr<AudioNode>>(&vertex)) {
+    std::vector<Vertex> prevNodes;
+
+    for (const auto &input : (*node)->inputs_) {
+      if (auto srcNode = input.source.lock()) {
+        prevNodes.push_back(srcNode);
+      }
+    }
+
+    for (const auto &input : (*node)->inputsIndirect_) {
+      if (auto srcNode = input.lock()) {
+        prevNodes.push_back(srcNode);
+      }
+    }
+
+    return prevNodes;
+  } else if (auto listener =
+                 std::get_if<std::shared_ptr<AudioListener>>(&vertex)) {
+    std::vector<Vertex> prevNodes;
+
+    for (const auto &input : (*listener)->inputsIndirect_) {
+      if (auto srcNode = input.lock()) {
+        prevNodes.push_back(srcNode);
+      }
+    }
+
+    return prevNodes;
+  }
+
+  std::abort();
 }
 
 std::vector<AudioGraph::Vertex> AudioGraph::getVertices() const {

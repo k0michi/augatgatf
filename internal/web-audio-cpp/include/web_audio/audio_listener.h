@@ -10,6 +10,10 @@ class AudioParam;
 class BaseAudioContext;
 class AudioNode;
 
+namespace details {
+class AudioGraph;
+}
+
 class AudioListener : public std::enable_shared_from_this<AudioListener> {
   WEB_AUDIO_PRIVATE : AudioListener() = default;
 
@@ -62,5 +66,6 @@ public:
   friend class AudioContext;
   friend class OfflineAudioContext;
   friend class AudioNode;
+  friend class details::AudioGraph;
 };
 } // namespace web_audio
