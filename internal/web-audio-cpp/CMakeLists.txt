@@ -41,6 +41,24 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 set(WEB_AUDIO_TEST_SRC
+# include src/**/*.cc
+  src/audio_buffer.cc
+  src/audio_destination_node.cc
+  src/audio_listener.cc
+  src/audio_node.cc
+  src/audio_param.cc
+  src/audio_scheduled_source_node.cc
+  src/base_audio_context.cc
+  src/delay_node.cc
+  src/details/event_queue.cc
+  src/details/message_queue.cc
+  src/details/node_graph.cc
+  src/details/param_collection.cc
+  src/details/render_quantum.cc
+  src/dom_exception.cc
+  src/offline_audio_context.cc
+  src/periodic_wave.cc
+# end
 # include test/**/*.cc
   test/test_audio_buffer.cc
   test/test_audio_node.cc
@@ -53,8 +71,9 @@ set(WEB_AUDIO_TEST_SRC
 # end
 )
 add_executable(test_web_audio ${WEB_AUDIO_TEST_SRC})
-target_link_libraries(test_web_audio PRIVATE web-audio-cpp GTest::gtest_main)
+target_link_libraries(test_web_audio PRIVATE GTest::gtest_main)
 add_test(NAME test_web_audio COMMAND test_web_audio)
+target_include_directories(test_web_audio PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 add_library(web_audio_coverage_config INTERFACE)
@@ -74,7 +93,5 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
-# FIXME:
-target_compile_definitions(web-audio-cpp PUBLIC WEB_AUDIO_TEST)
 target_compile_definitions(test_web_audio PUBLIC WEB_AUDIO_TEST)
 target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)
