@@ -21,9 +21,7 @@ void AudioGraph::clear() { nodes_.clear(); }
 
 std::vector<AudioGraph::Vertex>
 AudioGraph::getNextVertices(std::shared_ptr<AudioNode> node) const {
-  std::vector<
-      std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>>
-      nextNodes;
+  std::vector<Vertex> nextNodes;
 
   for (const auto &output : node->outputs_) {
     auto destination = output.destination;
