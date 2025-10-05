@@ -11,7 +11,7 @@ class AudioParam;
 
 namespace web_audio::details {
 struct AudioNodeInput {
-  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioParam>> source;
+  std::weak_ptr<AudioNode> source;
   std::uint32_t sourceIndex;
   std::uint32_t destinationIndex;
 
@@ -25,15 +25,7 @@ struct AudioNodeInput {
       return !a.owner_before(b) && !b.owner_before(a);
     };
 
-    if (source.index() != other.source.index()) {
-      return false;
-    }
-
-    if (source.index() == 0) {
-      return cmp(std::get<0>(source), std::get<0>(other.source));
-    } else {
-      return cmp(std::get<1>(source), std::get<1>(other.source));
-    }
+    return cmp(source, other.source);
   }
 
   bool operator!=(const AudioNodeInput &other) const {
