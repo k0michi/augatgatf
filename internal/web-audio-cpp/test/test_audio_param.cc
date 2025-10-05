@@ -1,35 +1,38 @@
 #include <gtest/gtest.h>
 
+#include "dummy_node.h"
 #include "web_audio.h"
 
+#include <unordered_set>
+
 namespace {
+std::shared_ptr<web_audio::OfflineAudioContext> context;
+
 std::shared_ptr<web_audio::OfflineAudioContext> createOfflineContext() {
-  return web_audio::OfflineAudioContext::create(2, 128, 44100.0f);
+  return context = web_audio::OfflineAudioContext::create(2, 128, 44100.0f);
 }
+
+// FIXME:
+std::unordered_set<std::shared_ptr<DummyNode>> nodes;
 
 std::shared_ptr<web_audio::AudioParam>
 createAudioParam(std::shared_ptr<web_audio::OfflineAudioContext> context) {
-  return web_audio::AudioParam::create(context, 0.0f,
-                                       -std::numeric_limits<float>::infinity(),
-                                       std::numeric_limits<float>::infinity(),
-                                       web_audio::AutomationRate::eARate, true);
+  std::shared_ptr<DummyNode> dummyNode = DummyNode::create(context);
+  nodes.insert(dummyNode);
+  return dummyNode->param_;
 }
 
 std::shared_ptr<web_audio::AudioParam>
 createAudioParam1(std::shared_ptr<web_audio::OfflineAudioContext> context) {
-  return web_audio::AudioParam::create(context, 1.0f,
-                                       -std::numeric_limits<float>::infinity(),
-                                       std::numeric_limits<float>::infinity(),
-                                       web_audio::AutomationRate::eARate, true);
+  std::shared_ptr<DummyNode> dummyNode = DummyNode::create(context);
+  nodes.insert(dummyNode);
+  return dummyNode->param1_;
 }
 } // namespace
 
 TEST(AudioParamTest, Create) {
   auto context = createOfflineContext();
-  auto param = web_audio::AudioParam::create(
-      context, 0.0f, -std::numeric_limits<float>::infinity(),
-      std::numeric_limits<float>::infinity(), web_audio::AutomationRate::eARate,
-      true);
+  auto param = createAudioParam(context);
   EXPECT_EQ(param->getValue(), 0.0f);
   EXPECT_EQ(param->getDefaultValue(), 0.0f);
   EXPECT_EQ(param->getMinValue(), -std::numeric_limits<float>::infinity());
@@ -232,4 +235,10 @@ TEST(AudioParamTest, ComputeIntrinsicValues_LinearAfterCurve) {
       EXPECT_NEAR(outputs[i], expected, 0.01f);
     }
   }
+}
+
+TEST(AudioParamTest, CurrentValue) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam1(context);
+  EXPECT_EQ(param->getValue(), 1.0f);
 }

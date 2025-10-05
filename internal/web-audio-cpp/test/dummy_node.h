@@ -1,7 +1,6 @@
 #pragma once
 
-#include "web_audio/audio_node.h"
-#include "web_audio/details/param_collection.h"
+#include "web_audio.h"
 
 namespace {
 class DummyNode : public web_audio::AudioNode {
@@ -22,6 +21,15 @@ public:
     node->channelCountMode_ = web_audio::ChannelCountMode::eMax;
     node->channelInterpretation_ = web_audio::ChannelInterpretation::eSpeakers;
 
+    node->param_ = web_audio::AudioParam::create(
+        node, 0.0f, -std::numeric_limits<float>::infinity(),
+        std::numeric_limits<float>::infinity(),
+        web_audio::AutomationRate::eARate, true);
+    node->param1_ = web_audio::AudioParam::create(
+        node, 1.0f, -std::numeric_limits<float>::infinity(),
+        std::numeric_limits<float>::infinity(),
+        web_audio::AutomationRate::eARate, true);
+
     return node;
   }
 
@@ -29,5 +37,9 @@ public:
   process(const std::vector<web_audio::details::RenderQuantum> &inputBuffer,
           std::vector<web_audio::details::RenderQuantum> &outputBuffer,
           const web_audio::details::ParamCollection &params) override {}
+
+public:
+  std::shared_ptr<web_audio::AudioParam> param_;
+  std::shared_ptr<web_audio::AudioParam> param1_;
 };
 } // namespace

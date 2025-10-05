@@ -1,10 +1,13 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <limits>
 #include <memory>
 #include <set>
+#include <stdexcept>
+#include <variant>
 #include <vector>
 
 #include "automation_rate.h"
@@ -22,7 +25,8 @@ private:
   AudioParam() = default;
 
   static std::shared_ptr<AudioParam>
-  create(std::shared_ptr<BaseAudioContext> context = nullptr,
+  create(std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>>
+             owner,
          float defaultValue = 0.0f,
          float minValue = -std::numeric_limits<float>::infinity(),
          float maxValue = std::numeric_limits<float>::infinity(),
@@ -111,6 +115,19 @@ public:
 
   void computeIntrinsicValues(double startTime, std::vector<float> &outputs);
 
+  /**
+   * Returns the owner of this AudioParam (either an AudioNode or an
+   * AudioListener). Throws if the owner has expired.
+   */
+  std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>
+  getOwner() const;
+
+  /**
+   * Returns the context this AudioParam belongs to. Throws if the context
+   * has expired.
+   */
+  std::shared_ptr<BaseAudioContext> getContext() const;
+
 #ifdef WEB_AUDIO_TEST
 public:
 #else
@@ -126,6 +143,7 @@ private:
   bool allowARate_;
   std::set<details::ParamEvent, details::ParamEventLess> events_;
   std::uint32_t eventIndex_ = 0;
+  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>> owner_;
 
   friend class DelayNode;
 };
@@ -136,11 +154,17 @@ private:
 
 namespace web_audio {
 std::shared_ptr<AudioParam>
-AudioParam::create(std::shared_ptr<BaseAudioContext> context,
+AudioParam::create(　std::variant<std::weak_ptr<AudioNode>,
+                                  std::weak_ptr<AudioListener>>
+                       owner,
                    float defaultValue, float minValue, float maxValue,
                    AutomationRate automationRate, bool allowARate) {
   auto instance = std::shared_ptr<AudioParam>(new AudioParam());
-  instance->context_ = context;
+  // SPEC: Each AudioParam has an internal slot [[current value]], initially set
+  // to the AudioParam's defaultValue.
+  instance->currentValue_ = defaultValue;
+
+  instance->owner_ = owner;
   instance->defaultValue_ = defaultValue;
   instance->minValue_ = minValue;
   instance->maxValue_ = maxValue;
@@ -506,6 +530,32 @@ void AudioParam::computeIntrinsicValues(double startTime,
         outputs[i] = endValue;
       }
     }
+  }
+}
+
+std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>
+AudioParam::getOwner() const {
+  if (auto node = std::get_if<std::weak_ptr<AudioNode>>(&owner_)) {
+    if (auto sp = node->lock()) {
+      return sp;
+    } else {
+      throw std::runtime_error("AudioParam: owner AudioNode has expired");
+    }
+  } else if (auto listener =
+                 std::get_if<std::weak_ptr<AudioListener>>(&owner_)) {
+    if (auto sp = listener->lock()) {
+      return sp;
+    } else {
+      throw std::runtime_error("AudioParam: owner AudioListener has expired");
+    }
+  }
+}
+
+std::shared_ptr<BaseAudioContext> AudioParam::getContext() const {
+  if (auto context = context_.lock()) {
+    return context;
+  } else {
+    throw std::runtime_error("AudioParam: context has expired");
   }
 }
 } // namespace web_audio
