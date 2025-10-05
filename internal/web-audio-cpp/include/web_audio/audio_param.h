@@ -154,7 +154,7 @@ private:
 
 namespace web_audio {
 std::shared_ptr<AudioParam>
-AudioParam::create(　std::variant<std::weak_ptr<AudioNode>,
+AudioParam::create(std::variant<std::weak_ptr<AudioNode>,
                                   std::weak_ptr<AudioListener>>
                        owner,
                    float defaultValue, float minValue, float maxValue,
