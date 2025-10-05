@@ -34,7 +34,7 @@ void AudioScheduledSourceNode::start(double when) {
   // SPEC: Queue a control message to start the AudioScheduledSourceNode,
   // including the parameter values in the message.
   auto context = context_.lock();
-  context->queueMessage(details::MessageStart{when, 0, 0, shared_from_this()});
+  context->queueMessage(detail::MessageStart{when, 0, 0, shared_from_this()});
 
   // SPEC: Send a control message to the associated AudioContext to start
   // running its rendering thread only when all the following conditions are
@@ -61,6 +61,6 @@ void AudioScheduledSourceNode::stop(double when) {
   // SPEC: Queue a control message to stop the AudioScheduledSourceNode,
   // including the parameter values in the message.
   auto context = context_.lock();
-  context->queueMessage(details::MessageStop{when, shared_from_this()});
+  context->queueMessage(detail::MessageStop{when, shared_from_this()});
 }
 } // namespace web_audio

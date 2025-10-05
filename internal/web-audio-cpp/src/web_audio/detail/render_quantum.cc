@@ -1,6 +1,6 @@
 #include "web_audio/detail/render_quantum.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels,
                              std::uint32_t length)
     : length_(length),
@@ -203,4 +203,4 @@ void RenderQuantum::mix(std::uint32_t computedNumberOfChannels,
     channelData_.resize(computedNumberOfChannels);
   }
 }
-} // namespace web_audio::details
+} // namespace web_audio::detail

@@ -65,8 +65,8 @@ protected:
   EventHandler *onstatechange_ = nullptr;
   std::atomic<double> currentTime_{0.0};
 
-  details::EventQueue eventQueue_;
-  details::MessageQueue controlMessageQueue_;
+  detail::EventQueue eventQueue_;
+  detail::MessageQueue controlMessageQueue_;
   std::vector<std::shared_ptr<AudioNode>> nodes_;
 };
 } // namespace web_audio

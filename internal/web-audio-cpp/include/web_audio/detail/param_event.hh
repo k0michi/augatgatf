@@ -6,7 +6,7 @@
 #include <variant>
 #include <vector>
 
-namespace web_audio::details {
+namespace web_audio::detail {
 struct ParamEventExponentialRamp {
   std::uint32_t index;
   float value;
@@ -74,4 +74,4 @@ struct ParamEventLess {
         a, b);
   }
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

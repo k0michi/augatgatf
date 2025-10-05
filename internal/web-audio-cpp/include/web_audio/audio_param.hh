@@ -20,7 +20,7 @@ class BaseAudioContext;
 class AudioNode;
 class AudioListener;
 
-namespace details {
+namespace detail {
 class AudioGraph;
 }
 
@@ -90,13 +90,13 @@ public:
   /**
    * Returns the last event whose time is less than or equal to `time`.
    */
-  std::set<details::ParamEvent, details::ParamEventLess>::iterator
+  std::set<detail::ParamEvent, detail::ParamEventLess>::iterator
   floorEvent(double time);
 
   /**
    * Returns the first event whose time is greater than `time`.
    */
-  std::set<details::ParamEvent, details::ParamEventLess>::iterator
+  std::set<detail::ParamEvent, detail::ParamEventLess>::iterator
   higherEvent(double time);
 
   /**
@@ -107,14 +107,14 @@ public:
   /**
    * Get the value at the end of the given event.
    */
-  float getEndValue(std::set<details::ParamEvent,
-                             details::ParamEventLess>::iterator event) const;
+  float getEndValue(std::set<detail::ParamEvent,
+                             detail::ParamEventLess>::iterator event) const;
 
   /**
    * Get the value at the beginning of the given event.
    */
-  float getStartValue(std::set<details::ParamEvent,
-                               details::ParamEventLess>::iterator event) const;
+  float getStartValue(std::set<detail::ParamEvent,
+                               detail::ParamEventLess>::iterator event) const;
 
   void computeIntrinsicValues(double startTime, std::vector<float> &outputs);
 
@@ -139,13 +139,13 @@ public:
   float minValue_;
   float maxValue_;
   bool allowARate_;
-  std::set<details::ParamEvent, details::ParamEventLess> events_;
+  std::set<detail::ParamEvent, detail::ParamEventLess> events_;
   std::uint32_t eventIndex_ = 0;
   std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>> owner_;
-  std::vector<details::AudioNodeInput> inputs_;
+  std::vector<detail::AudioNodeInput> inputs_;
 
   friend class DelayNode;
-  friend class details::AudioGraph;
+  friend class detail::AudioGraph;
   friend class AudioNode;
 };
 } // namespace web_audio

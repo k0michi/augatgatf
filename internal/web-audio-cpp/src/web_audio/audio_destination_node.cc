@@ -7,9 +7,9 @@ std::uint32_t AudioDestinationNode::getMaxChannelCount() const {
 }
 
 void AudioDestinationNode::process(
-    const std::vector<details::RenderQuantum> &inputs,
-    std::vector<details::RenderQuantum> &outputs,
-    const details::ParamCollection &params) {
+    const std::vector<detail::RenderQuantum> &inputs,
+    std::vector<detail::RenderQuantum> &outputs,
+    const detail::ParamCollection &params) {
   throw std::runtime_error("Not implemented");
 }
 } // namespace web_audio

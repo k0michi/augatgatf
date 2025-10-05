@@ -10,7 +10,7 @@ namespace web_audio {
 class AudioParam;
 }
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class ParamCollection {
 public:
   ParamCollection() = default;
@@ -29,4 +29,4 @@ public:
       : std::unordered_map<std::shared_ptr<AudioParam>, std::vector<float>>
             params_;
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

@@ -20,7 +20,7 @@ enum class PromiseState {
 
 template <typename T> class PromiseInternal {
 public:
-  PromiseInternal(details::EventQueue &queue) : eventQueue_(queue) {}
+  PromiseInternal(detail::EventQueue &queue) : eventQueue_(queue) {}
 
   void resolve(T &&value) {
     state_ = PromiseState::eFulfilled;
@@ -78,7 +78,7 @@ public:
 
   WEB_AUDIO_PRIVATE : std::vector<std::function<void(T)>> fulfillCallbacks_;
   std::vector<std::function<void(std::exception_ptr)>> rejectCallbacks_;
-  details::EventQueue &eventQueue_;
+  detail::EventQueue &eventQueue_;
   T value_;
   std::exception_ptr exception_;
   PromiseState state_ = PromiseState::ePending;
@@ -86,7 +86,7 @@ public:
 
 template <> class PromiseInternal<void> {
 public:
-  PromiseInternal(details::EventQueue &queue) : eventQueue_(queue) {}
+  PromiseInternal(detail::EventQueue &queue) : eventQueue_(queue) {}
 
   void resolve() {
     state_ = PromiseState::eFulfilled;
@@ -143,14 +143,14 @@ public:
 
   WEB_AUDIO_PRIVATE : std::vector<std::function<void()>> fulfillCallbacks_;
   std::vector<std::function<void(std::exception_ptr)>> rejectCallbacks_;
-  details::EventQueue &eventQueue_;
+  detail::EventQueue &eventQueue_;
   std::exception_ptr exception_;
   PromiseState state_ = PromiseState::ePending;
 };
 
 template <typename T> class Promise : public PromiseBase {
 public:
-  Promise(details::EventQueue &queue) {
+  Promise(detail::EventQueue &queue) {
     internal_ = std::make_shared<PromiseInternal<T>>(queue);
   }
 

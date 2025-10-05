@@ -59,7 +59,7 @@ std::shared_ptr<AudioParam> AudioParam::setValueAtTime(float value,
 
   checkValueCurve(startTime);
 
-  events_.emplace(details::ParamEventSetValue{eventIndex_++, value, startTime});
+  events_.emplace(detail::ParamEventSetValue{eventIndex_++, value, startTime});
   return shared_from_this();
 }
 
@@ -74,7 +74,7 @@ AudioParam::linearRampToValueAtTime(float value, double endTime) {
 
   checkValueCurve(endTime);
 
-  events_.emplace(details::ParamEventLinearRamp{eventIndex_++, value, endTime});
+  events_.emplace(detail::ParamEventLinearRamp{eventIndex_++, value, endTime});
   return shared_from_this();
 }
 
@@ -100,7 +100,7 @@ AudioParam::exponentialRampToValueAtTime(float value, double endTime) {
   endTime = std::max(endTime, currentTime);
 
   events_.emplace(
-      details::ParamEventExponentialRamp{eventIndex_++, value, endTime});
+      detail::ParamEventExponentialRamp{eventIndex_++, value, endTime});
   return shared_from_this();
 }
 
@@ -121,7 +121,7 @@ std::shared_ptr<AudioParam> AudioParam::setTargetAtTime(float target,
 
   checkValueCurve(startTime);
 
-  events_.emplace(details::ParamEventSetTarget{
+  events_.emplace(detail::ParamEventSetTarget{
       eventIndex_++,
       target,
       startTime,
@@ -159,7 +159,7 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
   // SPEC: If setValueCurveAtTime() is called for time T and duration D and
   // there are any events having a time strictly greater than T, but strictly
   // less than T+D, then a NotSupportedError exception MUST be thrown.
-  auto it = events_.upper_bound(details::ParamEventSetValue{0, 0, startTime});
+  auto it = events_.upper_bound(detail::ParamEventSetValue{0, 0, startTime});
 
   if (it != events_.end()) {
     auto next = it;
@@ -174,10 +174,10 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
     }
   }
 
-  events_.emplace(details::ParamEventSetValueCurve{
+  events_.emplace(detail::ParamEventSetValueCurve{
       eventIndex_++, values, startTime, duration, std::nullopt});
-  events_.emplace(details::ParamEventSetValue{eventIndex_++, values.back(),
-                                              startTime + duration});
+  events_.emplace(detail::ParamEventSetValue{eventIndex_++, values.back(),
+                                             startTime + duration});
 
   return shared_from_this();
 }
@@ -192,7 +192,7 @@ AudioParam::cancelScheduledValues(double cancelTime) {
   }
 
   cancelTime = std::max(cancelTime, getContext()->getCurrentTime());
-  auto it = events_.lower_bound(details::ParamEventSetValue{0, 0, cancelTime});
+  auto it = events_.lower_bound(detail::ParamEventSetValue{0, 0, cancelTime});
   events_.erase(it, events_.end());
   return shared_from_this();
 }
@@ -213,9 +213,9 @@ std::shared_ptr<AudioParam> AudioParam::cancelAndHoldAtTime(double cancelTime) {
   return shared_from_this();
 }
 
-std::set<details::ParamEvent, details::ParamEventLess>::iterator
+std::set<detail::ParamEvent, detail::ParamEventLess>::iterator
 AudioParam::floorEvent(double time) {
-  auto it = events_.upper_bound(details::ParamEventSetValue{
+  auto it = events_.upper_bound(detail::ParamEventSetValue{
       std::numeric_limits<std::uint32_t>::max(), 0, time});
 
   if (it == events_.begin()) {
@@ -226,9 +226,9 @@ AudioParam::floorEvent(double time) {
   return it;
 }
 
-std::set<details::ParamEvent, details::ParamEventLess>::iterator
+std::set<detail::ParamEvent, detail::ParamEventLess>::iterator
 AudioParam::higherEvent(double time) {
-  return events_.upper_bound(details::ParamEventSetValue{
+  return events_.upper_bound(detail::ParamEventSetValue{
       std::numeric_limits<std::uint32_t>::max(), 0, time});
 }
 
@@ -237,13 +237,13 @@ void AudioParam::checkValueCurve(double time) const {
   // automation method is called at a time which is contained in [T,T+D), T
   // being the time of the curve and D its duration.
 
-  auto it = events_.lower_bound(details::ParamEventSetValue{0, 0, time});
+  auto it = events_.lower_bound(detail::ParamEventSetValue{0, 0, time});
 
   if (it != events_.begin()) {
     auto prev = std::prev(it);
 
-    if (std::holds_alternative<details::ParamEventSetValueCurve>(*prev)) {
-      auto &e = std::get<details::ParamEventSetValueCurve>(*prev);
+    if (std::holds_alternative<detail::ParamEventSetValueCurve>(*prev)) {
+      auto &e = std::get<detail::ParamEventSetValueCurve>(*prev);
 
       if (e.startTime <= time && time < e.startTime + e.duration) {
         throw DOMException(
@@ -255,26 +255,26 @@ void AudioParam::checkValueCurve(double time) const {
 }
 
 float AudioParam::getEndValue(
-    std::set<details::ParamEvent, details::ParamEventLess>::iterator event)
+    std::set<detail::ParamEvent, detail::ParamEventLess>::iterator event)
     const {
   if (event == events_.end()) {
     return defaultValue_;
   }
 
-  if (std::holds_alternative<details::ParamEventSetValue>(*event)) {
-    return std::get<details::ParamEventSetValue>(*event).value;
+  if (std::holds_alternative<detail::ParamEventSetValue>(*event)) {
+    return std::get<detail::ParamEventSetValue>(*event).value;
   }
 
-  if (std::holds_alternative<details::ParamEventLinearRamp>(*event)) {
-    return std::get<details::ParamEventLinearRamp>(*event).value;
+  if (std::holds_alternative<detail::ParamEventLinearRamp>(*event)) {
+    return std::get<detail::ParamEventLinearRamp>(*event).value;
   }
 
-  if (std::holds_alternative<details::ParamEventExponentialRamp>(*event)) {
-    return std::get<details::ParamEventExponentialRamp>(*event).value;
+  if (std::holds_alternative<detail::ParamEventExponentialRamp>(*event)) {
+    return std::get<detail::ParamEventExponentialRamp>(*event).value;
   }
 
-  if (std::holds_alternative<details::ParamEventSetTarget>(*event)) {
-    auto &e = std::get<details::ParamEventSetTarget>(*event);
+  if (std::holds_alternative<detail::ParamEventSetTarget>(*event)) {
+    auto &e = std::get<detail::ParamEventSetTarget>(*event);
     float prevValue;
 
     if (event == events_.begin()) {
@@ -300,8 +300,8 @@ float AudioParam::getEndValue(
                        std::exp((e.startTime - nextTime) / e.timeConstant));
   }
 
-  if (std::holds_alternative<details::ParamEventSetValueCurve>(*event)) {
-    auto &e = std::get<details::ParamEventSetValueCurve>(*event);
+  if (std::holds_alternative<detail::ParamEventSetValueCurve>(*event)) {
+    auto &e = std::get<detail::ParamEventSetValueCurve>(*event);
     return e.values.back();
   }
 
@@ -309,7 +309,7 @@ float AudioParam::getEndValue(
 }
 
 float AudioParam::getStartValue(
-    std::set<details::ParamEvent, details::ParamEventLess>::iterator event)
+    std::set<detail::ParamEvent, detail::ParamEventLess>::iterator event)
     const {
   if (event == events_.begin()) {
     return defaultValue_;
@@ -331,16 +331,16 @@ void AudioParam::computeIntrinsicValues(double startTime,
 
     if (prevEvent == events_.end()) {
       outputs[i] = defaultValue_;
-    } else if (std::holds_alternative<details::ParamEventSetTarget>(
+    } else if (std::holds_alternative<detail::ParamEventSetTarget>(
                    *prevEvent)) {
-      auto &e = std::get<details::ParamEventSetTarget>(*prevEvent);
+      auto &e = std::get<detail::ParamEventSetTarget>(*prevEvent);
       auto startValue = getStartValue(prevEvent);
       outputs[i] = static_cast<float>(
           e.target + (startValue - e.target) *
                          std::exp((e.startTime - time) / e.timeConstant));
-    } else if (std::holds_alternative<details::ParamEventSetValueCurve>(
+    } else if (std::holds_alternative<detail::ParamEventSetValueCurve>(
                    *prevEvent)) {
-      auto &e = std::get<details::ParamEventSetValueCurve>(*prevEvent);
+      auto &e = std::get<detail::ParamEventSetValueCurve>(*prevEvent);
       auto k = static_cast<std::size_t>(std::floor(
           (e.values.size() - 1.0) / e.duration * (time - e.startTime)));
 
@@ -358,18 +358,18 @@ void AudioParam::computeIntrinsicValues(double startTime,
 
       if (nextEvent == events_.end()) {
         outputs[i] = endValue;
-      } else if (std::holds_alternative<details::ParamEventLinearRamp>(
+      } else if (std::holds_alternative<detail::ParamEventLinearRamp>(
                      *nextEvent)) {
         auto prevTime =
             std::visit([](const auto &x) { return x.getTime(); }, *prevEvent);
-        auto &e = std::get<details::ParamEventLinearRamp>(*nextEvent);
+        auto &e = std::get<detail::ParamEventLinearRamp>(*nextEvent);
         outputs[i] = endValue + (e.value - endValue) * (time - prevTime) /
                                     (e.endTime - prevTime);
-      } else if (std::holds_alternative<details::ParamEventExponentialRamp>(
+      } else if (std::holds_alternative<detail::ParamEventExponentialRamp>(
                      *nextEvent)) {
         auto prevTime =
             std::visit([](const auto &x) { return x.getTime(); }, *prevEvent);
-        auto &e = std::get<details::ParamEventExponentialRamp>(*nextEvent);
+        auto &e = std::get<detail::ParamEventExponentialRamp>(*nextEvent);
 
         outputs[i] =
             endValue * std::pow(e.value / endValue,

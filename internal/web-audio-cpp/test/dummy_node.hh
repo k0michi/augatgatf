@@ -31,10 +31,9 @@ public:
     return node;
   }
 
-  void
-  process(const std::vector<web_audio::details::RenderQuantum> &inputBuffer,
-          std::vector<web_audio::details::RenderQuantum> &outputBuffer,
-          const web_audio::details::ParamCollection &params) override {}
+  void process(const std::vector<web_audio::detail::RenderQuantum> &inputBuffer,
+               std::vector<web_audio::detail::RenderQuantum> &outputBuffer,
+               const web_audio::detail::ParamCollection &params) override {}
 
 public:
   std::shared_ptr<web_audio::AudioParam> param_;

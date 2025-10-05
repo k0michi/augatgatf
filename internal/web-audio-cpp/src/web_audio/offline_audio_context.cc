@@ -28,7 +28,7 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
 
   renderingThread_ = std::make_unique<std::thread>([this, internal]() {
     {
-      details::MessageQueue qRendering;
+      detail::MessageQueue qRendering;
       this->controlMessageQueue_.swap(qRendering);
       while (true) {
         auto msg = qRendering.pop();

@@ -15,9 +15,9 @@
 #include "detail/render_quantum.hh"
 #include "dom_exception.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class AudioGraph;
-} // namespace web_audio::details
+} // namespace web_audio::detail
 
 namespace web_audio {
 class BaseAudioContext;
@@ -63,9 +63,9 @@ public:
   virtual void
   setChannelInterpretation(ChannelInterpretation channelInterpretation);
 
-  virtual void process(const std::vector<details::RenderQuantum> &inputs,
-                       std::vector<details::RenderQuantum> &outputs,
-                       const details::ParamCollection &params) = 0;
+  virtual void process(const std::vector<detail::RenderQuantum> &inputs,
+                       std::vector<detail::RenderQuantum> &outputs,
+                       const detail::ParamCollection &params) = 0;
 
   void disconnectInternal(std::size_t index);
 
@@ -83,13 +83,13 @@ protected:
   ChannelCountMode channelCountMode_;
   ChannelInterpretation channelInterpretation_;
 
-  std::vector<details::AudioNodeInput> inputs_;
-  std::vector<details::AudioNodeOutput> outputs_;
+  std::vector<detail::AudioNodeInput> inputs_;
+  std::vector<detail::AudioNodeOutput> outputs_;
   std::vector<std::weak_ptr<AudioNode>> inputsIndirect_;
 
   friend class BaseAudioContext;
   friend class AudioContext;
   friend class OfflineAudioContext;
-  friend class details::AudioGraph;
+  friend class detail::AudioGraph;
 };
 } // namespace web_audio

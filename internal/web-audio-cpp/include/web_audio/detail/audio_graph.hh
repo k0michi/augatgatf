@@ -9,7 +9,7 @@
 #include "../audio_node.hh"
 #include "common.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class AudioGraph {
 public:
   using Vertex =
@@ -50,4 +50,4 @@ public:
   WEB_AUDIO_PRIVATE : std::vector<std::shared_ptr<AudioNode>> nodes_;
   std::shared_ptr<AudioListener> listener_;
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

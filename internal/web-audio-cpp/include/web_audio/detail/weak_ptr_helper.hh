@@ -3,7 +3,7 @@
 #include <compare>
 #include <memory>
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class WeakPtrHelper {
 public:
   template <typename T>
@@ -40,4 +40,4 @@ public:
     return compare(b, a);
   }
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

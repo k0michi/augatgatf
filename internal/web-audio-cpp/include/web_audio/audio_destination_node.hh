@@ -15,9 +15,9 @@ public:
 public:
   std::uint32_t getMaxChannelCount() const;
 
-  void process(const std::vector<details::RenderQuantum> &inputs,
-               std::vector<details::RenderQuantum> &outputs,
-               const details::ParamCollection &params) override;
+  void process(const std::vector<detail::RenderQuantum> &inputs,
+               std::vector<detail::RenderQuantum> &outputs,
+               const detail::ParamCollection &params) override;
 
   friend class AudioContext;
   friend class OfflineAudioContext;

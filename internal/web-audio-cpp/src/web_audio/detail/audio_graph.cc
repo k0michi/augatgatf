@@ -2,7 +2,7 @@
 
 #include "web_audio/audio_param.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 void AudioGraph::addNode(std::shared_ptr<AudioNode> node) {
   if (!hasNode(node)) {
     nodes_.push_back(node);
@@ -195,4 +195,4 @@ AudioGraph::getStronglyConnectedComponents() const {
 
   return sccs;
 }
-} // namespace web_audio::details
+} // namespace web_audio::detail

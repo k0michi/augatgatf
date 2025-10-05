@@ -36,9 +36,9 @@ AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
     }
   }
 
-  outputs_.push_back(details::AudioNodeOutput{output, destinationNode, input});
+  outputs_.push_back(detail::AudioNodeOutput{output, destinationNode, input});
   destinationNode->inputs_.push_back(
-      details::AudioNodeInput{shared_from_this(), output, input});
+      detail::AudioNodeInput{shared_from_this(), output, input});
 
   return destinationNode;
 }
@@ -75,9 +75,9 @@ void AudioNode::connect(std::shared_ptr<AudioParam> destinationParam,
     }
   }
 
-  outputs_.push_back(details::AudioNodeOutput{output, destinationParam, 0});
+  outputs_.push_back(detail::AudioNodeOutput{output, destinationParam, 0});
   destinationParam->inputs_.push_back(
-      details::AudioNodeInput{shared_from_this(), output, 0});
+      detail::AudioNodeInput{shared_from_this(), output, 0});
   auto owner = destinationParam->getOwner();
 
   if (auto ownerNode = std::get_if<std::shared_ptr<AudioNode>>(&owner)) {
@@ -313,9 +313,9 @@ void AudioNode::disconnectInternal(std::size_t index) {
     if (auto sp = destNode->lock()) {
       auto &inputs = sp->inputs_;
       inputs.erase(std::remove(inputs.begin(), inputs.end(),
-                               details::AudioNodeInput{
-                                   shared_from_this(), output.sourceIndex,
-                                   output.destinationIndex}),
+                               detail::AudioNodeInput{shared_from_this(),
+                                                      output.sourceIndex,
+                                                      output.destinationIndex}),
                    inputs.end());
       outputs_.erase(outputs_.begin() + index);
     }
@@ -324,8 +324,8 @@ void AudioNode::disconnectInternal(std::size_t index) {
     if (auto sp = destParam->lock()) {
       auto &inputs = sp->inputs_;
       inputs.erase(std::remove(inputs.begin(), inputs.end(),
-                               details::AudioNodeInput{shared_from_this(),
-                                                       output.sourceIndex, 0}),
+                               detail::AudioNodeInput{shared_from_this(),
+                                                      output.sourceIndex, 0}),
                    inputs.end());
       outputs_.erase(outputs_.begin() + index);
 
@@ -335,7 +335,7 @@ void AudioNode::disconnectInternal(std::size_t index) {
         inputsIndirect.erase(
             std::remove_if(inputsIndirect.begin(), inputsIndirect.end(),
                            [this](const auto &node) {
-                             return details::WeakPtrHelper::compare(
+                             return detail::WeakPtrHelper::compare(
                                         node, shared_from_this()) == 0;
                            }),
             inputsIndirect.end());
@@ -345,7 +345,7 @@ void AudioNode::disconnectInternal(std::size_t index) {
         inputsIndirect.erase(
             std::remove_if(inputsIndirect.begin(), inputsIndirect.end(),
                            [this](const auto &node) {
-                             return details::WeakPtrHelper::compare(
+                             return detail::WeakPtrHelper::compare(
                                         node, shared_from_this()) == 0;
                            }),
             inputsIndirect.end());

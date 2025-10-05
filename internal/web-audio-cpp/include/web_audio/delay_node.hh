@@ -20,18 +20,18 @@ public:
 
   std::shared_ptr<AudioParam> getDelayTime() const;
 
-  void process(const std::vector<details::RenderQuantum> &inputs,
-               std::vector<details::RenderQuantum> &outputs,
-               const details::ParamCollection &params) override;
+  void process(const std::vector<detail::RenderQuantum> &inputs,
+               std::vector<detail::RenderQuantum> &outputs,
+               const detail::ParamCollection &params) override;
 
 public:
   class DelayNodeReader : public AudioNode {
     WEB_AUDIO_PRIVATE : DelayNodeReader() = default;
 
   public:
-    void process(const std::vector<details::RenderQuantum> &inputs,
-                 std::vector<details::RenderQuantum> &outputs,
-                 const details::ParamCollection &params) override;
+    void process(const std::vector<detail::RenderQuantum> &inputs,
+                 std::vector<detail::RenderQuantum> &outputs,
+                 const detail::ParamCollection &params) override;
 
     static std::shared_ptr<DelayNodeReader>
     create(std::shared_ptr<DelayNode> delayNode);
@@ -43,9 +43,9 @@ public:
     WEB_AUDIO_PRIVATE : DelayNodeWriter() = default;
 
   public:
-    void process(const std::vector<details::RenderQuantum> &inputs,
-                 std::vector<details::RenderQuantum> &outputs,
-                 const details::ParamCollection &params) override;
+    void process(const std::vector<detail::RenderQuantum> &inputs,
+                 std::vector<detail::RenderQuantum> &outputs,
+                 const detail::ParamCollection &params) override;
 
     static std::shared_ptr<DelayNodeWriter>
     create(std::shared_ptr<DelayNode> delayNode);
@@ -55,7 +55,7 @@ public:
 
   WEB_AUDIO_PRIVATE : std::shared_ptr<AudioParam> delayTime_;
   double maxDelayTime_;
-  std::vector<details::RenderQuantum> delayBuffers_;
+  std::vector<detail::RenderQuantum> delayBuffers_;
   size_t writeIndex_ = 0;
   std::shared_ptr<DelayNodeReader> reader_;
   std::shared_ptr<DelayNodeWriter> writer_;

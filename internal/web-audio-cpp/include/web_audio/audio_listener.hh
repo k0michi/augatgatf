@@ -10,7 +10,7 @@ class AudioParam;
 class BaseAudioContext;
 class AudioNode;
 
-namespace details {
+namespace detail {
 class AudioGraph;
 }
 
@@ -66,6 +66,6 @@ public:
   friend class AudioContext;
   friend class OfflineAudioContext;
   friend class AudioNode;
-  friend class details::AudioGraph;
+  friend class detail::AudioGraph;
 };
 } // namespace web_audio

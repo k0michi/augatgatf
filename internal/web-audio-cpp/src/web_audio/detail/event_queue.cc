@@ -1,6 +1,6 @@
 #include "web_audio/detail/event_queue.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 void EventQueue::push(std::function<void()> func) {
   std::lock_guard<std::mutex> lock(mutex_);
   queue_.push(func);
@@ -14,4 +14,4 @@ void EventQueue::poll() {
     func();
   }
 }
-} // namespace web_audio::details
+} // namespace web_audio::detail

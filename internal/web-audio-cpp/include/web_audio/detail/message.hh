@@ -6,7 +6,7 @@ namespace web_audio {
 class AudioNode;
 }
 
-namespace web_audio::details {
+namespace web_audio::detail {
 struct MessageStart {
   double when;
   double offset;
@@ -21,4 +21,4 @@ struct MessageStop {
 // TODO: other messages
 
 using Message = std::variant<MessageStart, MessageStop>;
-} // namespace web_audio::details
+} // namespace web_audio::detail

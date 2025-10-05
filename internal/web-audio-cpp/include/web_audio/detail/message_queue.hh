@@ -7,7 +7,7 @@
 #include "common.hh"
 #include "message.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class MessageQueue {
   WEB_AUDIO_PRIVATE : std::queue<Message> queue_;
   std::mutex mtx_;
@@ -26,4 +26,4 @@ public:
 
   void swap(MessageQueue &other);
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

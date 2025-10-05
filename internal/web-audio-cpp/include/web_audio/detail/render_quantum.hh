@@ -7,7 +7,7 @@
 #include "../channel_interpretation.hh"
 #include "common.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class RenderQuantum {
 public:
   RenderQuantum(std::uint32_t numberOfChannels, std::uint32_t length);
@@ -28,4 +28,4 @@ public:
   WEB_AUDIO_PRIVATE : std::uint32_t length_;
   std::vector<std::vector<float>> channelData_;
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

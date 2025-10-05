@@ -31,8 +31,8 @@ DelayNode::create(std::shared_ptr<BaseAudioContext> context,
                 static_cast<float>(context->getRenderQuantumSize())) +
       1);
   node->delayBuffers_.resize(
-      quantums, details::RenderQuantum(node->channelCount_,
-                                       context->getRenderQuantumSize()));
+      quantums, detail::RenderQuantum(node->channelCount_,
+                                      context->getRenderQuantumSize()));
 
   node->reader_ = DelayNodeReader::create(node);
   node->writer_ = DelayNodeWriter::create(node);
@@ -44,9 +44,9 @@ std::shared_ptr<AudioParam> DelayNode::getDelayTime() const {
   return delayTime_;
 }
 
-void DelayNode::process(const std::vector<details::RenderQuantum> &inputs,
-                        std::vector<details::RenderQuantum> &outputs,
-                        const details::ParamCollection &params) {
+void DelayNode::process(const std::vector<detail::RenderQuantum> &inputs,
+                        std::vector<detail::RenderQuantum> &outputs,
+                        const detail::ParamCollection &params) {
   throw std::runtime_error("Not implemented");
 }
 
@@ -58,9 +58,9 @@ DelayNode::DelayNodeReader::create(std::shared_ptr<DelayNode> delayNode) {
 }
 
 void DelayNode::DelayNodeReader::process(
-    const std::vector<details::RenderQuantum> &inputs,
-    std::vector<details::RenderQuantum> &outputs,
-    const details::ParamCollection &params) {
+    const std::vector<detail::RenderQuantum> &inputs,
+    std::vector<detail::RenderQuantum> &outputs,
+    const detail::ParamCollection &params) {
   auto locked = this->delayNode_.lock();
   auto sampleRate = locked->context_.lock()->getSampleRate();
 
@@ -98,9 +98,9 @@ DelayNode::DelayNodeWriter::create(std::shared_ptr<DelayNode> delayNode) {
 }
 
 void DelayNode::DelayNodeWriter::process(
-    const std::vector<details::RenderQuantum> &inputs,
-    std::vector<details::RenderQuantum> &outputs,
-    const details::ParamCollection &params) {
+    const std::vector<detail::RenderQuantum> &inputs,
+    std::vector<detail::RenderQuantum> &outputs,
+    const detail::ParamCollection &params) {
   auto locked = this->delayNode_.lock();
   auto context = locked->context_.lock();
 

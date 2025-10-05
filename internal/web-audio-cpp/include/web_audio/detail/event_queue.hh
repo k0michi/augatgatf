@@ -6,7 +6,7 @@
 
 #include "common.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 class EventQueue {
 public:
   void push(std::function<void()> func);
@@ -20,4 +20,4 @@ public:
   WEB_AUDIO_PRIVATE : std::queue<std::function<void()>> queue_;
   std::mutex mutex_;
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

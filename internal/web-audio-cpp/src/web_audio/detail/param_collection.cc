@@ -1,6 +1,6 @@
 #include "web_audio/detail/param_collection.hh"
 
-namespace web_audio::details {
+namespace web_audio::detail {
 float ParamCollection::getValue(std::shared_ptr<AudioParam> param,
                                 size_t frame) const {
   auto it = params_.find(param);
@@ -26,4 +26,4 @@ void ParamCollection::setValues(std::shared_ptr<AudioParam> param,
 }
 
 void ParamCollection::clear() { params_.clear(); }
-} // namespace web_audio::details
+} // namespace web_audio::detail

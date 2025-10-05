@@ -9,7 +9,7 @@ class AudioNode;
 class AudioParam;
 } // namespace web_audio
 
-namespace web_audio::details {
+namespace web_audio::detail {
 struct AudioNodeInput {
   std::weak_ptr<AudioNode> source;
   std::uint32_t sourceIndex;
@@ -32,4 +32,4 @@ struct AudioNodeInput {
     return !(*this == other);
   }
 };
-} // namespace web_audio::details
+} // namespace web_audio::detail

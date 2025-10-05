@@ -17,12 +17,12 @@ TEST(DelayNodeTest, Create) {
 TEST(DelayNodeTest, Delay1) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
-  std::vector<web_audio::details::RenderQuantum> inputs(
-      1, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
+  std::vector<web_audio::detail::RenderQuantum> inputs(
+      1, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
   inputs[0][0][0] = 1.0f;
-  std::vector<web_audio::details::RenderQuantum> outputs(
-      1, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
-  web_audio::details::ParamCollection params;
+  std::vector<web_audio::detail::RenderQuantum> outputs(
+      1, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
+  web_audio::detail::ParamCollection params;
   params.setValue(delayNode->getDelayTime(), 1.1f / context->getSampleRate());
   delayNode->writer_->process(inputs, outputs, params);
   delayNode->reader_->process(inputs, outputs, params);
@@ -33,12 +33,12 @@ TEST(DelayNodeTest, Delay1) {
 TEST(DelayNodeTest, Delay2) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
-  std::vector<web_audio::details::RenderQuantum> inputs(
-      1, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
+  std::vector<web_audio::detail::RenderQuantum> inputs(
+      1, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
   inputs[0][0][0] = 1.0f;
-  std::vector<web_audio::details::RenderQuantum> outputs(
-      1, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
-  web_audio::details::ParamCollection params;
+  std::vector<web_audio::detail::RenderQuantum> outputs(
+      1, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
+  web_audio::detail::ParamCollection params;
   params.setValue(delayNode->getDelayTime(), 2.1f / context->getSampleRate());
   delayNode->writer_->process(inputs, outputs, params);
   delayNode->reader_->process(inputs, outputs, params);
@@ -49,23 +49,23 @@ TEST(DelayNodeTest, Delay2) {
 TEST(DelayNodeTest, Delay1Quantum) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
-  std::vector<web_audio::details::RenderQuantum> inputs(
-      2, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
+  std::vector<web_audio::detail::RenderQuantum> inputs(
+      2, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
   inputs[0][0][0] = 1.0f;
-  std::vector<web_audio::details::RenderQuantum> outputs(
-      2, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
-  web_audio::details::ParamCollection params;
+  std::vector<web_audio::detail::RenderQuantum> outputs(
+      2, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
+  web_audio::detail::ParamCollection params;
   params.setValue(delayNode->getDelayTime(),
                   (context->getRenderQuantumSize() + 0.1f) /
                       context->getSampleRate());
 
   for (int32_t i = 0; i < 2; ++i) {
-    std::vector<web_audio::details::RenderQuantum> in(
+    std::vector<web_audio::detail::RenderQuantum> in(
         1,
-        web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
-    std::vector<web_audio::details::RenderQuantum> out(
+        web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
+    std::vector<web_audio::detail::RenderQuantum> out(
         1,
-        web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
+        web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
     in[0] = inputs[i];
 
     delayNode->writer_->process(in, out, params);
@@ -81,12 +81,12 @@ TEST(DelayNodeTest, Delay1Quantum) {
 TEST(DelayNodeTest, DelayChannel) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
-  std::vector<web_audio::details::RenderQuantum> inputs(
-      1, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
+  std::vector<web_audio::detail::RenderQuantum> inputs(
+      1, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
   inputs[0][1][0] = 1.0f;
-  std::vector<web_audio::details::RenderQuantum> outputs(
-      1, web_audio::details::RenderQuantum(2, context->getRenderQuantumSize()));
-  web_audio::details::ParamCollection params;
+  std::vector<web_audio::detail::RenderQuantum> outputs(
+      1, web_audio::detail::RenderQuantum(2, context->getRenderQuantumSize()));
+  web_audio::detail::ParamCollection params;
   params.setValue(delayNode->getDelayTime(), 1.1f / context->getSampleRate());
   delayNode->writer_->process(inputs, outputs, params);
   delayNode->reader_->process(inputs, outputs, params);

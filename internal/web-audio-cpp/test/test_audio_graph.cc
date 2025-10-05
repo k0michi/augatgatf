@@ -17,7 +17,7 @@ TEST(NodeGraph, IsPartOfCycleSimple) {
   node1->connect(node2);
   node2->connect(node1);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
   graph.addNode(node2);
 
@@ -34,7 +34,7 @@ TEST(NodeGraph, IsPartOfCycleNoCycle) {
   node1->connect(node2);
   node2->connect(node3);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
   graph.addNode(node2);
   graph.addNode(node3);
@@ -56,7 +56,7 @@ TEST(NodeGraph, IsPartOfCycleComplex) {
   node3->connect(node4);
   node4->connect(node2);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
   graph.addNode(node2);
   graph.addNode(node3);
@@ -74,7 +74,7 @@ TEST(NodeGraph, IsPartOfCycleSelfLoop) {
 
   node1->connect(node1);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
 
   EXPECT_TRUE(graph.isPartOfCycle(node1));
@@ -89,7 +89,7 @@ TEST(NodeGraph, GetNextVertices) {
   node1->connect(node2);
   node1->connect(node3);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
   graph.addNode(node2);
   graph.addNode(node3);
@@ -110,7 +110,7 @@ TEST(NodeGraph, GetPreviousVertices) {
   node1->connect(node2);
   node1->connect(node3);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
   graph.addNode(node2);
   graph.addNode(node3);
@@ -138,7 +138,7 @@ TEST(NodeGraph, GetStronglyConnectedComponents) {
   node3->connect(node1);
   node4->connect(node1);
 
-  web_audio::details::AudioGraph graph;
+  web_audio::detail::AudioGraph graph;
   graph.addNode(node1);
   graph.addNode(node2);
   graph.addNode(node3);
@@ -146,8 +146,7 @@ TEST(NodeGraph, GetStronglyConnectedComponents) {
 
   auto sccs = graph.getStronglyConnectedComponents();
   EXPECT_EQ(sccs.size(), 2);
-  EXPECT_EQ(sccs[0],
-            std::vector<web_audio::details::AudioGraph::Vertex>{node4});
-  EXPECT_EQ(sccs[1], (std::vector<web_audio::details::AudioGraph::Vertex>{
+  EXPECT_EQ(sccs[0], std::vector<web_audio::detail::AudioGraph::Vertex>{node4});
+  EXPECT_EQ(sccs[1], (std::vector<web_audio::detail::AudioGraph::Vertex>{
                          node1, node3, node2}));
 }
