@@ -13,8 +13,8 @@ public:
     auto node = std::shared_ptr<DummyNode>(new DummyNode());
     node->initialize(context);
 
-    node->numberOfInputs_ = 1;
-    node->numberOfOutputs_ = 1;
+    node->numberOfInputs_ = 2;
+    node->numberOfOutputs_ = 2;
     node->channelCount_ = 2;
     node->channelCountMode_ = web_audio::ChannelCountMode::eMax;
     node->channelInterpretation_ = web_audio::ChannelInterpretation::eSpeakers;
