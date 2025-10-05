@@ -7,6 +7,7 @@ void AudioGraph::initialize(std::shared_ptr<BaseAudioContext> context) {
   listenerNode_ = AudioListenerNode::create(context);
   destinationNode_.reset(new AudioDestinationNode());
   destinationNode_->context_ = context;
+  nodes_.push_back(destinationNode_);
 }
 
 void AudioGraph::addNode(std::shared_ptr<AudioNode> node) {

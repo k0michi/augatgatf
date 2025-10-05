@@ -146,7 +146,7 @@ TEST(NodeGraph, GetStronglyConnectedComponents) {
 
   auto sccs = graph->getStronglyConnectedComponents();
   EXPECT_EQ(sccs.size(), 4);
-  EXPECT_EQ(sccs[2], std::vector<std::shared_ptr<web_audio::AudioNode>>{node4});
-  EXPECT_EQ(sccs[3], (std::vector<std::shared_ptr<web_audio::AudioNode>>{
+  EXPECT_EQ(sccs[1], std::vector<std::shared_ptr<web_audio::AudioNode>>{node4});
+  EXPECT_EQ(sccs[2], (std::vector<std::shared_ptr<web_audio::AudioNode>>{
                          node1, node3, node2}));
 }
