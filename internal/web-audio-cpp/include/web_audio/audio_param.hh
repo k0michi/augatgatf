@@ -28,9 +28,7 @@ class AudioParam : public std::enable_shared_from_this<AudioParam> {
   WEB_AUDIO_PRIVATE : AudioParam() = default;
 
   static std::shared_ptr<AudioParam>
-  create(std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>>
-             owner,
-         float defaultValue = 0.0f,
+  create(std::shared_ptr<AudioNode> owner, float defaultValue = 0.0f,
          float minValue = -std::numeric_limits<float>::infinity(),
          float maxValue = std::numeric_limits<float>::infinity(),
          AutomationRate automationRate = AutomationRate::eARate,
@@ -122,8 +120,7 @@ public:
    * Returns the owner of this AudioParam (either an AudioNode or an
    * AudioListener). Throws if the owner has expired.
    */
-  std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>
-  getOwner() const;
+  std::shared_ptr<AudioNode> getOwner() const;
 
   /**
    * Returns the context this AudioParam belongs to. Throws if the context
@@ -141,7 +138,7 @@ public:
   bool allowARate_;
   std::set<detail::ParamEvent, detail::ParamEventLess> events_;
   std::uint32_t eventIndex_ = 0;
-  std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>> owner_;
+  std::weak_ptr<AudioNode> owner_;
   std::vector<detail::AudioNodeInput> inputs_;
 
   friend class DelayNode;

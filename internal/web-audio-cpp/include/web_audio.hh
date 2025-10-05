@@ -36,6 +36,7 @@
 #include "web_audio/delay_node.hh"
 #include "web_audio/delay_options.hh"
 #include "web_audio/detail/audio_graph.hh"
+#include "web_audio/detail/audio_listener_node.hh"
 #include "web_audio/detail/audio_node_input.hh"
 #include "web_audio/detail/audio_node_output.hh"
 #include "web_audio/detail/common.hh"

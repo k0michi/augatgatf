@@ -79,13 +79,7 @@ void AudioNode::connect(std::shared_ptr<AudioParam> destinationParam,
   destinationParam->inputs_.push_back(
       detail::AudioNodeInput{shared_from_this(), output, 0});
   auto owner = destinationParam->getOwner();
-
-  if (auto ownerNode = std::get_if<std::shared_ptr<AudioNode>>(&owner)) {
-    (*ownerNode)->inputsIndirect_.push_back(shared_from_this());
-  } else if (auto ownerListener =
-                 std::get_if<std::shared_ptr<AudioListener>>(&owner)) {
-    (*ownerListener)->inputsIndirect_.push_back(shared_from_this());
-  }
+  owner->inputsIndirect_.push_back(shared_from_this());
 }
 
 void AudioNode::disconnect() {
@@ -330,26 +324,14 @@ void AudioNode::disconnectInternal(std::size_t index) {
       outputs_.erase(outputs_.begin() + index);
 
       auto owner = sp->getOwner();
-      if (auto ownerNode = std::get_if<std::shared_ptr<AudioNode>>(&owner)) {
-        auto &inputsIndirect = (*ownerNode)->inputsIndirect_;
-        inputsIndirect.erase(
-            std::remove_if(inputsIndirect.begin(), inputsIndirect.end(),
-                           [this](const auto &node) {
-                             return detail::WeakPtrHelper::compare(
-                                        node, shared_from_this()) == 0;
-                           }),
-            inputsIndirect.end());
-      } else if (auto ownerListener =
-                     std::get_if<std::shared_ptr<AudioListener>>(&owner)) {
-        auto &inputsIndirect = (*ownerListener)->inputsIndirect_;
-        inputsIndirect.erase(
-            std::remove_if(inputsIndirect.begin(), inputsIndirect.end(),
-                           [this](const auto &node) {
-                             return detail::WeakPtrHelper::compare(
-                                        node, shared_from_this()) == 0;
-                           }),
-            inputsIndirect.end());
-      }
+      auto &inputsIndirect = owner->inputsIndirect_;
+      inputsIndirect.erase(
+          std::remove_if(inputsIndirect.begin(), inputsIndirect.end(),
+                         [this](const auto &node) {
+                           return detail::WeakPtrHelper::compare(
+                                      node, shared_from_this()) == 0;
+                         }),
+          inputsIndirect.end());
     }
   }
 }

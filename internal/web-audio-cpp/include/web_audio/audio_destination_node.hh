@@ -6,6 +6,10 @@
 #include <stdexcept>
 
 namespace web_audio {
+namespace detail {
+class AudioGraph;
+}
+
 class AudioDestinationNode : public AudioNode {
   WEB_AUDIO_PRIVATE : AudioDestinationNode() = default;
 
@@ -19,8 +23,6 @@ public:
                std::vector<detail::RenderQuantum> &outputs,
                const detail::ParamCollection &params) override;
 
-  friend class AudioContext;
-  friend class OfflineAudioContext;
-  friend class BaseAudioContext;
+  friend class detail::AudioGraph;
 };
 } // namespace web_audio

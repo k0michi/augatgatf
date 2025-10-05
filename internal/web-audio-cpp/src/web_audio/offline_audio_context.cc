@@ -17,8 +17,8 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
   Promise<std::shared_ptr<AudioBuffer>> promise(eventQueue_);
 
   try {
-    this->renderedBuffer_ = AudioBuffer::create(
-        AudioBufferOptions{destination_->channelCount_, length_, sampleRate_});
+    this->renderedBuffer_ = AudioBuffer::create(AudioBufferOptions{
+        audioGraph_.getDestinationNode()->channelCount_, length_, sampleRate_});
   } catch (const DOMException &e) {
     promise.getInternal()->reject(std::make_exception_ptr(e));
     return std::move(promise);
@@ -71,6 +71,7 @@ std::shared_ptr<OfflineAudioContext>
 OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   auto context =
       std::shared_ptr<OfflineAudioContext>(new OfflineAudioContext());
+  context->initialize();
 
   if (options.numberOfChannels == 0) {
     throw DOMException(
@@ -93,9 +94,8 @@ OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   context->renderThreadState_ = AudioContextState::eSuspended;
   // TODO: renderSizehint
   context->renderQuantumSize_ = 128;
-  context->destination_ =
-      std::shared_ptr<AudioDestinationNode>(new AudioDestinationNode());
-  context->destination_->channelCount_ = options.numberOfChannels;
+  context->audioGraph_.getDestinationNode()->channelCount_ =
+      options.numberOfChannels;
 
   // TODO: worklet
 

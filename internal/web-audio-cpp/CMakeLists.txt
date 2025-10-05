@@ -16,6 +16,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/base_audio_context.cc
   src/web_audio/delay_node.cc
   src/web_audio/detail/audio_graph.cc
+  src/web_audio/detail/audio_listener_node.cc
   src/web_audio/detail/event_queue.cc
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
@@ -51,6 +52,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/base_audio_context.cc
   src/web_audio/delay_node.cc
   src/web_audio/detail/audio_graph.cc
+  src/web_audio/detail/audio_listener_node.cc
   src/web_audio/detail/event_queue.cc
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc

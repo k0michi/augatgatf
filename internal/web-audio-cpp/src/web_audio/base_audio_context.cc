@@ -3,15 +3,17 @@
 namespace web_audio {
 BaseAudioContext::BaseAudioContext() {}
 
-AudioDestinationNode *BaseAudioContext::getDestination() {
-  return destination_.get();
+std::shared_ptr<AudioDestinationNode> BaseAudioContext::getDestination() {
+  return audioGraph_.getDestinationNode();
 }
 
 float BaseAudioContext::getSampleRate() const { return sampleRate_; }
 
 double BaseAudioContext::getCurrentTime() const { return currentTime_.load(); }
 
-AudioListener *BaseAudioContext::getListener() { return listener_.get(); }
+std::shared_ptr<AudioListener> BaseAudioContext::getListener() {
+  return audioGraph_.getListenerNode()->getListener();
+}
 
 AudioContextState BaseAudioContext::getState() const {
   return controlThreadState_;
@@ -36,11 +38,11 @@ void BaseAudioContext::setOnstatechange(EventHandler *value) {
 void BaseAudioContext::processEvents() { eventQueue_.poll(); }
 
 void BaseAudioContext::initialize() {
-  destination_.reset(new AudioDestinationNode());
-  destination_->context_ = shared_from_this();
-  listener_.reset(new AudioListener());
-  // TODO
   audioWorklet_.reset(new AudioWorklet());
   // TODO
+
+  audioGraph_.initialize(shared_from_this());
 }
+
+detail::AudioGraph *BaseAudioContext::getAudioGraph() { return &audioGraph_; }
 } // namespace web_audio

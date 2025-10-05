@@ -3,10 +3,11 @@
 #include "web_audio/base_audio_context.hh"
 
 namespace web_audio {
-std::shared_ptr<AudioParam> AudioParam::create(
-    std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>> owner,
-    float defaultValue, float minValue, float maxValue,
-    AutomationRate automationRate, bool allowARate) {
+std::shared_ptr<AudioParam> AudioParam::create(std::shared_ptr<AudioNode> owner,
+                                               float defaultValue,
+                                               float minValue, float maxValue,
+                                               AutomationRate automationRate,
+                                               bool allowARate) {
   auto instance = std::shared_ptr<AudioParam>(new AudioParam());
   // SPEC: Each AudioParam has an internal slot [[current value]], initially set
   // to the AudioParam's defaultValue.
@@ -381,35 +382,15 @@ void AudioParam::computeIntrinsicValues(double startTime,
   }
 }
 
-std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>
-AudioParam::getOwner() const {
-  if (auto node = std::get_if<std::weak_ptr<AudioNode>>(&owner_)) {
-    if (auto sp = node->lock()) {
-      return sp;
-    } else {
-      throw std::runtime_error("AudioParam: owner AudioNode has expired");
-    }
-  } else if (auto listener =
-                 std::get_if<std::weak_ptr<AudioListener>>(&owner_)) {
-    if (auto sp = listener->lock()) {
-      return sp;
-    } else {
-      throw std::runtime_error("AudioParam: owner AudioListener has expired");
-    }
+std::shared_ptr<AudioNode> AudioParam::getOwner() const {
+  if (auto sp = owner_.lock()) {
+    return sp;
+  } else {
+    throw std::runtime_error("AudioParam: owner has expired");
   }
 }
 
 std::shared_ptr<BaseAudioContext> AudioParam::getContext() const {
-  auto owner = getOwner();
-
-  if (auto node = std::get_if<std::shared_ptr<AudioNode>>(&owner)) {
-    return (*node)->getContext();
-  } else if (auto listener =
-                 std::get_if<std::shared_ptr<AudioListener>>(&owner)) {
-    return (*listener)->getContext();
-  }
-
-  // unreachable
-  std::abort();
+  return getOwner()->getContext();
 }
 } // namespace web_audio

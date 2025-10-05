@@ -9,6 +9,7 @@
 #include "audio_destination_node.hh"
 #include "audio_listener.hh"
 #include "audio_worklet.hh"
+#include "detail/audio_graph.hh"
 #include "detail/event_queue.hh"
 #include "detail/message_queue.hh"
 #include "event_handler.hh"
@@ -24,10 +25,10 @@ public:
   virtual ~BaseAudioContext() noexcept = default;
 
 public:
-  AudioDestinationNode *getDestination();
+  std::shared_ptr<AudioDestinationNode> getDestination();
   float getSampleRate() const;
   double getCurrentTime() const;
-  AudioListener *getListener();
+  std::shared_ptr<AudioListener> getListener();
   AudioContextState getState() const;
   std::uint32_t getRenderQuantumSize() const;
   AudioWorklet *getAudioWorklet();
@@ -45,8 +46,9 @@ public:
     controlMessageQueue_.push(std::forward<MessageType>(message));
   }
 
-protected:
-  void initialize();
+  WEB_AUDIO_PROTECTED : void initialize();
+
+  detail::AudioGraph *getAudioGraph();
 
 protected:
   // [[pending promises]]
@@ -58,8 +60,6 @@ protected:
   // [[render quantum size]]
   std::uint32_t renderQuantumSize_;
 
-  std::shared_ptr<AudioDestinationNode> destination_;
-  std::shared_ptr<AudioListener> listener_;
   std::shared_ptr<AudioWorklet> audioWorklet_;
   float sampleRate_;
   EventHandler *onstatechange_ = nullptr;
@@ -67,6 +67,6 @@ protected:
 
   detail::EventQueue eventQueue_;
   detail::MessageQueue controlMessageQueue_;
-  std::vector<std::shared_ptr<AudioNode>> nodes_;
+  detail::AudioGraph audioGraph_;
 };
 } // namespace web_audio

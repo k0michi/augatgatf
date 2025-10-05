@@ -3,6 +3,12 @@
 #include "web_audio/audio_param.hh"
 
 namespace web_audio::detail {
+void AudioGraph::initialize(std::shared_ptr<BaseAudioContext> context) {
+  listenerNode_ = AudioListenerNode::create(context);
+  destinationNode_.reset(new AudioDestinationNode());
+  destinationNode_->context_ = context;
+}
+
 void AudioGraph::addNode(std::shared_ptr<AudioNode> node) {
   if (!hasNode(node)) {
     nodes_.push_back(node);
@@ -19,9 +25,9 @@ bool AudioGraph::hasNode(std::shared_ptr<AudioNode> node) const {
 
 void AudioGraph::clear() { nodes_.clear(); }
 
-std::vector<AudioGraph::Vertex>
+std::vector<std::shared_ptr<AudioNode>>
 AudioGraph::getNextVertices(std::shared_ptr<AudioNode> node) const {
-  std::vector<Vertex> nextNodes;
+  std::vector<std::shared_ptr<AudioNode>> nextNodes;
 
   for (const auto &output : node->outputs_) {
     auto destination = output.destination;
@@ -34,13 +40,7 @@ AudioGraph::getNextVertices(std::shared_ptr<AudioNode> node) const {
                    std::get_if<std::weak_ptr<AudioParam>>(&destination)) {
       if (auto sharedDestParam = destParam->lock()) {
         auto owner = sharedDestParam->getOwner();
-
-        if (auto ownerNode = std::get_if<std::shared_ptr<AudioNode>>(&owner)) {
-          nextNodes.push_back(*ownerNode);
-        } else if (auto ownerListener =
-                       std::get_if<std::shared_ptr<AudioListener>>(&owner)) {
-          nextNodes.push_back(*ownerListener);
-        }
+        nextNodes.push_back(owner);
       }
     }
   }
@@ -48,62 +48,33 @@ AudioGraph::getNextVertices(std::shared_ptr<AudioNode> node) const {
   return nextNodes;
 }
 
-std::vector<AudioGraph::Vertex>
-AudioGraph::getNextVertices(Vertex vertex) const {
-  if (auto node = std::get_if<std::shared_ptr<AudioNode>>(&vertex)) {
-    return getNextVertices(*node);
-  } else if (auto listener =
-                 std::get_if<std::shared_ptr<AudioListener>>(&vertex)) {
-    return {};
+std::vector<std::shared_ptr<AudioNode>>
+AudioGraph::getPreviousVertices(std::shared_ptr<AudioNode> node) const {
+  std::vector<std::shared_ptr<AudioNode>> prevNodes;
+
+  for (const auto &input : node->inputs_) {
+    if (auto srcNode = input.source.lock()) {
+      prevNodes.push_back(srcNode);
+    }
   }
 
-  std::abort();
-}
-
-std::vector<AudioGraph::Vertex>
-AudioGraph::getPreviousVertices(Vertex vertex) const {
-  if (auto node = std::get_if<std::shared_ptr<AudioNode>>(&vertex)) {
-    std::vector<Vertex> prevNodes;
-
-    for (const auto &input : (*node)->inputs_) {
-      if (auto srcNode = input.source.lock()) {
-        prevNodes.push_back(srcNode);
-      }
+  for (const auto &input : node->inputsIndirect_) {
+    if (auto srcNode = input.lock()) {
+      prevNodes.push_back(srcNode);
     }
-
-    for (const auto &input : (*node)->inputsIndirect_) {
-      if (auto srcNode = input.lock()) {
-        prevNodes.push_back(srcNode);
-      }
-    }
-
-    return prevNodes;
-  } else if (auto listener =
-                 std::get_if<std::shared_ptr<AudioListener>>(&vertex)) {
-    std::vector<Vertex> prevNodes;
-
-    for (const auto &input : (*listener)->inputsIndirect_) {
-      if (auto srcNode = input.lock()) {
-        prevNodes.push_back(srcNode);
-      }
-    }
-
-    return prevNodes;
   }
 
-  std::abort();
+  return prevNodes;
 }
 
-std::vector<AudioGraph::Vertex> AudioGraph::getVertices() const {
-  std::vector<Vertex> vertices;
+std::vector<std::shared_ptr<AudioNode>> AudioGraph::getVertices() const {
+  std::vector<std::shared_ptr<AudioNode>> vertices;
 
   for (const auto &node : nodes_) {
     vertices.push_back(node);
   }
 
-  if (listener_) {
-    vertices.push_back(listener_);
-  }
+  vertices.push_back(listenerNode_);
 
   return vertices;
 }
@@ -118,17 +89,15 @@ bool AudioGraph::isPartOfCycle(std::shared_ptr<AudioNode> node) const {
     state[current] = VISITING;
 
     for (const auto &next : getNextVertices(current)) {
-      if (auto nextNode = std::get_if<std::shared_ptr<AudioNode>>(&next)) {
-        auto &nextState = state[*nextNode];
+      auto &nextState = state[next];
 
-        if (nextState == UNVISITED) {
-          if (dfs(*nextNode, origin)) {
-            return true;
-          }
-        } else if (nextState == VISITING) {
-          if (*nextNode == origin) {
-            return true;
-          }
+      if (nextState == UNVISITED) {
+        if (dfs(next, origin)) {
+          return true;
+        }
+      } else if (nextState == VISITING) {
+        if (next == origin) {
+          return true;
         }
       }
     }
@@ -140,28 +109,31 @@ bool AudioGraph::isPartOfCycle(std::shared_ptr<AudioNode> node) const {
   return dfs(node, node);
 }
 
-std::vector<std::vector<AudioGraph::Vertex>>
+std::vector<std::vector<std::shared_ptr<AudioNode>>>
 AudioGraph::getStronglyConnectedComponents() const {
-  std::unordered_set<AudioGraph::Vertex> visited;
-  std::vector<AudioGraph::Vertex> order;
+  std::unordered_set<std::shared_ptr<AudioNode>> visited;
+  std::vector<std::shared_ptr<AudioNode>> order;
   auto vertices = getVertices();
 
-  std::function<void(AudioGraph::Vertex)> dfs = [&](AudioGraph::Vertex v) {
-    visited.insert(v);
+  std::function<void(std::shared_ptr<AudioNode>)> dfs =
+      [&](std::shared_ptr<AudioNode> v) {
+        visited.insert(v);
 
-    auto next = getNextVertices(v);
+        auto next = getNextVertices(v);
 
-    for (const auto &u : next) {
-      if (!visited.count(u)) {
-        dfs(u);
-      }
-    }
+        for (const auto &u : next) {
+          if (!visited.count(u)) {
+            dfs(u);
+          }
+        }
 
-    order.push_back(v);
-  };
+        order.push_back(v);
+      };
 
-  std::function<void(AudioGraph::Vertex, std::vector<AudioGraph::Vertex> &)>
-      rdfs = [&](AudioGraph::Vertex v, std::vector<AudioGraph::Vertex> &comp) {
+  std::function<void(std::shared_ptr<AudioNode>,
+                     std::vector<std::shared_ptr<AudioNode>> &)>
+      rdfs = [&](std::shared_ptr<AudioNode> v,
+                 std::vector<std::shared_ptr<AudioNode>> &comp) {
         visited.insert(v);
         comp.push_back(v);
 
@@ -183,16 +155,24 @@ AudioGraph::getStronglyConnectedComponents() const {
   visited.clear();
   std::reverse(order.begin(), order.end());
 
-  std::vector<std::vector<AudioGraph::Vertex>> sccs;
+  std::vector<std::vector<std::shared_ptr<AudioNode>>> sccs;
 
   for (const auto &v : order) {
     if (!visited.count(v)) {
-      std::vector<AudioGraph::Vertex> comp;
+      std::vector<std::shared_ptr<AudioNode>> comp;
       rdfs(v, comp);
       sccs.push_back(std::move(comp));
     }
   }
 
   return sccs;
+}
+
+std::shared_ptr<AudioListenerNode> AudioGraph::getListenerNode() const {
+  return listenerNode_;
+}
+
+std::shared_ptr<AudioDestinationNode> AudioGraph::getDestinationNode() const {
+  return destinationNode_;
 }
 } // namespace web_audio::detail
