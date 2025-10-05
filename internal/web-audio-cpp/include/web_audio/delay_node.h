@@ -15,7 +15,7 @@ class DelayNode : public AudioNode {
 
 public:
   static std::shared_ptr<DelayNode>
-  create(std::shared_ptr<BaseAudioContext> context = nullptr,
+  create(std::shared_ptr<BaseAudioContext> context,
          const DelayOptions &options = {});
 
   std::shared_ptr<AudioParam> getDelayTime() const { return delayTime_; }
