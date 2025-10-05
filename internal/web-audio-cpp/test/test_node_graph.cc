@@ -67,3 +67,15 @@ TEST(NodeGraph, IsPartOfCycleComplex) {
   EXPECT_TRUE(graph.isPartOfCycle(node3));
   EXPECT_TRUE(graph.isPartOfCycle(node4));
 }
+
+TEST(NodeGraph, IsPartOfCycleSelfLoop) {
+  auto context = createOfflineContext();
+  auto node1 = DummyNode::create(context);
+
+  node1->connect(node1);
+
+  web_audio::details::AudioGraph graph;
+  graph.addNode(node1);
+
+  EXPECT_TRUE(graph.isPartOfCycle(node1));
+}
