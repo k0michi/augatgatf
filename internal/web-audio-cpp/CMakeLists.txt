@@ -7,22 +7,22 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(web-audio-cpp STATIC
 # include src/**/*.cc
-  src/audio_buffer.cc
-  src/audio_destination_node.cc
-  src/audio_listener.cc
-  src/audio_node.cc
-  src/audio_param.cc
-  src/audio_scheduled_source_node.cc
-  src/base_audio_context.cc
-  src/delay_node.cc
-  src/detail/audio_graph.cc
-  src/detail/event_queue.cc
-  src/detail/message_queue.cc
-  src/detail/param_collection.cc
-  src/detail/render_quantum.cc
-  src/dom_exception.cc
-  src/offline_audio_context.cc
-  src/periodic_wave.cc
+  src/web_audio/audio_buffer.cc
+  src/web_audio/audio_destination_node.cc
+  src/web_audio/audio_listener.cc
+  src/web_audio/audio_node.cc
+  src/web_audio/audio_param.cc
+  src/web_audio/audio_scheduled_source_node.cc
+  src/web_audio/base_audio_context.cc
+  src/web_audio/delay_node.cc
+  src/web_audio/detail/audio_graph.cc
+  src/web_audio/detail/event_queue.cc
+  src/web_audio/detail/message_queue.cc
+  src/web_audio/detail/param_collection.cc
+  src/web_audio/detail/render_quantum.cc
+  src/web_audio/dom_exception.cc
+  src/web_audio/offline_audio_context.cc
+  src/web_audio/periodic_wave.cc
 # end
 )
 target_include_directories(web-audio-cpp PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -42,22 +42,22 @@ enable_testing()
 
 set(WEB_AUDIO_TEST_SRC
 # include src/**/*.cc
-  src/audio_buffer.cc
-  src/audio_destination_node.cc
-  src/audio_listener.cc
-  src/audio_node.cc
-  src/audio_param.cc
-  src/audio_scheduled_source_node.cc
-  src/base_audio_context.cc
-  src/delay_node.cc
-  src/detail/audio_graph.cc
-  src/detail/event_queue.cc
-  src/detail/message_queue.cc
-  src/detail/param_collection.cc
-  src/detail/render_quantum.cc
-  src/dom_exception.cc
-  src/offline_audio_context.cc
-  src/periodic_wave.cc
+  src/web_audio/audio_buffer.cc
+  src/web_audio/audio_destination_node.cc
+  src/web_audio/audio_listener.cc
+  src/web_audio/audio_node.cc
+  src/web_audio/audio_param.cc
+  src/web_audio/audio_scheduled_source_node.cc
+  src/web_audio/base_audio_context.cc
+  src/web_audio/delay_node.cc
+  src/web_audio/detail/audio_graph.cc
+  src/web_audio/detail/event_queue.cc
+  src/web_audio/detail/message_queue.cc
+  src/web_audio/detail/param_collection.cc
+  src/web_audio/detail/render_quantum.cc
+  src/web_audio/dom_exception.cc
+  src/web_audio/offline_audio_context.cc
+  src/web_audio/periodic_wave.cc
 # end
 # include test/**/*.cc
   test/test_audio_buffer.cc
