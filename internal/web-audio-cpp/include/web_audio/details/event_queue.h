@@ -4,6 +4,8 @@
 #include <mutex>
 #include <queue>
 
+#include "common.h"
+
 namespace web_audio::details {
 class EventQueue {
 public:
@@ -15,8 +17,7 @@ public:
     queue_.swap(out);
   }
 
-private:
-  std::queue<std::function<void()>> queue_;
+  WEB_AUDIO_PRIVATE : std::queue<std::function<void()>> queue_;
   std::mutex mutex_;
 };
 } // namespace web_audio::details

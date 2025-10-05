@@ -6,12 +6,12 @@
 #include <vector>
 
 #include "audio_buffer_options.h"
+#include "details/common.h"
 #include "dom_exception.h"
 
 namespace web_audio {
 class AudioBuffer : public std::enable_shared_from_this<AudioBuffer> {
-private:
-  AudioBuffer();
+  WEB_AUDIO_PRIVATE : AudioBuffer();
 
 public:
   virtual ~AudioBuffer() noexcept = default;
@@ -40,9 +40,9 @@ public:
 
   static std::shared_ptr<AudioBuffer> create(const AudioBufferOptions &options);
 
-private:
-  // [[number of channels]]
-  std::uint32_t numberOfChannels_;
+  WEB_AUDIO_PRIVATE :
+      // [[number of channels]]
+      std::uint32_t numberOfChannels_;
   // [[length]]
   std::uint32_t length_;
   // [[sample rate]]

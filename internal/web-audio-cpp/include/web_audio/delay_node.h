@@ -5,13 +5,13 @@
 #include "audio_node.h"
 #include "audio_param.h"
 #include "delay_options.h"
+#include "details/common.h"
 #include "details/param_collection.h"
 #include "details/render_quantum.h"
 
 namespace web_audio {
 class DelayNode : public AudioNode {
-private:
-  DelayNode() = default;
+  WEB_AUDIO_PRIVATE : DelayNode() = default;
 
 public:
   static std::shared_ptr<DelayNode>
@@ -26,8 +26,7 @@ public:
 
 public:
   class DelayNodeReader : public AudioNode {
-  private:
-    DelayNodeReader() = default;
+    WEB_AUDIO_PRIVATE : DelayNodeReader() = default;
 
   public:
     void process(const std::vector<details::RenderQuantum> &inputs,
@@ -37,13 +36,11 @@ public:
     static std::shared_ptr<DelayNodeReader>
     create(std::shared_ptr<DelayNode> delayNode);
 
-  private:
-    std::weak_ptr<DelayNode> delayNode_;
+    WEB_AUDIO_PRIVATE : std::weak_ptr<DelayNode> delayNode_;
   };
 
   class DelayNodeWriter : public AudioNode {
-  private:
-    DelayNodeWriter() = default;
+    WEB_AUDIO_PRIVATE : DelayNodeWriter() = default;
 
   public:
     void process(const std::vector<details::RenderQuantum> &inputs,
@@ -53,16 +50,10 @@ public:
     static std::shared_ptr<DelayNodeWriter>
     create(std::shared_ptr<DelayNode> delayNode);
 
-  private:
-    std::weak_ptr<DelayNode> delayNode_;
+    WEB_AUDIO_PRIVATE : std::weak_ptr<DelayNode> delayNode_;
   };
 
-#ifdef WEB_AUDIO_TEST
-public:
-#else
-private:
-#endif
-  std::shared_ptr<AudioParam> delayTime_;
+  WEB_AUDIO_PRIVATE : std::shared_ptr<AudioParam> delayTime_;
   double maxDelayTime_;
   std::vector<details::RenderQuantum> delayBuffers_;
   size_t writeIndex_ = 0;

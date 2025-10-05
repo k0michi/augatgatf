@@ -7,6 +7,7 @@
 
 #include "../audio_listener.h"
 #include "../audio_node.h"
+#include "common.h"
 
 namespace web_audio::details {
 class AudioGraph {
@@ -31,8 +32,7 @@ public:
 
   bool isPartOfCycle(std::shared_ptr<AudioNode> node) const;
 
-private:
-  std::vector<std::shared_ptr<AudioNode>> nodes_;
+  WEB_AUDIO_PRIVATE : std::vector<std::shared_ptr<AudioNode>> nodes_;
   std::shared_ptr<AudioListener> listener_;
 };
 } // namespace web_audio::details

@@ -6,6 +6,7 @@
 
 #include "audio_buffer.h"
 #include "base_audio_context.h"
+#include "details/common.h"
 #include "details/message_queue.h"
 #include "event_handler.h"
 #include "offline_audio_context_options.h"
@@ -30,9 +31,9 @@ public:
   create(std::uint32_t numberOfChannels, std::uint32_t length,
          float sampleRate);
 
-private:
-  // [[rendering started]]
-  bool renderingStarted_ = false;
+  WEB_AUDIO_PRIVATE :
+      // [[rendering started]]
+      bool renderingStarted_ = false;
   // [[rendered buffer]]
   std::shared_ptr<AudioBuffer> renderedBuffer_;
   std::uint32_t length_;

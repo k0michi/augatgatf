@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "automation_rate.h"
+#include "details/common.h"
 #include "details/param_event.h"
 
 namespace web_audio {
@@ -19,12 +20,7 @@ class AudioNode;
 class AudioListener;
 
 class AudioParam : public std::enable_shared_from_this<AudioParam> {
-#ifdef WEB_AUDIO_TEST
-public:
-#else
-private:
-#endif
-  AudioParam() = default;
+  WEB_AUDIO_PRIVATE : AudioParam() = default;
 
   static std::shared_ptr<AudioParam>
   create(std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>>
@@ -130,13 +126,9 @@ public:
    */
   std::shared_ptr<BaseAudioContext> getContext() const;
 
-#ifdef WEB_AUDIO_TEST
-public:
-#else
-private:
-#endif
-  // [[current value]]
-  float currentValue_;
+  WEB_AUDIO_PRIVATE :
+      // [[current value]]
+      float currentValue_;
   AutomationRate automationRate_;
   float defaultValue_;
   float minValue_;

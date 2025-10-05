@@ -2,13 +2,14 @@
 
 #include <memory>
 
+#include "details/common.h"
+
 namespace web_audio {
 class AudioParam;
 class BaseAudioContext;
 
 class AudioListener : public std::enable_shared_from_this<AudioListener> {
-private:
-  AudioListener() = default;
+  WEB_AUDIO_PRIVATE : AudioListener() = default;
 
 public:
   ~AudioListener() = default;
@@ -42,8 +43,7 @@ public:
    */
   std::shared_ptr<BaseAudioContext> getContext() const;
 
-private:
-  std::shared_ptr<AudioParam> positionX;
+  WEB_AUDIO_PRIVATE : std::shared_ptr<AudioParam> positionX;
   std::shared_ptr<AudioParam> positionY;
   std::shared_ptr<AudioParam> positionZ;
   std::shared_ptr<AudioParam> forwardX;

@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "common.h"
+
 namespace web_audio {
 class AudioParam;
 }
@@ -23,7 +25,8 @@ public:
 
   void clear();
 
-private:
-  std::unordered_map<std::shared_ptr<AudioParam>, std::vector<float>> params_;
+  WEB_AUDIO_PRIVATE
+      : std::unordered_map<std::shared_ptr<AudioParam>, std::vector<float>>
+            params_;
 };
 } // namespace web_audio::details

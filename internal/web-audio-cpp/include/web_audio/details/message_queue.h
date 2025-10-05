@@ -4,12 +4,12 @@
 #include <mutex>
 #include <queue>
 
+#include "common.h"
 #include "message.h"
 
 namespace web_audio::details {
 class MessageQueue {
-private:
-  std::queue<Message> queue_;
+  WEB_AUDIO_PRIVATE : std::queue<Message> queue_;
   std::mutex mtx_;
   std::condition_variable cv_;
 

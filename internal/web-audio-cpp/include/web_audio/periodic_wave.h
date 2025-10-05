@@ -5,13 +5,13 @@
 #include <vector>
 
 #include "base_audio_context.h"
+#include "details/common.h"
 #include "dom_exception.h"
 #include "periodic_wave_options.h"
 
 namespace web_audio {
 class PeriodicWave : public std::enable_shared_from_this<PeriodicWave> {
-private:
-  PeriodicWave() = default;
+  WEB_AUDIO_PRIVATE : PeriodicWave() = default;
 
 public:
   PeriodicWave(const PeriodicWave &) = delete;
@@ -25,9 +25,10 @@ public:
   create(std::shared_ptr<BaseAudioContext> context,
          const PeriodicWaveOptions &options = {});
 
-private:
-  // [[real]]
-  std::vector<float> real_;
+  WEB_AUDIO_PRIVATE :
+      // [[real]]
+      std::vector<float>
+          real_;
   // [[imag]]
   std::vector<float> imag_;
   // [[normalize]]

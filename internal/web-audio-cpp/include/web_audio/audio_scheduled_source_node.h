@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio_node.h"
+#include "details/common.h"
 #include "event_handler.h"
 
 namespace web_audio {
@@ -18,8 +19,7 @@ public:
 
   void stop(double when = 0);
 
-private:
-  EventHandler *onended = nullptr;
+  WEB_AUDIO_PRIVATE : EventHandler *onended = nullptr;
   // [[source started]]
   bool sourceStarted_ = false;
 };

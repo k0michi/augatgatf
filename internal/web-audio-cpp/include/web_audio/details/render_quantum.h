@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../channel_interpretation.h"
+#include "common.h"
 
 namespace web_audio::details {
 class RenderQuantum {
@@ -24,8 +25,7 @@ public:
   void mix(std::uint32_t computedNumberOfChannels,
            ChannelInterpretation channelInterpretation);
 
-private:
-  std::uint32_t length_;
+  WEB_AUDIO_PRIVATE : std::uint32_t length_;
   std::vector<std::vector<float>> channelData_;
 };
 } // namespace web_audio::details

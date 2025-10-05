@@ -4,10 +4,11 @@
 #include <exception>
 #include <string>
 
+#include "details/common.h"
+
 namespace web_audio {
 class DOMException : public std::exception {
-private:
-  std::string message_;
+  WEB_AUDIO_PRIVATE : std::string message_;
   std::string name_;
 
 public:

@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "details/common.h"
 #include "details/event_queue.h"
 
 namespace web_audio {
@@ -75,8 +76,7 @@ public:
   using FulfillCallbackType = std::function<void(T)>;
   using RejectCallbackType = std::function<void(std::exception_ptr)>;
 
-private:
-  std::vector<std::function<void(T)>> fulfillCallbacks_;
+  WEB_AUDIO_PRIVATE : std::vector<std::function<void(T)>> fulfillCallbacks_;
   std::vector<std::function<void(std::exception_ptr)>> rejectCallbacks_;
   details::EventQueue &eventQueue_;
   T value_;
@@ -141,8 +141,7 @@ public:
   using FulfillCallbackType = std::function<void()>;
   using RejectCallbackType = std::function<void(std::exception_ptr)>;
 
-private:
-  std::vector<std::function<void()>> fulfillCallbacks_;
+  WEB_AUDIO_PRIVATE : std::vector<std::function<void()>> fulfillCallbacks_;
   std::vector<std::function<void(std::exception_ptr)>> rejectCallbacks_;
   details::EventQueue &eventQueue_;
   std::exception_ptr exception_;
@@ -179,7 +178,6 @@ public:
    */
   std::shared_ptr<PromiseInternal<T>> getInternal() const { return internal_; }
 
-private:
-  std::shared_ptr<PromiseInternal<T>> internal_;
+  WEB_AUDIO_PRIVATE : std::shared_ptr<PromiseInternal<T>> internal_;
 };
 } // namespace web_audio

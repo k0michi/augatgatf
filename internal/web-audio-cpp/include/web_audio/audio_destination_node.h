@@ -1,13 +1,13 @@
 #pragma once
 
 #include "audio_node.h"
+#include "details/common.h"
 
 #include <stdexcept>
 
 namespace web_audio {
 class AudioDestinationNode : public AudioNode {
-private:
-  AudioDestinationNode() = default;
+  WEB_AUDIO_PRIVATE : AudioDestinationNode() = default;
 
 public:
   ~AudioDestinationNode() noexcept = default;
