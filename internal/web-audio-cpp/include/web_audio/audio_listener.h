@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "details/common.h"
 
 namespace web_audio {
 class AudioParam;
 class BaseAudioContext;
+class AudioNode;
 
 class AudioListener : public std::enable_shared_from_this<AudioListener> {
   WEB_AUDIO_PRIVATE : AudioListener() = default;
@@ -54,9 +56,11 @@ public:
   std::shared_ptr<AudioParam> upZ;
 
   std::weak_ptr<BaseAudioContext> context_;
+  std::vector<std::weak_ptr<AudioNode>> inputsIndirect_;
 
   friend class BaseAudioContext;
   friend class AudioContext;
   friend class OfflineAudioContext;
+  friend class AudioNode;
 };
 } // namespace web_audio

@@ -85,6 +85,7 @@ protected:
 
   std::vector<details::AudioNodeInput> inputs_;
   std::vector<details::AudioNodeOutput> outputs_;
+  std::vector<std::weak_ptr<AudioNode>> inputsIndirect_;
 
   friend class BaseAudioContext;
   friend class AudioContext;
