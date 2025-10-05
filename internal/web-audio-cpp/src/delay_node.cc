@@ -1,6 +1,6 @@
-#include "web_audio/delay_node.h"
+#include "web_audio/delay_node.hh"
 
-#include "web_audio/base_audio_context.h"
+#include "web_audio/base_audio_context.hh"
 
 namespace web_audio {
 std::shared_ptr<DelayNode>

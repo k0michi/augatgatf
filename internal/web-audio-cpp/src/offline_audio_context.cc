@@ -1,4 +1,4 @@
-#include "web_audio/offline_audio_context.h"
+#include "web_audio/offline_audio_context.hh"
 
 namespace web_audio {
 OfflineAudioContext::OfflineAudioContext() : BaseAudioContext() {}

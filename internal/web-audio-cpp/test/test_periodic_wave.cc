@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "web_audio/offline_audio_context.h"
-#include "web_audio/periodic_wave.h"
-#include "web_audio/periodic_wave_options.h"
+#include "web_audio/offline_audio_context.hh"
+#include "web_audio/periodic_wave.hh"
+#include "web_audio/periodic_wave_options.hh"
 
 using namespace web_audio;
 

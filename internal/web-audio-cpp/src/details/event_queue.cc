@@ -1,4 +1,4 @@
-#include "web_audio/details/event_queue.h"
+#include "web_audio/details/event_queue.hh"
 
 namespace web_audio::details {
 void EventQueue::push(std::function<void()> func) {

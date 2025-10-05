@@ -1,4 +1,4 @@
-#include "web_audio/details/render_quantum.h"
+#include "web_audio/details/render_quantum.hh"
 
 namespace web_audio::details {
 RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels,

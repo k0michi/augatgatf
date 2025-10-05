@@ -1,4 +1,4 @@
-#include "web_audio/details/param_collection.h"
+#include "web_audio/details/param_collection.hh"
 
 namespace web_audio::details {
 float ParamCollection::getValue(std::shared_ptr<AudioParam> param,

@@ -1,6 +1,6 @@
-#include "web_audio/audio_scheduled_source_node.h"
+#include "web_audio/audio_scheduled_source_node.hh"
 
-#include "web_audio/base_audio_context.h"
+#include "web_audio/base_audio_context.hh"
 
 namespace web_audio {
 EventHandler *AudioScheduledSourceNode ::getOnended() { return this->onended; }

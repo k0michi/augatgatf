@@ -1,4 +1,4 @@
-#include "web_audio/dom_exception.h"
+#include "web_audio/dom_exception.hh"
 
 namespace web_audio {
 DOMException::DOMException(const std::string &message, const std::string &name)

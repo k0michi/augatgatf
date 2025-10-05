@@ -1,4 +1,4 @@
-#include "web_audio/audio_buffer.h"
+#include "web_audio/audio_buffer.hh"
 
 namespace web_audio {
 AudioBuffer::AudioBuffer() {}

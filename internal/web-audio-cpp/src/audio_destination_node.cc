@@ -1,4 +1,4 @@
-#include "web_audio/audio_destination_node.h"
+#include "web_audio/audio_destination_node.hh"
 
 namespace web_audio {
 std::uint32_t AudioDestinationNode::getMaxChannelCount() const {

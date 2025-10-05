@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "web_audio.h"
+#include "web_audio.hh"
 
 namespace {
 std::shared_ptr<web_audio::OfflineAudioContext> createOfflineContext() {

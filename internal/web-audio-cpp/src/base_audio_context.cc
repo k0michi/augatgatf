@@ -1,4 +1,4 @@
-#include "web_audio/base_audio_context.h"
+#include "web_audio/base_audio_context.hh"
 
 namespace web_audio {
 BaseAudioContext::BaseAudioContext() {}

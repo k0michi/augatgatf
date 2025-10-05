@@ -1,4 +1,4 @@
-#include "web_audio/periodic_wave.h"
+#include "web_audio/periodic_wave.hh"
 
 namespace web_audio {
 std::shared_ptr<PeriodicWave>

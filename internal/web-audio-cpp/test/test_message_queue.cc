@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "web_audio.h"
+#include "web_audio.hh"
 
 TEST(MessageQueueTest, PushPop) {
   web_audio::details::MessageQueue mq;

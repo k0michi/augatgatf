@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "web_audio/offline_audio_context.h"
+#include "web_audio/offline_audio_context.hh"
 
 using namespace web_audio;
 

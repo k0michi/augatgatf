@@ -1,4 +1,4 @@
-#include "web_audio/audio_listener.h"
+#include "web_audio/audio_listener.hh"
 
 #include <stdexcept>
 

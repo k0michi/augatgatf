@@ -1,6 +1,6 @@
-#include "web_audio/audio_param.h"
+#include "web_audio/audio_param.hh"
 
-#include "web_audio/base_audio_context.h"
+#include "web_audio/base_audio_context.hh"
 
 namespace web_audio {
 std::shared_ptr<AudioParam> AudioParam::create(

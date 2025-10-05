@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "dummy_node.h"
-#include "web_audio.h"
+#include "dummy_node.hh"
+#include "web_audio.hh"
 
 namespace {
 std::shared_ptr<web_audio::OfflineAudioContext> createOfflineContext() {

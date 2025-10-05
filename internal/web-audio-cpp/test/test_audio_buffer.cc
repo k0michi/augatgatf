@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "web_audio/audio_buffer.h"
+#include "web_audio/audio_buffer.hh"
 
 using namespace web_audio;
 

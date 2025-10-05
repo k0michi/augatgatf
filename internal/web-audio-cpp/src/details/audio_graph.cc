@@ -1,6 +1,6 @@
-#include "web_audio/details/audio_graph.h"
+#include "web_audio/details/audio_graph.hh"
 
-#include "web_audio/audio_param.h"
+#include "web_audio/audio_param.hh"
 
 namespace web_audio::details {
 void AudioGraph::addNode(std::shared_ptr<AudioNode> node) {
