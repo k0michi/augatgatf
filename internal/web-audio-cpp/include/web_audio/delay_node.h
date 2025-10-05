@@ -18,7 +18,7 @@ public:
   create(std::shared_ptr<BaseAudioContext> context,
          const DelayOptions &options = {});
 
-  std::shared_ptr<AudioParam> getDelayTime() const { return delayTime_; }
+  std::shared_ptr<AudioParam> getDelayTime() const;
 
   void process(const std::vector<details::RenderQuantum> &inputs,
                std::vector<details::RenderQuantum> &outputs,

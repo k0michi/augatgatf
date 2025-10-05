@@ -40,6 +40,10 @@ DelayNode::create(std::shared_ptr<BaseAudioContext> context,
   return node;
 }
 
+std::shared_ptr<AudioParam> DelayNode::getDelayTime() const {
+  return delayTime_;
+}
+
 void DelayNode::process(const std::vector<details::RenderQuantum> &inputs,
                         std::vector<details::RenderQuantum> &outputs,
                         const details::ParamCollection &params) {
