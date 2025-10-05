@@ -11,10 +11,8 @@ public:
   static std::shared_ptr<DummyNode>
   create(std::shared_ptr<web_audio::BaseAudioContext> context = nullptr) {
     auto node = std::shared_ptr<DummyNode>(new DummyNode());
+    node->initialize(context);
 
-    if (context) {
-      node->context_ = context;
-    }
     node->numberOfInputs_ = 1;
     node->numberOfOutputs_ = 1;
     node->channelCount_ = 2;

@@ -110,4 +110,9 @@ void AudioNode::setChannelInterpretation(
     ChannelInterpretation channelInterpretation) {
   channelInterpretation_ = channelInterpretation;
 }
+
+void AudioNode::initialize(std::shared_ptr<BaseAudioContext> context) {
+  // SPEC: Set o’s associated BaseAudioContext to context.
+  context_ = context;
+}
 } // namespace web_audio

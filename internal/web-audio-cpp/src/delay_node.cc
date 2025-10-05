@@ -7,10 +7,7 @@ std::shared_ptr<DelayNode>
 DelayNode::create(std::shared_ptr<BaseAudioContext> context,
                   const DelayOptions &options) {
   auto node = std::shared_ptr<DelayNode>(new DelayNode());
-
-  if (context) {
-    node->context_ = context;
-  }
+  node->initialize(context);
 
   if (!(options.maxDelayTime >= 0 && options.maxDelayTime <= 180)) {
     throw DOMException(

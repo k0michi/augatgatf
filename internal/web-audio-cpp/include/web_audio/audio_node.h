@@ -66,6 +66,12 @@ public:
                        std::vector<details::RenderQuantum> &outputs,
                        const details::ParamCollection &params) = 0;
 
+  /**
+   * Must be called from the create() factory method of each
+   * derived class.
+   */
+  void initialize(std::shared_ptr<BaseAudioContext> context);
+
 protected:
   std::weak_ptr<BaseAudioContext> context_;
   std::uint32_t numberOfInputs_;
