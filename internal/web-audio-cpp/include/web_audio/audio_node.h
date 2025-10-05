@@ -38,6 +38,7 @@ public:
                std::uint32_t output = 0);
   void disconnect();
   void disconnect(std::uint32_t output);
+  void disconnect(std::shared_ptr<AudioNode> destinationNode);
   void disconnect(std::shared_ptr<AudioNode> destinationNode,
                   std::uint32_t output);
   void disconnect(std::shared_ptr<AudioNode> destinationNode,
@@ -65,6 +66,8 @@ public:
   virtual void process(const std::vector<details::RenderQuantum> &inputs,
                        std::vector<details::RenderQuantum> &outputs,
                        const details::ParamCollection &params) = 0;
+
+  void disconnectInternal(std::size_t index);
 
   /**
    * Must be called from the create() factory method of each

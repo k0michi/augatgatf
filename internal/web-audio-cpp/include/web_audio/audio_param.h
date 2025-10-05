@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "automation_rate.h"
+#include "details/audio_node_input.h"
 #include "details/common.h"
 #include "details/param_event.h"
 
@@ -18,6 +19,10 @@ namespace web_audio {
 class BaseAudioContext;
 class AudioNode;
 class AudioListener;
+
+namespace details {
+class AudioGraph;
+}
 
 class AudioParam : public std::enable_shared_from_this<AudioParam> {
   WEB_AUDIO_PRIVATE : AudioParam() = default;
@@ -137,7 +142,10 @@ public:
   std::set<details::ParamEvent, details::ParamEventLess> events_;
   std::uint32_t eventIndex_ = 0;
   std::variant<std::weak_ptr<AudioNode>, std::weak_ptr<AudioListener>> owner_;
+  std::vector<details::AudioNodeInput> inputs_;
 
   friend class DelayNode;
+  friend class details::AudioGraph;
+  friend class AudioNode;
 };
 } // namespace web_audio

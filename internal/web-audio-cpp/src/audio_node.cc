@@ -1,5 +1,7 @@
 #include "web_audio/audio_node.h"
 
+#include "web_audio/audio_param.h"
+
 namespace web_audio {
 std::shared_ptr<AudioNode>
 AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
@@ -41,34 +43,211 @@ AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
 
 void AudioNode::connect(std::shared_ptr<AudioParam> destinationParam,
                         std::uint32_t output) {
-  // TODO
+  // SPEC: If destinationParam belongs to an AudioNode that belongs to a
+  // BaseAudioContext that is different from the BaseAudioContext that has
+  // created the AudioNode on which this method was called, an
+  // InvalidAccessError MUST be thrown.
+  if (context_.lock() != destinationParam->getContext()) {
+    throw DOMException("AudioNode: cannot connect nodes from different context",
+                       "InvalidAccessError");
+  }
+
+  // SPEC: If the parameter is out-of-bounds, an IndexSizeError exception MUST
+  // be thrown.
+  if (output >= numberOfOutputs_) {
+    throw DOMException("AudioNode: output index is out of range",
+                       "IndexSizeError");
+  }
+
+  for (auto &out : outputs_) {
+    if (out.sourceIndex == output) {
+      if (auto dest =
+              std::get_if<std::weak_ptr<AudioParam>>(&out.destination)) {
+        if (auto destParam = dest->lock()) {
+          if (destParam == destinationParam) {
+            // already connected
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  outputs_.push_back(details::AudioNodeOutput{output, destinationParam, 0});
+  destinationParam->inputs_.push_back(
+      details::AudioNodeInput{shared_from_this(), output, 0});
 }
 
 void AudioNode::disconnect() {
-  // TODO
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    disconnectInternal(i);
+  }
 }
 
 void AudioNode::disconnect(std::uint32_t output) {
-  // TODO
+  // SPEC: If this parameter is out-of-bounds, an IndexSizeError exception MUST
+  // be thrown.
+  if (output >= numberOfOutputs_) {
+    throw DOMException("AudioNode: output index is out of range",
+                       "IndexSizeError");
+  }
+
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    const auto &out = outputs_[i];
+
+    if (out.sourceIndex == output) {
+      disconnectInternal(i);
+    }
+  }
+}
+
+void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode) {
+  bool found = false;
+
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    const auto &out = outputs_[i];
+
+    if (auto dest = std::get_if<std::weak_ptr<AudioNode>>(&out.destination)) {
+      if (auto destNode = dest->lock()) {
+        if (destNode == destinationNode) {
+          found = true;
+          disconnectInternal(i);
+        }
+      }
+    }
+  }
+
+  // SPEC: If there is no connection to the destinationNode, an
+  // InvalidAccessError exception MUST be thrown.
+  if (!found) {
+    throw DOMException("AudioNode: no connection to the destinationNode",
+                       "InvalidAccessError");
+  }
 }
 
 void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode,
                            std::uint32_t output) {
-  // TODO
+  bool found = false;
+
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    auto &out = outputs_[i];
+
+    if (out.sourceIndex == output) {
+      if (auto dest = std::get_if<std::weak_ptr<AudioNode>>(&out.destination)) {
+        if (auto destNode = dest->lock()) {
+          if (destNode == destinationNode) {
+            found = true;
+            disconnectInternal(i);
+          }
+        }
+      }
+    }
+  }
+
+  // SPEC: If there is no connection to the destinationNode, an
+  // InvalidAccessError exception MUST be thrown.
+  if (!found) {
+    throw DOMException("AudioNode: no connection to the destinationNode",
+                       "InvalidAccessError");
+  }
 }
 
 void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode,
                            std::uint32_t output, std::uint32_t input) {
-  // TODO
+  // SPEC: If this parameter is out-of-bounds, an IndexSizeError exception MUST
+  // be thrown.
+  if (output >= numberOfOutputs_) {
+    throw DOMException("AudioNode: output index is out of range",
+                       "IndexSizeError");
+  }
+
+  // SPEC: If this parameter is out-of-bounds, an IndexSizeError exception MUST
+  // be thrown.
+  if (input >= destinationNode->numberOfInputs_) {
+    throw DOMException("AudioNode: input index is out of range",
+                       "IndexSizeError");
+  }
+
+  bool found = false;
+
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    auto &out = outputs_[i];
+    if (out.sourceIndex == output) {
+      if (auto dest = std::get_if<std::weak_ptr<AudioNode>>(&out.destination)) {
+        if (auto destNode = dest->lock()) {
+          if (destNode == destinationNode && out.destinationIndex == input) {
+            found = true;
+            disconnectInternal(i);
+          }
+        }
+      }
+    }
+  }
+
+  // SPEC: If there is no connection to the destinationNode from the given
+  // output to the given input, an InvalidAccessError exception MUST be thrown.
+  if (!found) {
+    throw DOMException("AudioNode: no connection to the destinationNode",
+                       "InvalidAccessError");
+  }
 }
 
 void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam) {
-  // TODO
+  bool found = false;
+
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    auto &out = outputs_[i];
+    if (auto dest = std::get_if<std::weak_ptr<AudioParam>>(&out.destination)) {
+      if (auto destParam = dest->lock()) {
+        if (destParam == destinationParam) {
+          found = true;
+          disconnectInternal(i);
+        }
+      }
+    }
+  }
+
+  // SPEC: If there is no connection to the destinationParam, an
+  // InvalidAccessError exception MUST be thrown.
+  if (!found) {
+    throw DOMException("AudioNode: no connection to the destinationParam",
+                       "InvalidAccessError");
+  }
 }
 
 void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam,
                            std::uint32_t output) {
-  // TODO
+  // SPEC: If the parameter is out-of-bounds, an IndexSizeError exception MUST
+  // be thrown.
+  if (output >= numberOfOutputs_) {
+    throw DOMException("AudioNode: output index is out of range",
+                       "IndexSizeError");
+  }
+
+  bool found = false;
+
+  for (std::size_t i = outputs_.size(); i-- > 0;) {
+    const auto &out = outputs_[i];
+
+    if (out.sourceIndex == output) {
+      if (auto dest =
+              std::get_if<std::weak_ptr<AudioParam>>(&out.destination)) {
+        if (auto destParam = dest->lock()) {
+          if (destParam == destinationParam) {
+            found = true;
+            disconnectInternal(i);
+          }
+        }
+      }
+    }
+  }
+
+  // SPEC: If there is no connection to the destinationParam, an
+  // InvalidAccessError exception MUST be thrown.
+  if (!found) {
+    throw DOMException("AudioNode: no connection to the destinationParam",
+                       "InvalidAccessError");
+  }
 }
 
 std::shared_ptr<BaseAudioContext> AudioNode::getContext() const {
@@ -114,5 +293,32 @@ void AudioNode::setChannelInterpretation(
 void AudioNode::initialize(std::shared_ptr<BaseAudioContext> context) {
   // SPEC: Set o’s associated BaseAudioContext to context.
   context_ = context;
+}
+
+void AudioNode::disconnectInternal(std::size_t index) {
+  const auto &output = outputs_[index];
+
+  if (auto destNode =
+          std::get_if<std::weak_ptr<AudioNode>>(&output.destination)) {
+    if (auto sp = destNode->lock()) {
+      auto &inputs = sp->inputs_;
+      inputs.erase(std::remove(inputs.begin(), inputs.end(),
+                               details::AudioNodeInput{
+                                   shared_from_this(), output.sourceIndex,
+                                   output.destinationIndex}),
+                   inputs.end());
+      outputs_.erase(outputs_.begin() + index);
+    }
+  } else if (auto destParam =
+                 std::get_if<std::weak_ptr<AudioParam>>(&output.destination)) {
+    if (auto sp = destParam->lock()) {
+      auto &inputs = sp->inputs_;
+      inputs.erase(std::remove(inputs.begin(), inputs.end(),
+                               details::AudioNodeInput{shared_from_this(),
+                                                       output.sourceIndex, 0}),
+                   inputs.end());
+      outputs_.erase(outputs_.begin() + index);
+    }
+  }
 }
 } // namespace web_audio
