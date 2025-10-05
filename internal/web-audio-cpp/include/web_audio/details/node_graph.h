@@ -12,6 +12,9 @@
 namespace web_audio::details {
 class AudioGraph {
 public:
+  using Vertex =
+      std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>;
+
   AudioGraph() = default;
   virtual ~AudioGraph() noexcept = default;
 
@@ -26,11 +29,21 @@ public:
   /**
    * Returns the destination nodes connected to this node.
    */
-  std::vector<
-      std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>>
-  getNextNodes(std::shared_ptr<AudioNode> node) const;
+  std::vector<Vertex> getNextVertices(std::shared_ptr<AudioNode> node) const;
 
+  std::vector<Vertex> getNextVertices(Vertex vertex) const;
+
+  std::vector<Vertex> getVertices() const;
+
+  /**
+   * Returns true if the given node is part of a cycle.
+   */
   bool isPartOfCycle(std::shared_ptr<AudioNode> node) const;
+
+  /**
+   * Returns the strongly connected components of the graph.
+   */
+  std::vector<std::vector<Vertex>> getConnectedComponents() const;
 
   WEB_AUDIO_PRIVATE : std::vector<std::shared_ptr<AudioNode>> nodes_;
   std::shared_ptr<AudioListener> listener_;

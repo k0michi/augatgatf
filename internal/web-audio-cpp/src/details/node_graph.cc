@@ -19,9 +19,8 @@ bool AudioGraph::hasNode(std::shared_ptr<AudioNode> node) const {
 
 void AudioGraph::clear() { nodes_.clear(); }
 
-std::vector<
-    std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>>
-AudioGraph::getNextNodes(std::shared_ptr<AudioNode> node) const {
+std::vector<AudioGraph::Vertex>
+AudioGraph::getNextVertices(std::shared_ptr<AudioNode> node) const {
   std::vector<
       std::variant<std::shared_ptr<AudioNode>, std::shared_ptr<AudioListener>>>
       nextNodes;
@@ -51,29 +50,117 @@ AudioGraph::getNextNodes(std::shared_ptr<AudioNode> node) const {
   return nextNodes;
 }
 
+std::vector<AudioGraph::Vertex>
+AudioGraph::getNextVertices(Vertex vertex) const {
+  if (auto node = std::get_if<std::shared_ptr<AudioNode>>(&vertex)) {
+    return getNextVertices(*node);
+  } else if (auto listener =
+                 std::get_if<std::shared_ptr<AudioListener>>(&vertex)) {
+    return {};
+  }
+
+  std::abort();
+}
+
+std::vector<AudioGraph::Vertex> AudioGraph::getVertices() const {
+  std::vector<Vertex> vertices;
+
+  for (const auto &node : nodes_) {
+    vertices.push_back(node);
+  }
+
+  if (listener_) {
+    vertices.push_back(listener_);
+  }
+
+  return vertices;
+}
+
 bool AudioGraph::isPartOfCycle(std::shared_ptr<AudioNode> node) const {
-  std::unordered_map<std::shared_ptr<AudioNode>, std::uint32_t> state;
+  enum VisitState { UNVISITED = 0, VISITING = 1, VISITED = 2 };
+  std::unordered_map<std::shared_ptr<AudioNode>, VisitState> state;
 
-  std::function<bool(std::shared_ptr<AudioNode>)> dfs =
-      [&](std::shared_ptr<AudioNode> current) {
-        state[current] |= 1;
+  std::function<bool(std::shared_ptr<AudioNode>, std::shared_ptr<AudioNode>)>
+      dfs = [&](std::shared_ptr<AudioNode> current,
+                std::shared_ptr<AudioNode> origin) -> bool {
+    state[current] = VISITING;
 
-        for (const auto &next : getNextNodes(current)) {
-          if (auto nextNode = std::get_if<std::shared_ptr<AudioNode>>(&next)) {
-            if (state[*nextNode] & 1) {
-              return true;
-            } else if (!(state[*nextNode] & 2)) {
-              if (dfs(*nextNode)) {
-                return true;
-              }
-            }
+    for (const auto &next : getNextVertices(current)) {
+      if (auto nextNode = std::get_if<std::shared_ptr<AudioNode>>(&next)) {
+        auto &nextState = state[*nextNode];
+
+        if (nextState == UNVISITED) {
+          if (dfs(*nextNode, origin)) {
+            return true;
+          }
+        } else if (nextState == VISITING) {
+          if (*nextNode == origin) {
+            return true;
           }
         }
+      }
+    }
 
-        state[current] |= 2;
-        return false;
+    state[current] = VISITED;
+    return false;
+  };
+
+  return dfs(node, node);
+}
+
+std::vector<std::vector<AudioGraph::Vertex>>
+AudioGraph::getConnectedComponents() const {
+  std::unordered_set<AudioGraph::Vertex> visited;
+  std::vector<AudioGraph::Vertex> order;
+  auto vertices = getVertices();
+
+  std::function<void(AudioGraph::Vertex)> dfs = [&](AudioGraph::Vertex v) {
+    visited.insert(v);
+
+    auto next = getNextVertices(v);
+
+    for (const auto &u : next) {
+      if (!visited.count(u)) {
+        dfs(u);
+      }
+    }
+
+    order.push_back(v);
+  };
+
+  std::function<void(AudioGraph::Vertex, std::vector<AudioGraph::Vertex> &)>
+      rdfs = [&](AudioGraph::Vertex v, std::vector<AudioGraph::Vertex> &comp) {
+        visited.insert(v);
+        comp.push_back(v);
+
+        auto next = getNextVertices(v);
+
+        for (const auto &u : next) {
+          if (!visited.count(u)) {
+            rdfs(u, comp);
+          }
+        }
       };
 
-  return dfs(node);
+  for (const auto &v : vertices) {
+    if (!visited.count(v)) {
+      dfs(v);
+    }
+  }
+
+  visited.clear();
+  std::reverse(order.begin(), order.end());
+
+  std::vector<std::vector<AudioGraph::Vertex>> sccs;
+
+  for (const auto &v : order) {
+    if (!visited.count(v)) {
+      std::vector<AudioGraph::Vertex> comp;
+      rdfs(v, comp);
+      sccs.push_back(std::move(comp));
+    }
+  }
+
+  return sccs;
 }
 } // namespace web_audio::details
