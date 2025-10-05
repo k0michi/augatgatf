@@ -45,7 +45,7 @@ public:
   /**
    * Returns the strongly connected components of the graph.
    */
-  std::vector<std::vector<Vertex>> getConnectedComponents() const;
+  std::vector<std::vector<Vertex>> getStronglyConnectedComponents() const;
 
   WEB_AUDIO_PRIVATE : std::vector<std::shared_ptr<AudioNode>> nodes_;
   std::shared_ptr<AudioListener> listener_;

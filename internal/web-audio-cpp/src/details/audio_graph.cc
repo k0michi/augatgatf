@@ -141,7 +141,7 @@ bool AudioGraph::isPartOfCycle(std::shared_ptr<AudioNode> node) const {
 }
 
 std::vector<std::vector<AudioGraph::Vertex>>
-AudioGraph::getConnectedComponents() const {
+AudioGraph::getStronglyConnectedComponents() const {
   std::unordered_set<AudioGraph::Vertex> visited;
   std::vector<AudioGraph::Vertex> order;
   auto vertices = getVertices();

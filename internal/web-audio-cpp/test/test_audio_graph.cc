@@ -125,3 +125,29 @@ TEST(NodeGraph, GetPreviousVertices) {
   EXPECT_EQ(prev.size(), 1);
   EXPECT_EQ(std::get<std::shared_ptr<web_audio::AudioNode>>(prev[0]), node1);
 }
+
+TEST(NodeGraph, GetStronglyConnectedComponents) {
+  auto context = createOfflineContext();
+  auto node1 = DummyNode::create(context);
+  auto node2 = DummyNode::create(context);
+  auto node3 = DummyNode::create(context);
+  auto node4 = DummyNode::create(context);
+
+  node1->connect(node2);
+  node2->connect(node3);
+  node3->connect(node1);
+  node4->connect(node1);
+
+  web_audio::details::AudioGraph graph;
+  graph.addNode(node1);
+  graph.addNode(node2);
+  graph.addNode(node3);
+  graph.addNode(node4);
+
+  auto sccs = graph.getStronglyConnectedComponents();
+  EXPECT_EQ(sccs.size(), 2);
+  EXPECT_EQ(sccs[0],
+            std::vector<web_audio::details::AudioGraph::Vertex>{node4});
+  EXPECT_EQ(sccs[1], (std::vector<web_audio::details::AudioGraph::Vertex>{
+                         node1, node3, node2}));
+}
