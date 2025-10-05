@@ -1,0 +1,113 @@
+#include "web_audio/audio_node.h"
+
+namespace web_audio {
+std::shared_ptr<AudioNode>
+AudioNode::connect(std::shared_ptr<AudioNode> destinationNode,
+                   std::uint32_t output, std::uint32_t input) {
+  if (context_.lock() != destinationNode->context_.lock()) {
+    throw DOMException("AudioNode: cannot connect nodes from different context",
+                       "InvalidAccessError");
+  }
+
+  if (output >= numberOfOutputs_) {
+    throw DOMException("AudioNode: output index is out of range",
+                       "IndexSizeError");
+  }
+
+  if (input >= destinationNode->numberOfInputs_) {
+    throw DOMException("AudioNode: input index is out of range",
+                       "IndexSizeError");
+  }
+
+  for (auto &out : outputs_) {
+    if (out.sourceIndex == output) {
+      if (auto dest = std::get_if<std::weak_ptr<AudioNode>>(&out.destination)) {
+        if (auto destNode = dest->lock()) {
+          if (destNode == destinationNode && out.destinationIndex == input) {
+            // already connected
+            return destinationNode;
+          }
+        }
+      }
+    }
+  }
+
+  outputs_.push_back(details::AudioNodeOutput{output, destinationNode, input});
+  destinationNode->inputs_.push_back(
+      details::AudioNodeInput{shared_from_this(), output, input});
+
+  return destinationNode;
+}
+
+void AudioNode::connect(std::shared_ptr<AudioParam> destinationParam,
+                        std::uint32_t output) {
+  // TODO
+}
+
+void AudioNode::disconnect() {
+  // TODO
+}
+
+void AudioNode::disconnect(std::uint32_t output) {
+  // TODO
+}
+
+void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode,
+                           std::uint32_t output) {
+  // TODO
+}
+
+void AudioNode::disconnect(std::shared_ptr<AudioNode> destinationNode,
+                           std::uint32_t output, std::uint32_t input) {
+  // TODO
+}
+
+void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam) {
+  // TODO
+}
+
+void AudioNode::disconnect(std::shared_ptr<AudioParam> destinationParam,
+                           std::uint32_t output) {
+  // TODO
+}
+
+std::shared_ptr<BaseAudioContext> AudioNode::getContext() const {
+  if (auto context = context_.lock()) {
+    return context;
+  } else {
+    throw std::runtime_error("AudioNode: context has expired");
+  }
+}
+
+std::uint32_t AudioNode::getNumberOfInputs() const { return numberOfInputs_; }
+
+std::uint32_t AudioNode::getNumberOfOutputs() const { return numberOfOutputs_; }
+
+std::uint32_t AudioNode::getChannelCount() const { return channelCount_; }
+
+void AudioNode::setChannelCount(std::uint32_t channelCount) {
+  if (channelCount == 0) {
+    throw DOMException("AudioNode: channelCount must be at least 1",
+                       "NotSupportedError");
+  }
+
+  channelCount_ = channelCount;
+}
+
+ChannelCountMode AudioNode::getChannelCountMode() const {
+  return channelCountMode_;
+}
+
+void AudioNode::setChannelCountMode(ChannelCountMode channelCountMode) {
+  channelCountMode_ = channelCountMode;
+}
+
+ChannelInterpretation AudioNode::getChannelInterpretation() const {
+  return channelInterpretation_;
+}
+
+void AudioNode::setChannelInterpretation(
+    ChannelInterpretation channelInterpretation) {
+  channelInterpretation_ = channelInterpretation;
+}
+} // namespace web_audio
