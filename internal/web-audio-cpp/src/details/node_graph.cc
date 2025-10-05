@@ -60,6 +60,12 @@ AudioGraph::getNextVertices(Vertex vertex) const {
   std::abort();
 }
 
+std::vector<AudioGraph::Vertex>
+AudioGraph::getPreviousVertices(Vertex vertex) const {
+  // TODO
+  return {};
+}
+
 std::vector<AudioGraph::Vertex> AudioGraph::getVertices() const {
   std::vector<Vertex> vertices;
 
@@ -131,9 +137,9 @@ AudioGraph::getConnectedComponents() const {
         visited.insert(v);
         comp.push_back(v);
 
-        auto next = getNextVertices(v);
+        auto prev = getPreviousVertices(v);
 
-        for (const auto &u : next) {
+        for (const auto &u : prev) {
           if (!visited.count(u)) {
             rdfs(u, comp);
           }

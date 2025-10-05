@@ -33,6 +33,8 @@ public:
 
   std::vector<Vertex> getNextVertices(Vertex vertex) const;
 
+  std::vector<Vertex> getPreviousVertices(Vertex vertex) const;
+
   std::vector<Vertex> getVertices() const;
 
   /**
