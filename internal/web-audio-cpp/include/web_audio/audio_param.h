@@ -295,6 +295,8 @@ AudioParam::setValueCurveAtTime(const std::vector<float> &values,
 
   events_.emplace(details::ParamEventSetValueCurve{
       eventIndex_++, values, startTime, duration, std::nullopt});
+  events_.emplace(details::ParamEventSetValue{eventIndex_++, values.back(),
+                                              startTime + duration});
 
   return shared_from_this();
 }
@@ -443,8 +445,8 @@ void AudioParam::computeIntrinsicValues(double startTime,
 
   for (uint32_t i = 0; i < outputs.size(); ++i) {
     auto time = startTime + i * delta;
-    auto prevEvent = floorEvent(startTime);
-    auto nextEvent = higherEvent(startTime);
+    auto prevEvent = floorEvent(time);
+    auto nextEvent = higherEvent(time);
 
     if (prevEvent == events_.end()) {
       outputs[i] = defaultValue_;

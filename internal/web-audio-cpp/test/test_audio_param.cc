@@ -213,3 +213,23 @@ TEST(AudioParamTest, ComputeIntrinsicValues_NoEvents) {
     EXPECT_FLOAT_EQ(v, 1.0f);
   }
 }
+
+TEST(AudioParamTest, ComputeIntrinsicValues_LinearAfterCurve) {
+  auto context = createOfflineContext();
+  auto param = createAudioParam(context);
+  param->setValueCurveAtTime({0.0f, 1.0f, 0.0f}, 0.0, 1.0);
+  param->linearRampToValueAtTime(2.0f, 2.0);
+  std::vector<float> outputs(context->getSampleRate() * 2, 0.0f);
+  param->computeIntrinsicValues(0.0, outputs);
+
+  for (std::size_t i = 0; i < outputs.size(); ++i) {
+    auto t = static_cast<double>(i) / context->getSampleRate();
+    if (t < 1.0) {
+      auto expected = (t < 0.5) ? (2.0f * t) : (-2.0f * t + 2.0f);
+      EXPECT_NEAR(outputs[i], expected, 0.01f);
+    } else {
+      auto expected = 0.0f + (2.0f - 0.0f) * (t - 1.0f) / (2.0f - 1.0f);
+      EXPECT_NEAR(outputs[i], expected, 0.01f);
+    }
+  }
+}
