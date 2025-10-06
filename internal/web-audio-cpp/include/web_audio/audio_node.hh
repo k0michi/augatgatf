@@ -75,6 +75,8 @@ public:
    */
   void initialize(std::shared_ptr<BaseAudioContext> context);
 
+  virtual std::vector<std::shared_ptr<AudioParam>> getParams();
+
 protected:
   std::weak_ptr<BaseAudioContext> context_;
   std::uint32_t numberOfInputs_;

@@ -335,4 +335,6 @@ void AudioNode::disconnectInternal(std::size_t index) {
     }
   }
 }
+
+std::vector<std::shared_ptr<AudioParam>> AudioNode::getParams() { return {}; }
 } // namespace web_audio

@@ -50,6 +50,10 @@ void DelayNode::process(const std::vector<detail::RenderQuantum> &inputs,
   throw std::runtime_error("Not implemented");
 }
 
+std::vector<std::shared_ptr<AudioParam>> DelayNode::getParams() {
+  return {delayTime_};
+}
+
 std::shared_ptr<DelayNode::DelayNodeReader>
 DelayNode::DelayNodeReader::create(std::shared_ptr<DelayNode> delayNode) {
   auto node = std::shared_ptr<DelayNodeReader>(new DelayNodeReader());

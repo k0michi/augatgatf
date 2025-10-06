@@ -24,6 +24,8 @@ public:
                std::vector<detail::RenderQuantum> &outputs,
                const detail::ParamCollection &params) override;
 
+  std::vector<std::shared_ptr<AudioParam>> getParams() override;
+
 public:
   class DelayNodeReader : public AudioNode {
     WEB_AUDIO_PRIVATE : DelayNodeReader() = default;
