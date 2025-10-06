@@ -1,5 +1,7 @@
 #include "web_audio/detail/render_quantum.hh"
 
+#include <stdexcept>
+
 namespace web_audio::detail {
 RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels,
                              std::uint32_t length)
@@ -201,6 +203,27 @@ void RenderQuantum::mix(std::uint32_t computedNumberOfChannels,
                         std::vector<float>(length_, 0.0f));
   } else {
     channelData_.resize(computedNumberOfChannels);
+  }
+}
+
+void RenderQuantum::add(const RenderQuantum &other,
+                        ChannelInterpretation channelInterpretation) {
+  if (length_ != other.length_) {
+    throw std::runtime_error(
+        "RenderQuantum::add: length mismatch between RenderQuantums");
+  }
+
+  if (channelData_.size() != other.channelData_.size()) {
+    auto clone = other;
+    clone.mix(static_cast<std::uint32_t>(channelData_.size()),
+              channelInterpretation);
+    add(clone, channelInterpretation);
+  } else {
+    for (std::size_t ch = 0; ch < channelData_.size(); ++ch) {
+      for (std::size_t i = 0; i < length_; ++i) {
+        channelData_[ch][i] += other.channelData_[ch][i];
+      }
+    }
   }
 }
 } // namespace web_audio::detail

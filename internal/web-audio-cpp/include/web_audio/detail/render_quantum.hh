@@ -25,6 +25,9 @@ public:
   void mix(std::uint32_t computedNumberOfChannels,
            ChannelInterpretation channelInterpretation);
 
+  void add(const RenderQuantum &other,
+           ChannelInterpretation channelInterpretation);
+
   WEB_AUDIO_PRIVATE : std::uint32_t length_;
   std::vector<std::vector<float>> channelData_;
 };
