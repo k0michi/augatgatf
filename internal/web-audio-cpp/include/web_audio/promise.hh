@@ -22,9 +22,9 @@ template <typename T> class PromiseInternal {
 public:
   PromiseInternal(detail::EventQueue &queue) : eventQueue_(queue) {}
 
-  void resolve(T &&value) {
+  void resolve(const T &value) {
     state_ = PromiseState::eFulfilled;
-    value_ = std::move(value);
+    value_ = value;
 
     for (const auto &callback : fulfillCallbacks_) {
       eventQueue_.push([callback, value = value_]() { callback(value); });

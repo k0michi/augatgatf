@@ -22,5 +22,7 @@ public:
   WEB_AUDIO_PRIVATE : EventHandler *onended = nullptr;
   // [[source started]]
   bool sourceStarted_ = false;
+  double startTime_ = std::numeric_limits<double>::infinity();
+  double stopTime_ = std::numeric_limits<double>::infinity();
 };
 } // namespace web_audio

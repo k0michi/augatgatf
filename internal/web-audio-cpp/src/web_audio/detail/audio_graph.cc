@@ -176,4 +176,62 @@ std::shared_ptr<AudioListenerNode> AudioGraph::getListenerNode() const {
 std::shared_ptr<AudioDestinationNode> AudioGraph::getDestinationNode() const {
   return destinationNode_;
 }
+
+std::vector<std::shared_ptr<AudioNode>> AudioGraph::orderNodes() const {
+  std::vector<std::shared_ptr<AudioNode>> ordered;
+  auto sccs = getStronglyConnectedComponents();
+
+  for (const auto &scc : sccs) {
+    if (scc.size() == 1) {
+      ordered.push_back(scc[0]);
+    } else {
+      // TODO: handle cycles
+    }
+  }
+
+  return ordered;
+}
+
+std::vector<std::shared_ptr<AudioNode>>
+AudioGraph::getNextNodes(std::shared_ptr<AudioNode> node) const {
+  std::vector<std::shared_ptr<AudioNode>> nextNodes;
+
+  for (const auto &output : node->outputs_) {
+    auto destination = output.destination;
+
+    if (auto destNode = std::get_if<std::weak_ptr<AudioNode>>(&destination)) {
+      if (auto sharedDestNode = destNode->lock()) {
+        nextNodes.push_back(sharedDestNode);
+      }
+    }
+  }
+
+  return nextNodes;
+}
+
+std::vector<std::shared_ptr<AudioNode>>
+AudioGraph::getPreviousNodes(std::shared_ptr<AudioNode> node) const {
+  std::vector<std::shared_ptr<AudioNode>> prevNodes;
+
+  for (const auto &input : node->inputs_) {
+    if (auto srcNode = input.source.lock()) {
+      prevNodes.push_back(srcNode);
+    }
+  }
+
+  return prevNodes;
+}
+
+std::vector<std::shared_ptr<AudioNode>>
+AudioGraph::getPreviousNodes(std::shared_ptr<AudioParam> param) const {
+  std::vector<std::shared_ptr<AudioNode>> prevNodes;
+
+  for (const auto &input : param->inputs_) {
+    if (auto srcNode = input.source.lock()) {
+      prevNodes.push_back(srcNode);
+    }
+  }
+
+  return prevNodes;
+}
 } // namespace web_audio::detail

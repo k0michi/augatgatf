@@ -52,6 +52,15 @@ public:
   std::shared_ptr<AudioListenerNode> getListenerNode() const;
   std::shared_ptr<AudioDestinationNode> getDestinationNode() const;
 
+  std::vector<std::shared_ptr<AudioNode>> orderNodes() const;
+
+  std::vector<std::shared_ptr<AudioNode>>
+  getNextNodes(std::shared_ptr<AudioNode> node) const;
+  std::vector<std::shared_ptr<AudioNode>>
+  getPreviousNodes(std::shared_ptr<AudioNode> node) const;
+  std::vector<std::shared_ptr<AudioNode>>
+  getPreviousNodes(std::shared_ptr<AudioParam> param) const;
+
   WEB_AUDIO_PRIVATE : std::vector<std::shared_ptr<AudioNode>> nodes_;
   std::shared_ptr<detail::AudioListenerNode> listenerNode_;
   std::shared_ptr<AudioDestinationNode> destinationNode_;

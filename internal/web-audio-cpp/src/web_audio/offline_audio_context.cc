@@ -4,6 +4,12 @@ namespace web_audio {
 OfflineAudioContext::OfflineAudioContext() : BaseAudioContext() {}
 
 Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
+  // SPEC: If this's relevant global object's associated Document is not fully
+  // active then return a promise rejected with "InvalidStateError"
+  // DOMException.
+
+  // SPEC: If the [[rendering started]] slot on the OfflineAudioContext is true,
+  // return a rejected promise with InvalidStateError, and abort these steps.
   if (renderingStarted_) {
     Promise<std::shared_ptr<AudioBuffer>> promise(eventQueue_);
     promise.getInternal()->reject(std::make_exception_ptr(DOMException(
@@ -12,40 +18,53 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
     return std::move(promise);
   }
 
+  // SPEC: Set the [[rendering started]] slot of the OfflineAudioContext to
+  // true.
   renderingStarted_ = true;
 
+  // SPEC: Let promise be a new promise.
   Promise<std::shared_ptr<AudioBuffer>> promise(eventQueue_);
 
+  // SPEC: Create a new AudioBuffer, with a number of channels, length and
+  // sample rate equal respectively to the numberOfChannels, length and
+  // sampleRate values passed to this instance’s constructor in the
+  // contextOptions parameter. Assign this buffer to an internal slot [[rendered
+  // buffer]] in the OfflineAudioContext.
   try {
     this->renderedBuffer_ = AudioBuffer::create(AudioBufferOptions{
         audioGraph_.getDestinationNode()->channelCount_, length_, sampleRate_});
   } catch (const DOMException &e) {
+    // SPEC: If an exception was thrown during the preceding AudioBuffer
+    // constructor call, reject promise with this exception.
     promise.getInternal()->reject(std::make_exception_ptr(e));
     return std::move(promise);
   }
 
+  // SPEC: Otherwise, in the case that the buffer was successfully constructed,
+  // begin offline rendering.
   auto internal = promise.getInternal();
 
   renderingThread_ = std::make_unique<std::thread>([this, internal]() {
-    {
-      detail::MessageQueue qRendering;
-      this->controlMessageQueue_.swap(qRendering);
-      while (true) {
-        auto msg = qRendering.pop();
-        // TODO: process event
-      }
+    this->renderThreadState_ = AudioContextState::eRunning;
 
-      // TODO: Process the BaseAudioContext's associated task queue.
+    while (currentFrame_.load() < length_) {
+      auto rendered = this->render();
 
-      // Process a render quantum.
-      if (this->renderThreadState_ != AudioContextState::eRunning) {
-        return;
+      for (std::uint32_t channel = 0; channel < rendered.size(); ++channel) {
+        auto &channelData = this->renderedBuffer_->getChannelData(channel);
+        auto &renderedChannelData = rendered[channel][0];
+        auto offset = currentFrame_.load();
+        std::copy(renderedChannelData.begin(), renderedChannelData.end(),
+                  channelData.begin() + offset);
       }
     }
+
+    internal->resolve(this->renderedBuffer_);
   });
 
-  // 8. Append promise to [[pending promises]].
+  // SPEC: Append promise to [[pending promises]].
 
+  // SPEC: Return promise.
   return std::move(promise);
 }
 

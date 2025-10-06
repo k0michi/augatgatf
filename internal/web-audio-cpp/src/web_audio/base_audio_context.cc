@@ -1,5 +1,9 @@
 #include "web_audio/base_audio_context.hh"
 
+#include <unordered_map>
+
+#include "web_audio/audio_param.hh"
+
 namespace web_audio {
 BaseAudioContext::BaseAudioContext() {}
 
@@ -45,4 +49,82 @@ void BaseAudioContext::initialize() {
 }
 
 detail::AudioGraph *BaseAudioContext::getAudioGraph() { return &audioGraph_; }
+
+std::vector<detail::RenderQuantum> BaseAudioContext::render() {
+  // SPEC: Process the control message queue.
+
+  // SPEC: Process the BaseAudioContext's associated task queue.
+
+  // SPEC: If the [[rendering thread state]] of the BaseAudioContext is not
+  // running, return false.
+  if (renderThreadState_ != AudioContextState::eRunning) {
+    return {};
+  }
+
+  // SPEC: Order the AudioNodes of the BaseAudioContext to be processed.
+  auto orderedNodes = audioGraph_.orderNodes();
+  std::unordered_map<std::shared_ptr<AudioNode>,
+                     std::vector<detail::RenderQuantum>>
+      nodeResults;
+  std::unordered_map<std::shared_ptr<AudioParam>, detail::RenderQuantum>
+      paramResults;
+  auto currentTime = currentTime_.load();
+
+  for (auto &node : orderedNodes) {
+    auto params = node->getParams();
+
+    std::vector<detail::RenderQuantum> inputs;
+    std::vector<detail::RenderQuantum> outputs(
+        node->getNumberOfOutputs(),
+        detail::RenderQuantum(node->getChannelCount(), renderQuantumSize_));
+    detail::ParamCollection paramCollection;
+
+    for (auto &param : params) {
+      detail::RenderQuantum paramOutput(1, renderQuantumSize_);
+
+      for (auto &input : param->inputs_) {
+        if (auto srcNode = input.source.lock()) {
+          if (nodeResults.find(srcNode) != nodeResults.end()) {
+            // discrete?
+            paramOutput.add(nodeResults[srcNode][input.sourceIndex],
+                            ChannelInterpretation::eDiscrete);
+          }
+        }
+      }
+
+      param->computeIntrinsicValues(currentTime, paramOutput[0]);
+
+      // SPEC: Queue a control message to set the [[current value]] slot of this
+      // AudioParam according to § 1.6.3 Computation of Value.
+      // TODO
+
+      paramCollection.setValues(param, paramOutput[0]);
+    }
+
+    for (auto &inputNode : node->inputs_) {
+      detail::RenderQuantum input(1, renderQuantumSize_);
+
+      if (auto srcNode = inputNode.source.lock()) {
+        if (nodeResults.find(srcNode) != nodeResults.end()) {
+          input.add(nodeResults[srcNode][inputNode.sourceIndex],
+                    node->getChannelInterpretation());
+        }
+      }
+
+      inputs.push_back(std::move(input));
+    }
+
+    node->process(inputs, outputs, paramCollection);
+    nodeResults[node] = std::move(outputs);
+
+    // SPEC: If this AudioNode is an AudioWorkletNode, execute these substeps:
+    // TODO
+  }
+
+  // SPEC: Atomically perform the following steps:
+  currentFrame_ += renderQuantumSize_;
+  currentTime_ = static_cast<double>(currentFrame_.load()) / sampleRate_;
+
+  return nodeResults[audioGraph_.getDestinationNode()];
+}
 } // namespace web_audio

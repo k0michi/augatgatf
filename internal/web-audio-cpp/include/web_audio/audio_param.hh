@@ -17,8 +17,8 @@
 
 namespace web_audio {
 class BaseAudioContext;
-class AudioNode;
 class AudioListener;
+class OscillatorNode;
 
 namespace detail {
 class AudioGraph;
@@ -144,5 +144,7 @@ public:
   friend class DelayNode;
   friend class detail::AudioGraph;
   friend class AudioNode;
+  friend class OscillatorNode;
+  friend class BaseAudioContext;
 };
 } // namespace web_audio

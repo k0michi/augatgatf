@@ -50,6 +50,8 @@ public:
 
   detail::AudioGraph *getAudioGraph();
 
+  std::vector<detail::RenderQuantum> render();
+
 protected:
   // [[pending promises]]
   std::vector<PromiseBase> pendingPromises_;
@@ -59,6 +61,8 @@ protected:
   AudioContextState controlThreadState_;
   // [[render quantum size]]
   std::uint32_t renderQuantumSize_;
+  // [[current frame]]
+  std::atomic<std::uint64_t> currentFrame_{0};
 
   std::shared_ptr<AudioWorklet> audioWorklet_;
   float sampleRate_;

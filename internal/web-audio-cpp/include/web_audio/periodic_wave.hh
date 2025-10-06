@@ -10,6 +10,8 @@
 #include "periodic_wave_options.hh"
 
 namespace web_audio {
+class OscillatorNode;
+
 class PeriodicWave : public std::enable_shared_from_this<PeriodicWave> {
   WEB_AUDIO_PRIVATE : PeriodicWave() = default;
 
@@ -33,5 +35,7 @@ public:
   std::vector<float> imag_;
   // [[normalize]]
   bool normalize_;
+
+  friend class OscillatorNode;
 };
 } // namespace web_audio
