@@ -1,7 +1,11 @@
 #include "web_audio/offline_audio_context.hh"
 
 namespace web_audio {
-OfflineAudioContext::OfflineAudioContext() : BaseAudioContext() {}
+OfflineAudioContext::~OfflineAudioContext() noexcept {
+  if (renderingThread_ && renderingThread_->joinable()) {
+    renderingThread_->join();
+  }
+}
 
 Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
   // SPEC: If this's relevant global object's associated Document is not fully

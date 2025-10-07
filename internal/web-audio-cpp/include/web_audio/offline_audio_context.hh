@@ -15,8 +15,8 @@
 namespace web_audio {
 class OfflineAudioContext : public BaseAudioContext {
 public:
-  OfflineAudioContext();
-  virtual ~OfflineAudioContext() noexcept = default;
+  OfflineAudioContext() = default;
+  virtual ~OfflineAudioContext() noexcept;
 
   Promise<std::shared_ptr<AudioBuffer>> startRendering();
   Promise<void> resume();
