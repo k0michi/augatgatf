@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <thread>
 
 #include "audio_buffer.hh"
 #include "base_audio_context.hh"

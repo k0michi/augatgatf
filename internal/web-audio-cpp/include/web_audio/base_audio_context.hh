@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <thread>
 
 #include "audio_context_state.hh"
 #include "audio_destination_node.hh"
