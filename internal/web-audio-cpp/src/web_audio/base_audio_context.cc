@@ -3,9 +3,18 @@
 #include <unordered_map>
 
 #include "web_audio/audio_param.hh"
+#include "web_audio/offline_audio_context.hh"
 
 namespace web_audio {
 BaseAudioContext::BaseAudioContext() {}
+
+BaseAudioContext::~BaseAudioContext() {
+  controlMessageQueue_.push(detail::MessageTerminate());
+
+  if (renderingThread_ && renderingThread_->joinable()) {
+    renderingThread_->join();
+  }
+}
 
 std::shared_ptr<AudioDestinationNode> BaseAudioContext::getDestination() {
   return audioGraph_.getDestinationNode();
@@ -46,6 +55,8 @@ void BaseAudioContext::initialize(std::uint32_t numberOfChannels) {
   // TODO
 
   audioGraph_.initialize(shared_from_this(), numberOfChannels);
+  renderingThread_ =
+      std::make_unique<std::thread>(&BaseAudioContext::run, this);
 }
 
 detail::AudioGraph *BaseAudioContext::getAudioGraph() { return &audioGraph_; }
@@ -127,4 +138,32 @@ std::optional<detail::RenderQuantum> BaseAudioContext::render() {
 
   return nodeResults[audioGraph_.getDestinationNode()][0];
 }
+
+void BaseAudioContext::run() {
+  while (true) {
+    std::optional<detail::Message> message;
+
+    if (dynamic_cast<OfflineAudioContext *>(this) &&
+        renderThreadState_ == AudioContextState::eRunning) {
+      message = controlMessageQueue_.tryPop();
+    } else {
+      message = controlMessageQueue_.pop();
+    }
+
+    if (message) {
+      if (std::holds_alternative<detail::MessageTerminate>(*message)) {
+        return;
+      } else if (std::holds_alternative<detail::MessageBeginRendering>(
+                     *message)) {
+        this->renderThreadState_ = AudioContextState::eRunning;
+      } else {
+        // TODO
+      }
+    } else {
+      this->process();
+    }
+  }
+}
+
+void BaseAudioContext::process() {}
 } // namespace web_audio

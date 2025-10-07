@@ -9,10 +9,18 @@ Message MessageQueue::pop() {
   return value;
 }
 
+std::optional<Message> MessageQueue::tryPop() {
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (queue_.empty()) {
+    return std::nullopt;
+  }
+  Message value = queue_.front();
+  queue_.pop();
+  return value;
+}
+
 void MessageQueue::swap(MessageQueue &other) {
-  std::lock(mtx_, other.mtx_);
-  std::lock_guard<std::mutex> lock1(mtx_, std::adopt_lock);
-  std::lock_guard<std::mutex> lock2(other.mtx_, std::adopt_lock);
+  std::scoped_lock lock(mtx_, other.mtx_);
   queue_.swap(other.queue_);
 }
 } // namespace web_audio::detail

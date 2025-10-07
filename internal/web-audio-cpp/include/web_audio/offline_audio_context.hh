@@ -16,7 +16,7 @@ namespace web_audio {
 class OfflineAudioContext : public BaseAudioContext {
 public:
   OfflineAudioContext() = default;
-  virtual ~OfflineAudioContext() noexcept;
+  virtual ~OfflineAudioContext() = default;
 
   Promise<std::shared_ptr<AudioBuffer>> startRendering();
   Promise<void> resume();
@@ -31,6 +31,8 @@ public:
   create(std::uint32_t numberOfChannels, std::uint32_t length,
          float sampleRate);
 
+  void process() override;
+
   WEB_AUDIO_PRIVATE :
       // [[rendering started]]
       bool renderingStarted_ = false;
@@ -38,7 +40,7 @@ public:
   std::shared_ptr<AudioBuffer> renderedBuffer_;
   std::uint32_t length_;
   EventHandler *oncomplete_ = nullptr;
-
-  std::unique_ptr<std::thread> renderingThread_;
+  std::shared_ptr<PromiseInternal<std::shared_ptr<AudioBuffer>>>
+      renderingPromiseInternal_;
 };
 } // namespace web_audio

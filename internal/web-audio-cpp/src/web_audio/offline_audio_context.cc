@@ -1,12 +1,6 @@
 #include "web_audio/offline_audio_context.hh"
 
 namespace web_audio {
-OfflineAudioContext::~OfflineAudioContext() noexcept {
-  if (renderingThread_ && renderingThread_->joinable()) {
-    renderingThread_->join();
-  }
-}
-
 Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
   // SPEC: If this's relevant global object's associated Document is not fully
   // active then return a promise rejected with "InvalidStateError"
@@ -46,28 +40,9 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
 
   // SPEC: Otherwise, in the case that the buffer was successfully constructed,
   // begin offline rendering.
-  auto internal = promise.getInternal();
+  renderingPromiseInternal_ = promise.getInternal();
 
-  renderingThread_ = std::make_unique<std::thread>([this, internal]() {
-    this->renderThreadState_ = AudioContextState::eRunning;
-
-    while (currentFrame_.load() < length_) {
-      auto frame = currentFrame_.load();
-      auto rendered = this->render();
-
-      for (std::uint32_t ch = 0;
-           ch < this->renderedBuffer_->getNumberOfChannels(); ++ch) {
-        auto &channelData = this->renderedBuffer_->getChannelData(ch);
-        auto &renderedChannelData = (*rendered)[ch];
-
-        std::copy(renderedChannelData.begin(), renderedChannelData.end(),
-                  channelData.begin() + frame);
-      }
-    }
-
-    this->controlThreadState_ = AudioContextState::eClosed;
-    internal->resolve(this->renderedBuffer_);
-  });
+  this->controlMessageQueue_.push(detail::MessageBeginRendering());
 
   // SPEC: Append promise to [[pending promises]].
 
@@ -133,5 +108,37 @@ OfflineAudioContext::create(std::uint32_t numberOfChannels,
                             std::uint32_t length, float sampleRate) {
   return create(
       OfflineAudioContextOptions{numberOfChannels, length, sampleRate});
+}
+
+void OfflineAudioContext::process() {
+  if (renderThreadState_ != AudioContextState::eRunning) {
+    return;
+  }
+
+  if (currentFrame_.load() < length_) {
+    auto frame = currentFrame_.load();
+    auto rendered = this->render();
+
+    for (std::uint32_t ch = 0;
+         ch < this->renderedBuffer_->getNumberOfChannels(); ++ch) {
+      auto &channelData = this->renderedBuffer_->getChannelData(ch);
+      auto &renderedChannelData = (*rendered)[ch];
+
+      std::copy(renderedChannelData.begin(), renderedChannelData.end(),
+                channelData.begin() + frame);
+    }
+  }
+
+  if (currentFrame_.load() >= length_) {
+    renderThreadState_ = AudioContextState::eClosed;
+
+    eventQueue_.push(
+        [this]() { this->controlThreadState_ = AudioContextState::eClosed; });
+
+    if (renderingPromiseInternal_) {
+      renderingPromiseInternal_->resolve(this->renderedBuffer_);
+      renderingPromiseInternal_.reset();
+    }
+  }
 }
 } // namespace web_audio

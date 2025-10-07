@@ -18,7 +18,18 @@ struct MessageStop {
   double when;
   std::shared_ptr<AudioNode> node;
 };
+
+/**
+ * Message to terminate the rendering thread.
+ */
+struct MessageTerminate {};
+
+/**
+ * Message to begin rendering.
+ */
+struct MessageBeginRendering {};
 // TODO: other messages
 
-using Message = std::variant<MessageStart, MessageStop>;
+using Message = std::variant<MessageStart, MessageStop, MessageTerminate,
+                             MessageBeginRendering>;
 } // namespace web_audio::detail

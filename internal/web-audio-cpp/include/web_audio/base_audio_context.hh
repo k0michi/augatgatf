@@ -12,6 +12,7 @@
 #include "audio_worklet.hh"
 #include "detail/audio_graph.hh"
 #include "detail/event_queue.hh"
+#include "detail/message.hh"
 #include "detail/message_queue.hh"
 #include "event_handler.hh"
 #include "promise.hh"
@@ -23,7 +24,7 @@ protected:
   BaseAudioContext();
 
 public:
-  virtual ~BaseAudioContext() noexcept = default;
+  virtual ~BaseAudioContext();
 
 public:
   std::shared_ptr<AudioDestinationNode> getDestination();
@@ -53,6 +54,10 @@ public:
 
   std::optional<detail::RenderQuantum> render();
 
+  void run();
+
+  virtual void process();
+
   WEB_AUDIO_PROTECTED :
       // [[pending promises]]
       std::vector<PromiseBase>
@@ -74,5 +79,6 @@ public:
   detail::EventQueue eventQueue_;
   detail::MessageQueue controlMessageQueue_;
   detail::AudioGraph audioGraph_;
+  std::unique_ptr<std::thread> renderingThread_;
 };
 } // namespace web_audio

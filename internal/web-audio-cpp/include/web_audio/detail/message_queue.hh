@@ -2,6 +2,7 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <queue>
 
 #include "common.hh"
@@ -23,6 +24,8 @@ public:
   }
 
   Message pop();
+
+  std::optional<Message> tryPop();
 
   void swap(MessageQueue &other);
 };
