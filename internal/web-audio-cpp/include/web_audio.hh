@@ -46,7 +46,6 @@
 #include "web_audio/detail/param_collection.hh"
 #include "web_audio/detail/param_event.hh"
 #include "web_audio/detail/render_quantum.hh"
-#include "web_audio/detail/render_thread.hh"
 #include "web_audio/detail/weak_ptr_helper.hh"
 #include "web_audio/distance_model_type.hh"
 #include "web_audio/dom_exception.hh"
