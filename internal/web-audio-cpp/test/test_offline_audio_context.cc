@@ -29,4 +29,6 @@ TEST(OfflineAudioContextTest, Render) {
   EXPECT_EQ(rendered.has_value(), true);
   EXPECT_EQ(rendered->getNumberOfChannels(), 2u);
   EXPECT_EQ(rendered->getLength(), 128u);
+  EXPECT_NEAR(context->getCurrentTime(), 128.0 / 44100.0, 0.01);
+  EXPECT_EQ(context->currentFrame_.load(), 128u);
 }
