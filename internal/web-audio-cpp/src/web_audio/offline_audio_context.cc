@@ -65,6 +65,7 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
       }
     }
 
+    this->controlThreadState_ = AudioContextState::eClosed;
     internal->resolve(this->renderedBuffer_);
   });
 

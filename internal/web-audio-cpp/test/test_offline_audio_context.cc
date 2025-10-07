@@ -47,6 +47,7 @@ TEST(OfflineAudioContextTest, StartRendering) {
     EXPECT_EQ(buffer->getLength(), 128u);
     EXPECT_NEAR(context->getCurrentTime(), 128.0 / 44100.0, 0.01);
     EXPECT_EQ(context->currentFrame_.load(), 128u);
+    EXPECT_EQ(context->getState(), AudioContextState::eClosed);
     called = true;
   });
   promise.catch_([&](std::exception_ptr exception) {
