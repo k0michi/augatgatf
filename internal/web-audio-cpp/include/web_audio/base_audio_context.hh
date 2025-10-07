@@ -19,6 +19,8 @@
 #include "promise.hh"
 
 namespace web_audio {
+class AudioNode;
+
 class BaseAudioContext : public std::enable_shared_from_this<
                              BaseAudioContext> /* : EventTarget */ {
 protected:
@@ -81,5 +83,7 @@ public:
   detail::MessageQueue controlMessageQueue_;
   detail::AudioGraph audioGraph_;
   std::unique_ptr<std::thread> renderingThread_;
+
+  friend class AudioNode;
 };
 } // namespace web_audio

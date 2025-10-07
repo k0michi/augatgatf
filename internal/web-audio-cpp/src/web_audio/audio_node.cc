@@ -2,6 +2,7 @@
 
 #include "web_audio/audio_listener.hh"
 #include "web_audio/audio_param.hh"
+#include "web_audio/base_audio_context.hh"
 #include "web_audio/detail/weak_ptr_helper.hh"
 
 namespace web_audio {
@@ -297,6 +298,8 @@ void AudioNode::setChannelInterpretation(
 void AudioNode::initialize(std::shared_ptr<BaseAudioContext> context) {
   // SPEC: Set o’s associated BaseAudioContext to context.
   context_ = context;
+
+  context->audioGraph_.addNode(shared_from_this());
 }
 
 void AudioNode::disconnectInternal(std::size_t index) {
@@ -336,7 +339,9 @@ void AudioNode::disconnectInternal(std::size_t index) {
   }
 }
 
-std::vector<std::shared_ptr<AudioParam>> AudioNode::getParams() { return {}; }
+std::vector<std::shared_ptr<AudioParam>> AudioNode::getParams() const {
+  return {};
+}
 
 std::uint32_t AudioNode::computeNumberOfChannels(
     const std::vector<detail::RenderQuantum> &inputs) const {

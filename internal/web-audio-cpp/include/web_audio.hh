@@ -15,6 +15,7 @@
 #include "web_audio/audio_param.hh"
 #include "web_audio/audio_param_descriptor.hh"
 #include "web_audio/audio_processing_event_init.hh"
+#include "web_audio/audio_render_capacity.hh"
 #include "web_audio/audio_render_capacity_event_init.hh"
 #include "web_audio/audio_render_capacity_options.hh"
 #include "web_audio/audio_scheduled_source_node.hh"

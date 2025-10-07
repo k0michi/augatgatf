@@ -75,7 +75,7 @@ public:
    */
   void initialize(std::shared_ptr<BaseAudioContext> context);
 
-  virtual std::vector<std::shared_ptr<AudioParam>> getParams();
+  virtual std::vector<std::shared_ptr<AudioParam>> getParams() const;
 
   std::uint32_t computeNumberOfChannels(
       const std::vector<detail::RenderQuantum> &inputs) const;

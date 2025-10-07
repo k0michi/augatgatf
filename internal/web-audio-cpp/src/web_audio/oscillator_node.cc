@@ -90,9 +90,13 @@ void OscillatorNode::process(const std::vector<detail::RenderQuantum> &inputs,
     auto detune = params.getValue(detune_, i);
     auto computedOscFrequency = frequency * std::pow(2.0f, detune / 1200.0f);
     auto phaseIncrement = computedOscFrequency / getContext()->getSampleRate();
+    phase_ += phaseIncrement;
+    if (phase_ >= 1.0f) {
+      phase_ -= 1.0f;
+    }
 
     if (type_ == OscillatorType::eSine) {
-      output[0][i] = std::sin(phase_ * 2.0f * std::numbers::pi);
+      output[0][i] = std::sin(phase_ * 2.0f * std::numbers::pi) / 2;
     } else if (type_ == OscillatorType::eSquare) {
       // TODO
     } else if (type_ == OscillatorType::eSawtooth) {
@@ -105,5 +109,9 @@ void OscillatorNode::process(const std::vector<detail::RenderQuantum> &inputs,
       output[0][i] = 0.0f;
     }
   }
+}
+
+std::vector<std::shared_ptr<AudioParam>> OscillatorNode::getParams() const {
+  return {frequency_, detune_};
 }
 } // namespace web_audio

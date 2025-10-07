@@ -226,4 +226,17 @@ void RenderQuantum::add(const RenderQuantum &other,
     }
   }
 }
+
+std::vector<float> RenderQuantum::getInterleaved() const {
+  std::vector<float> interleaved;
+  interleaved.reserve(length_ * channelData_.size());
+
+  for (std::uint32_t i = 0; i < length_; ++i) {
+    for (const auto &channel : channelData_) {
+      interleaved.push_back(channel[i]);
+    }
+  }
+
+  return interleaved;
+}
 } // namespace web_audio::detail

@@ -61,9 +61,11 @@ AudioGraph::getPreviousVertices(std::shared_ptr<AudioNode> node) const {
     }
   }
 
-  for (const auto &input : node->inputsIndirect_) {
-    if (auto srcNode = input.lock()) {
-      prevNodes.push_back(srcNode);
+  for (const auto &input : node->getParams()) {
+    for (const auto &paramInput : input->inputs_) {
+      if (auto srcNode = paramInput.source.lock()) {
+        prevNodes.push_back(srcNode);
+      }
     }
   }
 

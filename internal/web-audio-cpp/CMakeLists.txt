@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(web-audio-cpp STATIC
 # include src/**/*.cc
   src/web_audio/audio_buffer.cc
+  src/web_audio/audio_context.cc
   src/web_audio/audio_destination_node.cc
   src/web_audio/audio_listener.cc
   src/web_audio/audio_node.cc
@@ -32,6 +33,15 @@ target_include_directories(web-audio-cpp PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inc
 
 include(FetchContent)
 
+FetchContent_Declare(
+  SDL3
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+  GIT_TAG release-3.2.22
+)
+FetchContent_MakeAvailable(SDL3)
+
+target_link_libraries(web-audio-cpp PUBLIC SDL3::SDL3)
+
 # GTest
 FetchContent_Declare(
   googletest
@@ -46,6 +56,7 @@ enable_testing()
 set(WEB_AUDIO_TEST_SRC
 # include src/**/*.cc
   src/web_audio/audio_buffer.cc
+  src/web_audio/audio_context.cc
   src/web_audio/audio_destination_node.cc
   src/web_audio/audio_listener.cc
   src/web_audio/audio_node.cc
@@ -79,7 +90,7 @@ set(WEB_AUDIO_TEST_SRC
 # end
 )
 add_executable(test_web_audio ${WEB_AUDIO_TEST_SRC})
-target_link_libraries(test_web_audio PRIVATE GTest::gtest_main)
+target_link_libraries(test_web_audio PUBLIC GTest::gtest_main SDL3::SDL3)
 add_test(NAME test_web_audio COMMAND test_web_audio)
 target_include_directories(test_web_audio PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -103,3 +114,6 @@ endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
 target_compile_definitions(test_web_audio PUBLIC WEB_AUDIO_TEST)
 target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)
+
+add_executable(oscillator example/oscillator.cc)
+target_link_libraries(oscillator PRIVATE web-audio-cpp)

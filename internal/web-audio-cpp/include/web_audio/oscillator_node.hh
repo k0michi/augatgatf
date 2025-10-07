@@ -33,6 +33,8 @@ public:
                std::vector<detail::RenderQuantum> &outputs,
                const detail::ParamCollection &params) override;
 
+  std::vector<std::shared_ptr<AudioParam>> getParams() const override;
+
   WEB_AUDIO_PRIVATE : OscillatorType type_;
   std::shared_ptr<AudioParam> frequency_;
   std::shared_ptr<AudioParam> detune_;

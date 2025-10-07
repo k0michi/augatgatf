@@ -28,6 +28,8 @@ public:
   void add(const RenderQuantum &other,
            ChannelInterpretation channelInterpretation);
 
+  std::vector<float> getInterleaved() const;
+
   WEB_AUDIO_PRIVATE : std::uint32_t length_;
   std::vector<std::vector<float>> channelData_;
 };
