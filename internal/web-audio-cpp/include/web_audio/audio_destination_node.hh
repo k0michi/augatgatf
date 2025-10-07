@@ -16,6 +16,10 @@ class AudioDestinationNode : public AudioNode {
 public:
   ~AudioDestinationNode() noexcept = default;
 
+  static std::shared_ptr<AudioDestinationNode>
+  create(std::shared_ptr<BaseAudioContext> context,
+         std::uint32_t numberOfChannels);
+
 public:
   std::uint32_t getMaxChannelCount() const;
 

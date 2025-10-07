@@ -1,12 +1,14 @@
 #include "web_audio/detail/audio_graph.hh"
 
+#include "web_audio/audio_context.hh"
 #include "web_audio/audio_param.hh"
+#include "web_audio/offline_audio_context.hh"
 
 namespace web_audio::detail {
-void AudioGraph::initialize(std::shared_ptr<BaseAudioContext> context) {
+void AudioGraph::initialize(std::shared_ptr<BaseAudioContext> context,
+                            std::uint32_t numberOfChannels) {
   listenerNode_ = AudioListenerNode::create(context);
-  destinationNode_.reset(new AudioDestinationNode());
-  destinationNode_->context_ = context;
+  destinationNode_ = AudioDestinationNode::create(context, numberOfChannels);
   nodes_.push_back(destinationNode_);
 }
 

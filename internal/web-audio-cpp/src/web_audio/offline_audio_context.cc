@@ -50,12 +50,13 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
     while (currentFrame_.load() < length_) {
       auto rendered = this->render();
 
-      for (std::uint32_t channel = 0; channel < rendered.size(); ++channel) {
-        auto &channelData = this->renderedBuffer_->getChannelData(channel);
-        auto &renderedChannelData = rendered[channel][0];
-        auto offset = currentFrame_.load();
+      for (std::uint32_t ch = 0;
+           ch < this->renderedBuffer_->getNumberOfChannels(); ++ch) {
+        auto &channelData = this->renderedBuffer_->getChannelData(ch);
+        auto &renderedChannelData = (*rendered)[ch];
+
         std::copy(renderedChannelData.begin(), renderedChannelData.end(),
-                  channelData.begin() + offset);
+                  channelData.begin() + currentFrame_.load());
       }
     }
 
@@ -90,7 +91,7 @@ std::shared_ptr<OfflineAudioContext>
 OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   auto context =
       std::shared_ptr<OfflineAudioContext>(new OfflineAudioContext());
-  context->initialize();
+  context->initialize(options.numberOfChannels);
 
   if (options.numberOfChannels == 0) {
     throw DOMException(
@@ -113,8 +114,6 @@ OfflineAudioContext::create(const OfflineAudioContextOptions &options) {
   context->renderThreadState_ = AudioContextState::eSuspended;
   // TODO: renderSizehint
   context->renderQuantumSize_ = 128;
-  context->audioGraph_.getDestinationNode()->channelCount_ =
-      options.numberOfChannels;
 
   // TODO: worklet
 

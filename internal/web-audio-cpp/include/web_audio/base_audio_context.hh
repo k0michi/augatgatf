@@ -46,15 +46,16 @@ public:
     controlMessageQueue_.push(std::forward<MessageType>(message));
   }
 
-  WEB_AUDIO_PROTECTED : void initialize();
+  WEB_AUDIO_PROTECTED : void initialize(std::uint32_t numberOfChannels);
 
   detail::AudioGraph *getAudioGraph();
 
-  std::vector<detail::RenderQuantum> render();
+  std::optional<detail::RenderQuantum> render();
 
-protected:
-  // [[pending promises]]
-  std::vector<PromiseBase> pendingPromises_;
+  WEB_AUDIO_PROTECTED :
+      // [[pending promises]]
+      std::vector<PromiseBase>
+          pendingPromises_;
   // [[rendering thread state]]
   AudioContextState renderThreadState_;
   // [[control thread state]]

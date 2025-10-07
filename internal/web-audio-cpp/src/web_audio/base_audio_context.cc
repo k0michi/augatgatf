@@ -41,16 +41,16 @@ void BaseAudioContext::setOnstatechange(EventHandler *value) {
 
 void BaseAudioContext::processEvents() { eventQueue_.poll(); }
 
-void BaseAudioContext::initialize() {
+void BaseAudioContext::initialize(std::uint32_t numberOfChannels) {
   audioWorklet_.reset(new AudioWorklet());
   // TODO
 
-  audioGraph_.initialize(shared_from_this());
+  audioGraph_.initialize(shared_from_this(), numberOfChannels);
 }
 
 detail::AudioGraph *BaseAudioContext::getAudioGraph() { return &audioGraph_; }
 
-std::vector<detail::RenderQuantum> BaseAudioContext::render() {
+std::optional<detail::RenderQuantum> BaseAudioContext::render() {
   // SPEC: Process the control message queue.
 
   // SPEC: Process the BaseAudioContext's associated task queue.
@@ -58,7 +58,7 @@ std::vector<detail::RenderQuantum> BaseAudioContext::render() {
   // SPEC: If the [[rendering thread state]] of the BaseAudioContext is not
   // running, return false.
   if (renderThreadState_ != AudioContextState::eRunning) {
-    return {};
+    return std::nullopt;
   }
 
   // SPEC: Order the AudioNodes of the BaseAudioContext to be processed.
@@ -125,6 +125,6 @@ std::vector<detail::RenderQuantum> BaseAudioContext::render() {
   currentFrame_ += renderQuantumSize_;
   currentTime_ = static_cast<double>(currentFrame_.load()) / sampleRate_;
 
-  return nodeResults[audioGraph_.getDestinationNode()];
+  return nodeResults[audioGraph_.getDestinationNode()][0];
 }
 } // namespace web_audio

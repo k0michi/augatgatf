@@ -17,7 +17,8 @@ public:
   AudioGraph() = default;
   virtual ~AudioGraph() noexcept = default;
 
-  void initialize(std::shared_ptr<BaseAudioContext> context);
+  void initialize(std::shared_ptr<BaseAudioContext> context,
+                  std::uint32_t numberOfChannels);
 
   void addNode(std::shared_ptr<AudioNode> node);
 
