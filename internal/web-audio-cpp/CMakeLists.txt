@@ -72,6 +72,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_message_queue.cc
   test/test_offline_audio_context.cc
   test/test_periodic_wave.cc
+  test/test_promise.cc
   test/test_render_quantum.cc
 # end
 )
