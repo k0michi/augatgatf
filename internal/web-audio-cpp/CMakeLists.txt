@@ -23,6 +23,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/detail/render_quantum.cc
   src/web_audio/dom_exception.cc
   src/web_audio/offline_audio_context.cc
+  src/web_audio/oscillator_node.cc
   src/web_audio/periodic_wave.cc
 # end
 )
@@ -59,6 +60,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/detail/render_quantum.cc
   src/web_audio/dom_exception.cc
   src/web_audio/offline_audio_context.cc
+  src/web_audio/oscillator_node.cc
   src/web_audio/periodic_wave.cc
 # end
 # include test/**/*.cc

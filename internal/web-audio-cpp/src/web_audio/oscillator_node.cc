@@ -105,4 +105,5 @@ void OscillatorNode::process(const std::vector<detail::RenderQuantum> &inputs,
       output[0][i] = 0.0f;
     }
   }
+}
 } // namespace web_audio
