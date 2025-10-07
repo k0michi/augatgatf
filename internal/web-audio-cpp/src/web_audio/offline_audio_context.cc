@@ -48,6 +48,7 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
     this->renderThreadState_ = AudioContextState::eRunning;
 
     while (currentFrame_.load() < length_) {
+      auto frame = currentFrame_.load();
       auto rendered = this->render();
 
       for (std::uint32_t ch = 0;
@@ -56,7 +57,7 @@ Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
         auto &renderedChannelData = (*rendered)[ch];
 
         std::copy(renderedChannelData.begin(), renderedChannelData.end(),
-                  channelData.begin() + currentFrame_.load());
+                  channelData.begin() + frame);
       }
     }
 

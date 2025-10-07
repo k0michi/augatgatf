@@ -32,3 +32,29 @@ TEST(OfflineAudioContextTest, Render) {
   EXPECT_NEAR(context->getCurrentTime(), 128.0 / 44100.0, 0.01);
   EXPECT_EQ(context->currentFrame_.load(), 128u);
 }
+
+TEST(OfflineAudioContextTest, StartRendering) {
+  OfflineAudioContextOptions options;
+  options.numberOfChannels = 2;
+  options.length = 128;
+  options.sampleRate = 44100.0f;
+
+  auto context = OfflineAudioContext::create(options);
+  auto promise = context->startRendering();
+  bool called = false;
+  promise.then([&](std::shared_ptr<AudioBuffer> buffer) {
+    EXPECT_EQ(buffer->getNumberOfChannels(), 2u);
+    EXPECT_EQ(buffer->getLength(), 128u);
+    EXPECT_NEAR(context->getCurrentTime(), 128.0 / 44100.0, 0.01);
+    EXPECT_EQ(context->currentFrame_.load(), 128u);
+    called = true;
+  });
+  promise.catch_([&](std::exception_ptr exception) {
+    called = true;
+    FAIL() << "Promise rejected";
+  });
+
+  while (!called) {
+    context->processEvents();
+  }
+}
