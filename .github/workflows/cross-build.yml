@@ -73,7 +73,7 @@ jobs:
       - name: Run Tests (ctest)
         run: |
           cd build/internal/keel
-          ctest -C Debug -V
+          ctest -C Debug -V --timeout 60
 
       - name: Generate coverage report (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
