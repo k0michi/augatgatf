@@ -47,7 +47,8 @@ else()
   target_compile_definitions(web-audio-cpp PUBLIC WEB_AUDIO_BACKEND_NULL)
 endif()
 
-# GTest
+# Tests
+
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
@@ -99,6 +100,8 @@ target_link_libraries(test_web_audio PUBLIC GTest::gtest_main SDL3::SDL3)
 add_test(NAME test_web_audio COMMAND test_web_audio)
 target_include_directories(test_web_audio PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+target_compile_definitions(test_web_audio PUBLIC WEB_AUDIO_TEST WEB_AUDIO_BACKEND_NULL)
+
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 add_library(web_audio_coverage_config INTERFACE)
 
@@ -117,8 +120,9 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
-target_compile_definitions(test_web_audio PUBLIC WEB_AUDIO_TEST)
 target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)
+
+# Examples
 
 add_executable(oscillator example/oscillator.cc)
 target_link_libraries(oscillator PRIVATE web-audio-cpp)
