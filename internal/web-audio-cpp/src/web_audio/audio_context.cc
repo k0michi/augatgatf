@@ -122,11 +122,23 @@ Promise<void> AudioContext::setSinkId(
 void AudioContext::callback(void *userdata, SDL_AudioStream *stream,
                             int additional_amount, int total_amount) {
   auto context = static_cast<AudioContext *>(userdata);
-  auto rendered = context->render();
 
-  if (rendered) {
-    auto data = rendered->getInterleaved();
-    SDL_PutAudioStreamData(stream, data.data(), data.size() * sizeof(float));
+  auto ceilDiv = [](std::uint32_t a, std::uint32_t b) {
+    return (a + b - 1) / b;
+  };
+
+  auto quanta =
+      ceilDiv(additional_amount,
+              sizeof(float) * context->getDestination()->getChannelCount() *
+                  context->getRenderQuantumSize());
+
+  for (std::uint32_t i = 0; i < quanta; ++i) {
+    auto rendered = context->render();
+
+    if (rendered) {
+      auto data = rendered->getInterleaved();
+      SDL_PutAudioStreamData(stream, data.data(), data.size() * sizeof(float));
+    }
   }
 }
 } // namespace web_audio
