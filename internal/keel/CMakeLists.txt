@@ -10,10 +10,6 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 include(FetchContent)
 
-# web-audio-cpp
-
-add_subdirectory(../web-audio-cpp ${CMAKE_CURRENT_BINARY_DIR}/web-audio-cpp)
-
 # SDL3
 
 FetchContent_Declare(
@@ -22,6 +18,11 @@ FetchContent_Declare(
   GIT_TAG release-3.2.22
 )
 FetchContent_MakeAvailable(SDL3)
+
+# web-audio-cpp
+
+set(WEB_AUDIO_BACKEND_SDL3 ON CACHE BOOL "Enable SDL3 backend for web-audio-cpp")
+add_subdirectory(../web-audio-cpp ${CMAKE_CURRENT_BINARY_DIR}/web-audio-cpp)
 
 # glad
 

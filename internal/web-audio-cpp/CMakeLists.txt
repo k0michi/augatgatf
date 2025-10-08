@@ -31,16 +31,21 @@ add_library(web-audio-cpp STATIC
 )
 target_include_directories(web-audio-cpp PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-include(FetchContent)
+option(WEB_AUDIO_BACKEND_SDL3 "Use SDL3 backend" OFF)
 
-FetchContent_Declare(
-  SDL3
-  GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-  GIT_TAG release-3.2.22
-)
-FetchContent_MakeAvailable(SDL3)
+if(WEB_AUDIO_BACKEND_SDL3)
+  message(STATUS "web-audio-cpp backend: SDL3")
+  
+  if(NOT TARGET SDL3::SDL3)
+    message(FATAL_ERROR "WEB_AUDIO_BACKEND_SDL3 is ON but SDL3::SDL3 target not found")
+  endif()
 
-target_link_libraries(web-audio-cpp PUBLIC SDL3::SDL3)
+  target_compile_definitions(web-audio-cpp PUBLIC WEB_AUDIO_BACKEND_SDL3)
+  target_link_libraries(web-audio-cpp PUBLIC SDL3::SDL3)
+else()
+  message(STATUS "web-audio-cpp backend: Null")
+  target_compile_definitions(web-audio-cpp PUBLIC WEB_AUDIO_BACKEND_NULL)
+endif()
 
 # GTest
 FetchContent_Declare(

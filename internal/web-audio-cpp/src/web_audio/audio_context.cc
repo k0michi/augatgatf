@@ -14,6 +14,7 @@ AudioContext::create(const AudioContextOptions &contextOptions) {
   context->sampleRate_ = contextOptions.sampleRate.value_or(44100.0f);
   context->renderQuantumSize_ = 128;
 
+#ifdef WEB_AUDIO_SDL3
   SDL_AudioSpec spec;
   spec.format = SDL_AUDIO_F32;
   spec.channels = channels;
@@ -44,6 +45,7 @@ AudioContext::create(const AudioContextOptions &contextOptions) {
   }
 
   SDL_SetAudioStreamGetCallback(context->audioStream_, callback, context.get());
+#endif
 
   context->renderCapacity_ = std::make_shared<AudioRenderCapacity>();
   context->sinkId_ = std::string("");
@@ -52,6 +54,8 @@ AudioContext::create(const AudioContextOptions &contextOptions) {
 }
 
 AudioContext::~AudioContext() noexcept {
+  // TODO: Fix synchronization
+#ifdef WEB_AUDIO_SDL3
   SDL_SetAudioStreamGetCallback(audioStream_, nullptr, nullptr);
 
   if (audioStream_) {
@@ -63,6 +67,7 @@ AudioContext::~AudioContext() noexcept {
     SDL_CloseAudioDevice(deviceId_);
     deviceId_ = 0;
   }
+#endif
 }
 
 double AudioContext::getBaseLatency() const {
@@ -119,6 +124,7 @@ Promise<void> AudioContext::setSinkId(
   throw std::runtime_error("Not implemented");
 }
 
+#ifdef WEB_AUDIO_SDL3
 void AudioContext::callback(void *userdata, SDL_AudioStream *stream,
                             int additional_amount, int total_amount) {
   auto context = static_cast<AudioContext *>(userdata);
@@ -129,4 +135,5 @@ void AudioContext::callback(void *userdata, SDL_AudioStream *stream,
     SDL_PutAudioStreamData(stream, data.data(), data.size() * sizeof(float));
   }
 }
+#endif
 } // namespace web_audio

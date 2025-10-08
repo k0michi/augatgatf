@@ -1,7 +1,10 @@
 #pragma once
 
-#include <SDL3/SDL.h>
 #include <memory>
+
+#ifdef WEB_AUDIO_SDL3
+#include <SDL3/SDL.h>
+#endif
 
 #include "web_audio/audio_context_options.hh"
 #include "web_audio/audio_render_capacity.hh"
@@ -75,8 +78,10 @@ public:
 
   // SPEC: MediaStreamAudioDestinationNode createMediaStreamDestination ();
 
+#ifdef WEB_AUDIO_SDL3
   static void callback(void *userdata, SDL_AudioStream *stream,
                        int additional_amount, int total_amount);
+#endif
 
 private:
   // SPEC: [[sink ID]]
@@ -86,7 +91,9 @@ private:
   EventHandler *onsinkchange_ = nullptr;
   EventHandler *onerror_ = nullptr;
 
+#ifdef WEB_AUDIO_SDL3
   SDL_AudioDeviceID deviceId_ = 0;
   SDL_AudioStream *audioStream_ = nullptr;
+#endif
 };
 } // namespace web_audio
