@@ -324,11 +324,18 @@ void AudioParam::computeIntrinsicValues(double startTime,
   auto context = getContext();
   auto sampleRate = context->getSampleRate();
   auto delta = 1.0 / sampleRate;
+  auto prevEvent = floorEvent(startTime);
+  auto nextEvent = higherEvent(startTime);
 
   for (uint32_t i = 0; i < outputs.size(); ++i) {
     auto time = startTime + i * delta;
-    auto prevEvent = floorEvent(time);
-    auto nextEvent = higherEvent(time);
+
+    if (nextEvent != events_.end() &&
+        std::visit([](const auto &x) { return x.getTime(); }, *nextEvent) <=
+            time) {
+      prevEvent = floorEvent(time);
+      nextEvent = higherEvent(time);
+    }
 
     if (prevEvent == events_.end()) {
       outputs[i] = defaultValue_;
