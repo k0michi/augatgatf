@@ -27,6 +27,8 @@ public:
   create(std::shared_ptr<BaseAudioContext> context,
          const PeriodicWaveOptions &options = {});
 
+  float getSample(float phase) const;
+
   WEB_AUDIO_PRIVATE :
       // [[real]]
       std::vector<float>
@@ -35,6 +37,10 @@ public:
   std::vector<float> imag_;
   // [[normalize]]
   bool normalize_;
+
+  std::vector<float> waveTable_;
+
+  constexpr static std::size_t kTableSize = 8192;
 
   friend class OscillatorNode;
 };

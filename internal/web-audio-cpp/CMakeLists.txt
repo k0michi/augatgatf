@@ -129,3 +129,6 @@ target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)
 
 add_executable(oscillator example/oscillator.cc)
 target_link_libraries(oscillator PRIVATE web-audio-cpp)
+
+add_executable(oscillator_custom example/oscillator_custom.cc)
+target_link_libraries(oscillator_custom PRIVATE web-audio-cpp)

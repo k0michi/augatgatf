@@ -105,7 +105,7 @@ void OscillatorNode::process(const std::vector<detail::RenderQuantum> &inputs,
       output[0][i] =
           phase_ < 0.5f ? 2.0f * phase_ : 1.0f - 2.0f * (phase_ - 0.5f);
     } else if (type_ == OscillatorType::eCustom && periodicWave_) {
-      // TODO
+      output[0][i] = periodicWave_->getSample(phase_);
     } else {
       output[0][i] = 0.0f;
     }
