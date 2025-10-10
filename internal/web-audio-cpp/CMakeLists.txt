@@ -23,6 +23,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
   src/web_audio/detail/render_quantum.cc
+  src/web_audio/detail/wave_processing.cc
   src/web_audio/dom_exception.cc
   src/web_audio/offline_audio_context.cc
   src/web_audio/oscillator_node.cc
@@ -77,6 +78,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
   src/web_audio/detail/render_quantum.cc
+  src/web_audio/detail/wave_processing.cc
   src/web_audio/dom_exception.cc
   src/web_audio/offline_audio_context.cc
   src/web_audio/oscillator_node.cc
@@ -93,6 +95,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_periodic_wave.cc
   test/test_promise.cc
   test/test_render_quantum.cc
+  test/test_wave_processing.cc
 # end
 )
 add_executable(test_web_audio ${WEB_AUDIO_TEST_SRC})
