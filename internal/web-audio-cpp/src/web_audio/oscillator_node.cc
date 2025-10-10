@@ -96,13 +96,14 @@ void OscillatorNode::process(const std::vector<detail::RenderQuantum> &inputs,
     }
 
     if (type_ == OscillatorType::eSine) {
-      output[0][i] = std::sin(phase_ * 2.0f * std::numbers::pi) / 2;
+      output[0][i] = std::sin(phase_ * 2.0f * std::numbers::pi);
     } else if (type_ == OscillatorType::eSquare) {
-      // TODO
+      output[0][i] = phase_ < 0.5f ? 1.0f : -1.0f;
     } else if (type_ == OscillatorType::eSawtooth) {
-      // TODO
+      output[0][i] = 1.0f - 2.0f * phase_;
     } else if (type_ == OscillatorType::eTriangle) {
-      // TODO
+      output[0][i] =
+          phase_ < 0.5f ? 2.0f * phase_ : 1.0f - 2.0f * (phase_ - 0.5f);
     } else if (type_ == OscillatorType::eCustom && periodicWave_) {
       // TODO
     } else {

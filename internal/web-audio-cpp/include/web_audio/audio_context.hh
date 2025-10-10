@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#ifdef WEB_AUDIO_SDL3
+#ifdef WEB_AUDIO_BACKEND_SDL3
 #include <SDL3/SDL.h>
 #endif
 
@@ -78,7 +78,7 @@ public:
 
   // SPEC: MediaStreamAudioDestinationNode createMediaStreamDestination ();
 
-#ifdef WEB_AUDIO_SDL3
+#ifdef WEB_AUDIO_BACKEND_SDL3
   static void callback(void *userdata, SDL_AudioStream *stream,
                        int additional_amount, int total_amount);
 #endif
@@ -91,7 +91,7 @@ private:
   EventHandler *onsinkchange_ = nullptr;
   EventHandler *onerror_ = nullptr;
 
-#ifdef WEB_AUDIO_SDL3
+#ifdef WEB_AUDIO_BACKEND_SDL3
   SDL_AudioDeviceID deviceId_ = 0;
   SDL_AudioStream *audioStream_ = nullptr;
 #endif
