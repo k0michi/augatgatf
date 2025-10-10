@@ -43,3 +43,31 @@ TEST(OfflineAudioContextTest, StartRendering) {
     context->processEvents();
   }
 }
+
+TEST(OfflineAudioContextTest, StartRendering_NotDivisibleBy128) {
+  OfflineAudioContextOptions options;
+  options.numberOfChannels = 2;
+  options.length = 128 + 5;
+  options.sampleRate = 44100.0f;
+
+  auto context = OfflineAudioContext::create(options);
+  auto promise = context->startRendering();
+  bool called = false;
+  promise.then([&](std::shared_ptr<AudioBuffer> buffer) {
+    EXPECT_EQ(buffer->getNumberOfChannels(), 2u);
+    EXPECT_EQ(buffer->getLength(), 128 + 5u);
+    // Tested on Chrome and Firefox
+    EXPECT_NEAR(context->getCurrentTime(), 256 / 44100.0, 0.01);
+    EXPECT_EQ(context->currentFrame_.load(), 256u);
+    EXPECT_EQ(context->getState(), AudioContextState::eClosed);
+    called = true;
+  });
+  promise.catch_([&](std::exception_ptr exception) {
+    called = true;
+    FAIL() << "Promise rejected";
+  });
+
+  while (!called) {
+    context->processEvents();
+  }
+}
