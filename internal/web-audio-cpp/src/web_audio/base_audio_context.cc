@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "web_audio/audio_param.hh"
+#include "web_audio/audio_scheduled_source_node.hh"
 #include "web_audio/offline_audio_context.hh"
 
 namespace web_audio {
@@ -156,6 +157,18 @@ void BaseAudioContext::run() {
       } else if (std::holds_alternative<detail::MessageBeginRendering>(
                      *message)) {
         this->renderThreadState_ = AudioContextState::eRunning;
+      } else if (std::holds_alternative<
+                     detail::MessageAudioScheduledSourceNodeStart>(*message)) {
+        auto &msg =
+            std::get<detail::MessageAudioScheduledSourceNodeStart>(*message);
+
+        msg.node->startTime_ = msg.when;
+      } else if (std::holds_alternative<
+                     detail::MessageAudioScheduledSourceNodeStop>(*message)) {
+        auto &msg =
+            std::get<detail::MessageAudioScheduledSourceNodeStop>(*message);
+
+        msg.node->stopTime_ = msg.when;
       } else {
         // TODO
       }

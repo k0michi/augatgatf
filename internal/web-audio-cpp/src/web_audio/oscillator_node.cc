@@ -82,6 +82,10 @@ void OscillatorNode::setPeriodicWave(
 void OscillatorNode::process(const std::vector<detail::RenderQuantum> &inputs,
                              std::vector<detail::RenderQuantum> &outputs,
                              const detail::ParamCollection &params) {
+  if (!isPlaying()) {
+    return;
+  }
+
   auto &output = outputs[0];
   output = detail::RenderQuantum(1, output.getLength());
 

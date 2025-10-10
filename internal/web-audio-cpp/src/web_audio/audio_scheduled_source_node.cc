@@ -34,7 +34,9 @@ void AudioScheduledSourceNode::start(double when) {
   // SPEC: Queue a control message to start the AudioScheduledSourceNode,
   // including the parameter values in the message.
   auto context = context_.lock();
-  context->queueMessage(detail::MessageStart{when, 0, 0, shared_from_this()});
+  context->queueMessage(detail::MessageAudioScheduledSourceNodeStart{
+      when, 0, 0,
+      std::dynamic_pointer_cast<AudioScheduledSourceNode>(shared_from_this())});
 
   // SPEC: Send a control message to the associated AudioContext to start
   // running its rendering thread only when all the following conditions are
@@ -61,6 +63,13 @@ void AudioScheduledSourceNode::stop(double when) {
   // SPEC: Queue a control message to stop the AudioScheduledSourceNode,
   // including the parameter values in the message.
   auto context = context_.lock();
-  context->queueMessage(detail::MessageStop{when, shared_from_this()});
+  context->queueMessage(detail::MessageAudioScheduledSourceNodeStop{
+      when,
+      std::dynamic_pointer_cast<AudioScheduledSourceNode>(shared_from_this())});
+}
+
+bool AudioScheduledSourceNode::isPlaying() const {
+  auto currentTime = context_.lock()->getCurrentTime();
+  return sourceStarted_ && currentTime >= startTime_ && currentTime < stopTime_;
 }
 } // namespace web_audio

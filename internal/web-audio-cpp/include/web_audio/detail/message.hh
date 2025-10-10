@@ -3,20 +3,20 @@
 #include <variant>
 
 namespace web_audio {
-class AudioNode;
+class AudioScheduledSourceNode;
 }
 
 namespace web_audio::detail {
-struct MessageStart {
+struct MessageAudioScheduledSourceNodeStart {
   double when;
   double offset;
   double duration;
-  std::shared_ptr<AudioNode> node;
+  std::shared_ptr<AudioScheduledSourceNode> node;
 };
 
-struct MessageStop {
+struct MessageAudioScheduledSourceNodeStop {
   double when;
-  std::shared_ptr<AudioNode> node;
+  std::shared_ptr<AudioScheduledSourceNode> node;
 };
 
 /**
@@ -30,6 +30,7 @@ struct MessageTerminate {};
 struct MessageBeginRendering {};
 // TODO: other messages
 
-using Message = std::variant<MessageStart, MessageStop, MessageTerminate,
-                             MessageBeginRendering>;
+using Message = std::variant<MessageAudioScheduledSourceNodeStart,
+                             MessageAudioScheduledSourceNodeStop,
+                             MessageTerminate, MessageBeginRendering>;
 } // namespace web_audio::detail
