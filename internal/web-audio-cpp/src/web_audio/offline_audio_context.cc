@@ -127,7 +127,7 @@ void OfflineAudioContext::process() {
       auto &renderedChannelData = (*rendered)[ch];
 
       std::size_t copySize =
-          std::min(renderedChannelData.size(),
+          std::min(static_cast<std::uint64_t>(renderedChannelData.size()),
                    channelData.size() > frame ? channelData.size() - frame : 0);
       std::copy_n(renderedChannelData.begin(), copySize,
                   channelData.begin() + frame);
