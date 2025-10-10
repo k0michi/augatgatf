@@ -1,5 +1,7 @@
 #include "web_audio/offline_audio_context.hh"
 
+#include <algorithm>
+
 namespace web_audio {
 Promise<std::shared_ptr<AudioBuffer>> OfflineAudioContext::startRendering() {
   // SPEC: If this's relevant global object's associated Document is not fully
