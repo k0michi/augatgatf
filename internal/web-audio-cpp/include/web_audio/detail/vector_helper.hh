@@ -19,6 +19,15 @@ public:
   }
 
   template <typename T>
+  static void resizeAndSet(std::vector<T> &vector, std::size_t index,
+                           T &&value) {
+    if (index >= vector.size()) {
+      vector.resize(index + 1);
+    }
+    vector[index] = std::move(value);
+  }
+
+  template <typename T>
   static T getOrDefault(const std::vector<T> &vector, std::size_t index,
                         const T &defaultValue) {
     if (index >= vector.size()) {

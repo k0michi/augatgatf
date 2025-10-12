@@ -56,6 +56,7 @@
 #include "web_audio/dynamics_compressor_options.hh"
 #include "web_audio/event_handler.hh"
 #include "web_audio/gain_options.hh"
+#include "web_audio/iir_filter_node.hh"
 #include "web_audio/iir_filter_options.hh"
 #include "web_audio/media_element_audio_source_options.hh"
 #include "web_audio/media_stream_audio_source_options.hh"
