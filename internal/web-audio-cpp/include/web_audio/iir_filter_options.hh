@@ -6,7 +6,7 @@
 
 namespace web_audio {
 struct IIRFilterOptions : public AudioNodeOptions {
-  std::vector<float> feedforward;
-  std::vector<float> feedback;
+  std::vector<double> feedforward;
+  std::vector<double> feedback;
 };
 } // namespace web_audio
