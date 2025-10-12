@@ -46,10 +46,10 @@ public:
 
   std::vector<std::shared_ptr<AudioParam>> getParams() const override;
 
-  void transfer(const std::tuple<float, float, float> &a,
-                const std::tuple<float, float, float> &b,
-                const std::tuple<float, float, float> &x,
-                std::tuple<float, float, float> &y);
+  void transferTime(const std::tuple<float, float, float> &a,
+                    const std::tuple<float, float, float> &b,
+                    const std::tuple<float, float, float> &x,
+                    std::tuple<float, float, float> &y);
 
   /**
    * \f[

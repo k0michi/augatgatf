@@ -154,7 +154,7 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
       auto x =
           std::make_tuple(input[ch][i], std::get<0>(prevX), std::get<1>(prevX));
       auto y = std::make_tuple(0.0f, std::get<0>(prevY), std::get<1>(prevY));
-      transfer(a_, b_, x, y);
+      transferTime(a_, b_, x, y);
       output[ch][i] = std::get<0>(y);
       web_audio::detail::VectorHelper::resizeAndSet(x_, ch, x);
       web_audio::detail::VectorHelper::resizeAndSet(y_, ch, y);
@@ -166,10 +166,10 @@ std::vector<std::shared_ptr<AudioParam>> BiquadFilterNode::getParams() const {
   return {frequency_, detune_, Q_, gain_};
 }
 
-void BiquadFilterNode::transfer(const std::tuple<float, float, float> &a,
-                                const std::tuple<float, float, float> &b,
-                                const std::tuple<float, float, float> &x,
-                                std::tuple<float, float, float> &y) {
+void BiquadFilterNode::transferTime(const std::tuple<float, float, float> &a,
+                                    const std::tuple<float, float, float> &b,
+                                    const std::tuple<float, float, float> &x,
+                                    std::tuple<float, float, float> &y) {
   const auto &a_0 = std::get<0>(a);
   const auto &a_1 = std::get<1>(a);
   const auto &a_2 = std::get<2>(a);
