@@ -4,6 +4,15 @@
 TEST(BiquadFilterNodeTest, Create) {
   auto context = web_audio::AudioContext::create();
   auto node = web_audio::BiquadFilterNode::create(context);
+
+  EXPECT_NE(node, nullptr);
+  EXPECT_EQ(node->getNumberOfInputs(), 1);
+  EXPECT_EQ(node->getNumberOfOutputs(), 1);
+  EXPECT_EQ(node->getChannelCount(), 2);
+  EXPECT_EQ(node->getChannelCountMode(), web_audio::ChannelCountMode::eMax);
+  EXPECT_EQ(node->getChannelInterpretation(),
+            web_audio::ChannelInterpretation::eSpeakers);
+
   EXPECT_EQ(node->getType(), web_audio::BiquadFilterType::eLowpass);
   EXPECT_NE(node->getFrequency(), nullptr);
   EXPECT_NE(node->getDetune(), nullptr);
