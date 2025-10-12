@@ -114,6 +114,7 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
                                std::vector<detail::RenderQuantum> &outputs,
                                const detail::ParamCollection &params) {
   auto &input = inputs[0];
+  outputs.resize(1);
   auto &output = outputs[0];
 
   for (std::uint32_t i = 0; i < output.getLength(); ++i) {
