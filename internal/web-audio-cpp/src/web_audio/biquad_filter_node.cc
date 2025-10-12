@@ -312,7 +312,7 @@ void BiquadFilterNode::peaking(float F_s, float f_0, float G, float Q,
   computeIntermediate(F_s, f_0, G, Q, A, omega_0, alpha_Q, alpha_Q_dB, S,
                       alpha_S);
 
-  auto b_0 = 1 + alpha_Q_dB * A;
+  auto b_0 = 1 + alpha_Q * A;
   auto b_1 = -2 * std::cos(omega_0);
   auto b_2 = 1 - alpha_Q * A;
   auto a_0 = 1 + alpha_Q / A;
