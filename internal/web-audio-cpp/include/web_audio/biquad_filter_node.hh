@@ -4,6 +4,7 @@
 
 #include "audio_node.hh"
 #include "biquad_filter_options.hh"
+#include <complex>
 
 namespace web_audio {
 class BiquadFilterNode : public AudioNode {
@@ -50,9 +51,24 @@ public:
                 const std::tuple<float, float, float> &x,
                 std::tuple<float, float, float> &y);
 
+  /**
+   * \f[
+   * H(z) = \frac{\frac{b_0}{a_0} + \frac{b_1}{a_0}z^{-1} +
+   \frac{b_2}{a_0}z^{-2}} {1+\frac{a_1}{a_0}z^{-1}+\frac{a_2}{a_0}z^{-2}}
+   * \f]
+   */
+  void transferFrequency(const std::tuple<float, float, float> &a,
+                         const std::tuple<float, float, float> &b,
+                         const std::complex<float> &z, std::complex<float> &H);
+
   static void computeIntermediate(float F_s, float f_0, float G, float Q,
                                   float &A, float &omega_0, float &alpha_Q,
                                   float &alpha_Q_dB, float &S, float &alpha_S);
+
+  static void computeCoefficients(BiquadFilterType type, float F_s, float f_0,
+                                  float G, float Q,
+                                  std::tuple<float, float, float> &a,
+                                  std::tuple<float, float, float> &b);
 
   static void lowpass(float F_s, float f_0, float G, float Q,
                       std::tuple<float, float, float> &a,
@@ -95,5 +111,9 @@ public:
   std::vector<std::tuple<float, float, float>> y_;
   // x[n], x[n-1], x[n-2]
   std::vector<std::tuple<float, float, float>> x_;
+  // a0, a1, a2
+  std::tuple<float, float, float> a_;
+  // b0, b1, b2
+  std::tuple<float, float, float> b_;
 };
 } // namespace web_audio

@@ -12,11 +12,12 @@ int main() {
       context, {
                    .type = web_audio::OscillatorType::eSawtooth,
                });
-  auto biquad =
-      web_audio::BiquadFilterNode::create(context, {
-                                                       .Q = 1,
-                                                       .frequency = 1000,
-                                                   });
+  auto biquad = web_audio::BiquadFilterNode::create(
+      context, {
+                   .type = web_audio::BiquadFilterType::eHighpass,
+                   .Q = 1,
+                   .frequency = 1000,
+               });
   oscillator->connect(biquad);
   biquad->connect(context->getDestination());
   oscillator->start();

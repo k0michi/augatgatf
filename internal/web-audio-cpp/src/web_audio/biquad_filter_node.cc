@@ -45,6 +45,9 @@ BiquadFilterNode::create(std::shared_ptr<BaseAudioContext> context,
 
   node->type_ = options.type;
 
+  node->computeCoefficients(node->type_, context->getSampleRate(),
+                            options.frequency, options.gain, options.Q,
+                            node->a_, node->b_);
   return node;
 }
 
@@ -74,7 +77,17 @@ std::shared_ptr<AudioParam> BiquadFilterNode::getGain() const { return gain_; }
 void BiquadFilterNode::getFrequencyResponse(
     const std::vector<float> &frequencyHz, std::vector<float> &magResponse,
     std::vector<float> &phaseResponse) {
-  // TODO
+  for (std::size_t i = 0; i < frequencyHz.size(); ++i) {
+    auto f = frequencyHz[i];
+    auto omega = 2 * std::numbers::pi * f / getContext()->getSampleRate();
+    auto z = std::complex<float>(std::cos(omega), std::sin(omega));
+
+    std::complex<float> H;
+    transferFrequency(a_, b_, z, H);
+
+    magResponse[i] = std::abs(H);
+    phaseResponse[i] = std::arg(H);
+  }
 }
 
 void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
@@ -114,35 +127,7 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
 
       std::tuple<float, float, float> a;
       std::tuple<float, float, float> b;
-
-      switch (type_) {
-      case BiquadFilterType::eLowpass:
-        lowpass(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::eHighpass:
-        highpass(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::eBandpass:
-        bandpass(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::eNotch:
-        notch(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::eAllpass:
-        allpass(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::ePeaking:
-        peaking(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::eLowshelf:
-        lowshelf(F_s, f_0, G, Q, a, b);
-        break;
-      case BiquadFilterType::eHighshelf:
-        highshelf(F_s, f_0, G, Q, a, b);
-        break;
-      default:
-        std::abort();
-      }
+      computeCoefficients(type_, F_s, f_0, G, Q, a, b);
 
       auto prevX = detail::VectorHelper::getOrDefault(
           x_, ch, std::make_tuple(0.0f, 0.0f, 0.0f));
@@ -183,6 +168,14 @@ void BiquadFilterNode::transfer(const std::tuple<float, float, float> &a,
   y = std::make_tuple(y_0, y_1, y_2);
 }
 
+void BiquadFilterNode::transferFrequency(
+    const std::tuple<float, float, float> &a,
+    const std::tuple<float, float, float> &b, const std::complex<float> &z,
+    std::complex<float> &H) {
+  H = (std::get<0>(b) + std::get<1>(b) / z + std::get<2>(b) / (z * z)) /
+      (std::get<0>(a) + std::get<1>(a) / z + std::get<2>(a) / (z * z));
+}
+
 void BiquadFilterNode::computeIntermediate(float F_s, float f_0, float G,
                                            float Q, float &A, float &omega_0,
                                            float &alpha_Q, float &alpha_Q_dB,
@@ -193,6 +186,40 @@ void BiquadFilterNode::computeIntermediate(float F_s, float f_0, float G,
   alpha_Q_dB = std::sin(omega_0) / (2 * std::pow(10, Q / 20));
   S = 1;
   alpha_S = std::sin(omega_0) / 2 * std::sqrt((A + 1 / A) * (1 / S - 1) + 2);
+}
+
+void BiquadFilterNode::computeCoefficients(BiquadFilterType type, float F_s,
+                                           float f_0, float G, float Q,
+                                           std::tuple<float, float, float> &a,
+                                           std::tuple<float, float, float> &b) {
+  switch (type) {
+  case BiquadFilterType::eLowpass:
+    lowpass(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::eHighpass:
+    highpass(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::eBandpass:
+    bandpass(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::eNotch:
+    notch(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::eAllpass:
+    allpass(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::ePeaking:
+    peaking(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::eLowshelf:
+    lowshelf(F_s, f_0, G, Q, a, b);
+    break;
+  case BiquadFilterType::eHighshelf:
+    highshelf(F_s, f_0, G, Q, a, b);
+    break;
+  default:
+    std::abort();
+  }
 }
 
 void BiquadFilterNode::lowpass(float F_s, float f_0, float G, float Q,
