@@ -124,9 +124,7 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
       Q = std::clamp(Q, 0.f, std::numeric_limits<float>::max());
     }
 
-    std::tuple<float, float, float> a;
-    std::tuple<float, float, float> b;
-    computeCoefficients(type_, F_s, f_0, G, Q, a, b);
+    computeCoefficients(type_, F_s, f_0, G, Q, a_, b_);
 
     for (std::uint32_t ch = 0; ch < output.getNumberOfChannels(); ++ch) {
       auto prevX = detail::VectorHelper::getOrDefault(
@@ -136,14 +134,11 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
       auto x =
           std::make_tuple(input[ch][i], std::get<0>(prevX), std::get<1>(prevX));
       auto y = std::make_tuple(0.0f, std::get<0>(prevY), std::get<1>(prevY));
-      transfer(a, b, x, y);
+      transfer(a_, b_, x, y);
       output[ch][i] = std::get<0>(y);
       web_audio::detail::VectorHelper::resizeAndSet(x_, ch, x);
       web_audio::detail::VectorHelper::resizeAndSet(y_, ch, y);
     }
-
-    a_ = a;
-    b_ = b;
   }
 }
 
