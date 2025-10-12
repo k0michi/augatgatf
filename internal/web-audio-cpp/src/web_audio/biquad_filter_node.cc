@@ -96,39 +96,39 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
   auto &input = inputs[0];
   auto &output = outputs[0];
 
-  for (std::uint32_t ch = 0; ch < output.getNumberOfChannels(); ++ch) {
-    for (std::uint32_t i = 0; i < output.getLength(); ++i) {
-      auto f = params.getValue(frequency_, i);
-      auto d = params.getValue(detune_, i);
-      auto q = params.getValue(Q_, i);
-      auto g = params.getValue(gain_, i);
-      auto computedFrequency = static_cast<float>(f * std::pow(2, d / 1200));
-      auto nyquist = getContext()->getSampleRate() / 2;
-      computedFrequency = std::clamp(computedFrequency, 0.0f, nyquist);
+  for (std::uint32_t i = 0; i < output.getLength(); ++i) {
+    auto f = params.getValue(frequency_, i);
+    auto d = params.getValue(detune_, i);
+    auto q = params.getValue(Q_, i);
+    auto g = params.getValue(gain_, i);
+    auto computedFrequency = static_cast<float>(f * std::pow(2, d / 1200));
+    auto nyquist = getContext()->getSampleRate() / 2;
+    computedFrequency = std::clamp(computedFrequency, 0.0f, nyquist);
 
-      auto F_s = getContext()->getSampleRate();
-      auto f_0 = computedFrequency;
-      auto G = g;
-      auto Q = q;
+    auto F_s = getContext()->getSampleRate();
+    auto f_0 = computedFrequency;
+    auto G = g;
+    auto Q = q;
 
-      if (type_ == BiquadFilterType::eLowshelf ||
-          type_ == BiquadFilterType::eHighshelf) {
-        // NOTE: is qMax safe?
-        float qMax = std::log10(std::numeric_limits<float>::max()) * 20;
-        Q = std::clamp(Q, -qMax, qMax);
-      }
+    if (type_ == BiquadFilterType::eLowshelf ||
+        type_ == BiquadFilterType::eHighshelf) {
+      // NOTE: is qMax safe?
+      float qMax = std::log10(std::numeric_limits<float>::max()) * 20;
+      Q = std::clamp(Q, -qMax, qMax);
+    }
 
-      if (type_ == BiquadFilterType::eBandpass ||
-          type_ == BiquadFilterType::eNotch ||
-          type_ == BiquadFilterType::eAllpass ||
-          type_ == BiquadFilterType::ePeaking) {
-        Q = std::clamp(Q, 0.f, std::numeric_limits<float>::max());
-      }
+    if (type_ == BiquadFilterType::eBandpass ||
+        type_ == BiquadFilterType::eNotch ||
+        type_ == BiquadFilterType::eAllpass ||
+        type_ == BiquadFilterType::ePeaking) {
+      Q = std::clamp(Q, 0.f, std::numeric_limits<float>::max());
+    }
 
-      std::tuple<float, float, float> a;
-      std::tuple<float, float, float> b;
-      computeCoefficients(type_, F_s, f_0, G, Q, a, b);
+    std::tuple<float, float, float> a;
+    std::tuple<float, float, float> b;
+    computeCoefficients(type_, F_s, f_0, G, Q, a, b);
 
+    for (std::uint32_t ch = 0; ch < output.getNumberOfChannels(); ++ch) {
       auto prevX = detail::VectorHelper::getOrDefault(
           x_, ch, std::make_tuple(0.0f, 0.0f, 0.0f));
       auto prevY = detail::VectorHelper::getOrDefault(
@@ -141,6 +141,9 @@ void BiquadFilterNode::process(const std::vector<detail::RenderQuantum> &inputs,
       web_audio::detail::VectorHelper::resizeAndSet(x_, ch, x);
       web_audio::detail::VectorHelper::resizeAndSet(y_, ch, y);
     }
+
+    a_ = a;
+    b_ = b;
   }
 }
 
