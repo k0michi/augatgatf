@@ -77,8 +77,28 @@ std::shared_ptr<AudioParam> BiquadFilterNode::getGain() const { return gain_; }
 void BiquadFilterNode::getFrequencyResponse(
     const std::vector<float> &frequencyHz, std::vector<float> &magResponse,
     std::vector<float> &phaseResponse) {
+  // SPEC: The three parameters MUST be Float32Arrays of the same length, or an
+  // InvalidAccessError MUST be thrown.
+  if (frequencyHz.size() != magResponse.size() ||
+      frequencyHz.size() != phaseResponse.size()) {
+    throw DOMException("The three parameters must be  the same length.",
+                       "InvalidAccessError");
+  }
+
   for (std::size_t i = 0; i < frequencyHz.size(); ++i) {
     auto f = frequencyHz[i];
+
+    // SPEC: If a value in the frequencyHz parameter is not within [0,
+    // sampleRate/2], where sampleRate is the value of the sampleRate property
+    // of the AudioContext, the corresponding value at the same index of the
+    // magResponse array MUST be NaN.
+    if (f < 0 || f > getContext()->getSampleRate() / 2 || std::isnan(f) ||
+        std::isinf(f)) {
+      magResponse[i] = phaseResponse[i] =
+          std::numeric_limits<float>::quiet_NaN();
+      continue;
+    }
+
     auto omega = 2 * std::numbers::pi * f / getContext()->getSampleRate();
     auto z = std::complex<float>(std::cos(omega), std::sin(omega));
 

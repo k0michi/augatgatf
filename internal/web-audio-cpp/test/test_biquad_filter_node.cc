@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <web_audio.hh>
 
+#include <cmath>
+
 TEST(BiquadFilterNodeTest, Create) {
   auto context = web_audio::AudioContext::create();
   auto node = web_audio::BiquadFilterNode::create(context);
@@ -263,4 +265,33 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Allpass) {
   options.type = web_audio::BiquadFilterType::eAllpass;
   testGetFrequencyResponse(options, frequencyHz, expectedMagResponse,
                            expectedPhaseResponse);
+}
+
+TEST(BiquadFilterNodeTest, GetFrequencyResnpose_InvalidLength) {
+  auto context = web_audio::AudioContext::create();
+  auto node = web_audio::BiquadFilterNode::create(context);
+  std::vector<float> frequencyHz = {100.0, 200.0, 300.0};
+  std::vector<float> magResponse(2);
+  std::vector<float> phaseResponse(3);
+  EXPECT_THROW(
+      node->getFrequencyResponse(frequencyHz, magResponse, phaseResponse),
+      web_audio::DOMException);
+  magResponse.resize(3);
+  phaseResponse.resize(2);
+  EXPECT_THROW(
+      node->getFrequencyResponse(frequencyHz, magResponse, phaseResponse),
+      web_audio::DOMException);
+}
+
+TEST(BiquadFilterNodeTest, GetFrequencyResponse_OverSampleRate) {
+  auto context = web_audio::AudioContext::create({.sampleRate = 44100});
+  auto node = web_audio::BiquadFilterNode::create(context);
+  std::vector<float> frequencyHz = {100.0, 200.0, 300.0, 50000.0};
+  std::vector<float> magResponse(4);
+  std::vector<float> phaseResponse(4);
+  node->getFrequencyResponse(frequencyHz, magResponse, phaseResponse);
+  EXPECT_TRUE(std::isfinite(magResponse[0]));
+  EXPECT_TRUE(std::isfinite(magResponse[1]));
+  EXPECT_TRUE(std::isfinite(magResponse[2]));
+  EXPECT_TRUE(std::isnan(magResponse[3]));
 }
