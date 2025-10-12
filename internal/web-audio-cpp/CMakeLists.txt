@@ -16,6 +16,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/audio_render_capacity.cc
   src/web_audio/audio_scheduled_source_node.cc
   src/web_audio/base_audio_context.cc
+  src/web_audio/biquad_filter_node.cc
   src/web_audio/delay_node.cc
   src/web_audio/detail/audio_graph.cc
   src/web_audio/detail/audio_listener_node.cc
@@ -71,6 +72,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/audio_render_capacity.cc
   src/web_audio/audio_scheduled_source_node.cc
   src/web_audio/base_audio_context.cc
+  src/web_audio/biquad_filter_node.cc
   src/web_audio/delay_node.cc
   src/web_audio/detail/audio_graph.cc
   src/web_audio/detail/audio_listener_node.cc
@@ -92,6 +94,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_delay_node.cc
   test/test_message_queue.cc
   test/test_offline_audio_context.cc
+  test/test_oscillator_node.cc
   test/test_periodic_wave.cc
   test/test_promise.cc
   test/test_render_quantum.cc
@@ -132,3 +135,6 @@ target_link_libraries(oscillator PRIVATE web-audio-cpp)
 
 add_executable(oscillator_custom example/oscillator_custom.cc)
 target_link_libraries(oscillator_custom PRIVATE web-audio-cpp)
+
+add_executable(biquad_filter example/biquad_filter.cc)
+target_link_libraries(biquad_filter PRIVATE web-audio-cpp)
