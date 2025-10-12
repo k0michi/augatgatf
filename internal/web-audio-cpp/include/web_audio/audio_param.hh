@@ -20,6 +20,7 @@ class BaseAudioContext;
 class AudioListener;
 class OscillatorNode;
 class BiquadFilterNode;
+class GainNode;
 
 namespace detail {
 class AudioGraph;
@@ -148,5 +149,6 @@ public:
   friend class OscillatorNode;
   friend class BaseAudioContext;
   friend class BiquadFilterNode;
+  friend class GainNode;
 };
 } // namespace web_audio

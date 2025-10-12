@@ -55,6 +55,7 @@
 #include "web_audio/dom_exception.hh"
 #include "web_audio/dynamics_compressor_options.hh"
 #include "web_audio/event_handler.hh"
+#include "web_audio/gain_node.hh"
 #include "web_audio/gain_options.hh"
 #include "web_audio/iir_filter_node.hh"
 #include "web_audio/iir_filter_options.hh"

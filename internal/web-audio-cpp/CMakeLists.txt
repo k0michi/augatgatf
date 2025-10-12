@@ -26,6 +26,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/detail/render_quantum.cc
   src/web_audio/detail/wave_processing.cc
   src/web_audio/dom_exception.cc
+  src/web_audio/gain_node.cc
   src/web_audio/iir_filter_node.cc
   src/web_audio/offline_audio_context.cc
   src/web_audio/oscillator_node.cc
@@ -83,6 +84,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/detail/render_quantum.cc
   src/web_audio/detail/wave_processing.cc
   src/web_audio/dom_exception.cc
+  src/web_audio/gain_node.cc
   src/web_audio/iir_filter_node.cc
   src/web_audio/offline_audio_context.cc
   src/web_audio/oscillator_node.cc
@@ -144,3 +146,6 @@ target_link_libraries(biquad_filter PRIVATE web-audio-cpp)
 
 add_executable(iir_filter example/iir_filter.cc)
 target_link_libraries(iir_filter PRIVATE web-audio-cpp)
+
+add_executable(gain example/gain.cc)
+target_link_libraries(gain PRIVATE web-audio-cpp)
