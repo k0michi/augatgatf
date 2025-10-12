@@ -235,3 +235,32 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Notch) {
   testGetFrequencyResponse(options, frequencyHz, expectedMagResponse,
                            expectedPhaseResponse);
 }
+
+TEST(BiquadFilterNodeTest, GetFrequencyResponse_Allpass) {
+  std::vector<float> frequencyHz = {
+      1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
+      8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
+      60.000,   70.000,    80.000,    90.000,   100.000,  200.000,  300.000,
+      400.000,  500.000,   600.000,   700.000,  800.000,  900.000,  1000.000,
+      2000.000, 3000.000,  4000.000,  5000.000, 6000.000, 7000.000, 8000.000,
+      9000.000, 10000.000, 20000.000,
+  };
+  // From Firefox
+  std::vector<float> expectedMagResponse = {
+      1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000,
+      1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000,
+      1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000,
+      1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000,
+  };
+  std::vector<float> expectedPhaseResponse = {
+      -0.006, -0.011, -0.017, -0.023, -0.029, -0.034, -0.040, -0.046,
+      -0.051, -0.057, -0.115, -0.172, -0.231, -0.290, -0.350, -0.411,
+      -0.473, -0.537, -0.603, -1.407, -2.541, 2.618,  1.882,  1.447,
+      1.175,  0.991,  0.858,  0.758,  0.355,  0.232,  0.172,  0.135,
+      0.111,  0.093,  0.079,  0.069,  0.060,  0.012,
+  };
+  web_audio::BiquadFilterOptions options;
+  options.type = web_audio::BiquadFilterType::eAllpass;
+  testGetFrequencyResponse(options, frequencyHz, expectedMagResponse,
+                           expectedPhaseResponse);
+}
