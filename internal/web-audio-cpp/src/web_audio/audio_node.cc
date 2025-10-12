@@ -342,29 +342,4 @@ void AudioNode::disconnectInternal(std::size_t index) {
 std::vector<std::shared_ptr<AudioParam>> AudioNode::getParams() const {
   return {};
 }
-
-std::uint32_t AudioNode::computeNumberOfChannels(
-    const std::vector<detail::RenderQuantum> &inputs) const {
-  if (channelCountMode_ == ChannelCountMode::eMax) {
-    std::uint32_t maxChannels = 1;
-
-    for (const auto &input : inputs) {
-      maxChannels =
-          std::max(maxChannels, static_cast<std::uint32_t>(input.size()));
-    }
-
-    return maxChannels;
-  } else if (channelCountMode_ == ChannelCountMode::eClampedMax) {
-    std::uint32_t maxChannels = 1;
-
-    for (const auto &input : inputs) {
-      maxChannels =
-          std::max(maxChannels, static_cast<std::uint32_t>(input.size()));
-    }
-
-    return std::min(maxChannels, channelCount_);
-  } else { // ChannelCountMode::eExplicit
-    return channelCount_;
-  }
-}
 } // namespace web_audio

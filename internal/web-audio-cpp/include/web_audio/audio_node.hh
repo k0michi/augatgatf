@@ -77,9 +77,6 @@ public:
 
   virtual std::vector<std::shared_ptr<AudioParam>> getParams() const;
 
-  std::uint32_t computeNumberOfChannels(
-      const std::vector<detail::RenderQuantum> &inputs) const;
-
 protected:
   std::weak_ptr<BaseAudioContext> context_;
   std::uint32_t numberOfInputs_;

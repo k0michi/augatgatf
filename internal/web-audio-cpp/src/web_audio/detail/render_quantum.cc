@@ -3,6 +3,11 @@
 #include <stdexcept>
 
 namespace web_audio::detail {
+RenderQuantum::RenderQuantum() : RenderQuantum(0, 0) {}
+
+RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels)
+    : RenderQuantum(numberOfChannels, 0) {}
+
 RenderQuantum::RenderQuantum(std::uint32_t numberOfChannels,
                              std::uint32_t length)
     : length_(length),

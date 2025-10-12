@@ -10,7 +10,14 @@
 namespace web_audio::detail {
 class RenderQuantum {
 public:
+  RenderQuantum();
+  RenderQuantum(std::uint32_t numberOfChannels);
   RenderQuantum(std::uint32_t numberOfChannels, std::uint32_t length);
+  RenderQuantum(const RenderQuantum &) = default;
+  RenderQuantum(RenderQuantum &&) noexcept = default;
+
+  RenderQuantum &operator=(RenderQuantum &&) noexcept = default;
+  RenderQuantum &operator=(const RenderQuantum &) = default;
 
   std::uint32_t getLength() const;
 
