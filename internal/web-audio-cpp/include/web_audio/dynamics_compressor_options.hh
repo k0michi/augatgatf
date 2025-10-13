@@ -8,6 +8,6 @@ struct DynamicsCompressorOptions : public AudioNodeOptions {
   float knee = 30;
   float ratio = 12;
   float release = 0.25;
-  float threashold = -24;
+  float threshold = -24;
 };
 } // namespace web_audio
