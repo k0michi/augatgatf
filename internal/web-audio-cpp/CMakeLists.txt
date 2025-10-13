@@ -17,6 +17,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/audio_scheduled_source_node.cc
   src/web_audio/base_audio_context.cc
   src/web_audio/biquad_filter_node.cc
+  src/web_audio/constant_source_node.cc
   src/web_audio/delay_node.cc
   src/web_audio/detail/audio_graph.cc
   src/web_audio/detail/audio_listener_node.cc
@@ -75,6 +76,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/audio_scheduled_source_node.cc
   src/web_audio/base_audio_context.cc
   src/web_audio/biquad_filter_node.cc
+  src/web_audio/constant_source_node.cc
   src/web_audio/delay_node.cc
   src/web_audio/detail/audio_graph.cc
   src/web_audio/detail/audio_listener_node.cc
@@ -96,6 +98,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_audio_node.cc
   test/test_audio_param.cc
   test/test_biquad_filter_node.cc
+  test/test_constant_source_node.cc
   test/test_delay_node.cc
   test/test_message_queue.cc
   test/test_offline_audio_context.cc
