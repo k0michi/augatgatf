@@ -49,6 +49,7 @@
 #include "web_audio/detail/param_collection.hh"
 #include "web_audio/detail/param_event.hh"
 #include "web_audio/detail/render_quantum.hh"
+#include "web_audio/detail/vec3.hh"
 #include "web_audio/detail/vector_helper.hh"
 #include "web_audio/detail/wave_processing.hh"
 #include "web_audio/detail/weak_ptr_helper.hh"
