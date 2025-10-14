@@ -32,6 +32,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/offline_audio_context.cc
   src/web_audio/oscillator_node.cc
   src/web_audio/periodic_wave.cc
+  src/web_audio/stereo_panner_node.cc
 # end
 )
 target_include_directories(web-audio-cpp PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -91,6 +92,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/offline_audio_context.cc
   src/web_audio/oscillator_node.cc
   src/web_audio/periodic_wave.cc
+  src/web_audio/stereo_panner_node.cc
 # end
 # include test/**/*.cc
   test/test_audio_buffer.cc

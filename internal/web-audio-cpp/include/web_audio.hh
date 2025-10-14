@@ -76,6 +76,7 @@
 #include "web_audio/periodic_wave_constraints.hh"
 #include "web_audio/periodic_wave_options.hh"
 #include "web_audio/promise.hh"
+#include "web_audio/stereo_panner_node.hh"
 #include "web_audio/stereo_panner_options.hh"
 #include "web_audio/wave_shaper_options.hh"
 // end
