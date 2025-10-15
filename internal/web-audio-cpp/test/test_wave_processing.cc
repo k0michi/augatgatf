@@ -44,3 +44,25 @@ TEST(WaveProcessingTest, FourierTransformAndInverse_1) {
     EXPECT_NEAR(input[i].imag(), reconstructed[i].imag(), 1e-6);
   }
 }
+
+TEST(WaveProcessingTest, Convolve) {
+  std::vector<std::complex<double>> a = {{1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}};
+  std::vector<std::complex<double>> b = {{0.0, 0.0}, {1.0, 0.0}, {0.5, 0.0}};
+  std::vector<std::complex<double>> result;
+
+  web_audio::detail::WaveProcessing::convolve(a, b, result);
+
+  std::vector<std::complex<double>> expected(a.size() + b.size() - 1, 0.0);
+
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    for (std::size_t j = 0; j < b.size(); ++j) {
+      expected[i + j] += a[i] * b[j];
+    }
+  }
+
+  ASSERT_EQ(expected.size(), result.size());
+  for (std::size_t i = 0; i < expected.size(); ++i) {
+    EXPECT_NEAR(expected[i].real(), result[i].real(), 1e-6);
+    EXPECT_NEAR(expected[i].imag(), result[i].imag(), 1e-6);
+  }
+}

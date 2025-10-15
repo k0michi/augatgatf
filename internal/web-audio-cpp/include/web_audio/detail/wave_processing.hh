@@ -73,5 +73,65 @@ public:
       output[i + n / 2] = even[i] - t;
     }
   }
+
+  template <std::floating_point T>
+  static void convolve(const std::vector<std::complex<T>> &a,
+                       const std::vector<std::complex<T>> &b,
+                       std::vector<std::complex<T>> &result) {
+    if (a.empty() || b.empty()) {
+      result.clear();
+      return;
+    }
+
+    const std::size_t resultSize = a.size() + b.size() - 1;
+    std::size_t fftSize = 1;
+
+    while (fftSize < resultSize) {
+      fftSize *= 2;
+    }
+
+    std::vector<std::complex<T>> aPadded(fftSize, 0);
+    std::copy(a.begin(), a.end(), aPadded.begin());
+
+    std::vector<std::complex<T>> bPadded(fftSize, 0);
+    std::copy(b.begin(), b.end(), bPadded.begin());
+
+    std::vector<std::complex<T>> aTransformed(fftSize);
+    fourierTransform(aPadded, aTransformed);
+
+    std::vector<std::complex<T>> bTransformed(fftSize);
+    fourierTransform(bPadded, bTransformed);
+
+    std::vector<std::complex<T>> product(fftSize);
+
+    for (std::size_t i = 0; i < fftSize; ++i) {
+      product[i] = aTransformed[i] * bTransformed[i] * static_cast<T>(fftSize);
+    }
+
+    std::vector<std::complex<T>> convolved(fftSize);
+    inverseFourierTransform(product, convolved);
+
+    result.assign(convolved.begin(), convolved.begin() + resultSize);
+  }
+
+  template <std::floating_point T>
+  static void convolve(const std::vector<T> &a, const std::vector<T> &b,
+                       std::vector<T> &result) {
+    if (a.empty() || b.empty()) {
+      result.clear();
+      return;
+    }
+
+    std::vector<std::complex<T>> aComplex(a.begin(), a.end());
+    std::vector<std::complex<T>> bComplex(b.begin(), b.end());
+    std::vector<std::complex<T>> convolvedComplex;
+
+    convolve(aComplex, bComplex, convolvedComplex);
+
+    result.resize(convolvedComplex.size());
+    for (std::size_t i = 0; i < convolvedComplex.size(); ++i) {
+      result[i] = convolvedComplex[i].real();
+    }
+  }
 };
 } // namespace web_audio::detail
