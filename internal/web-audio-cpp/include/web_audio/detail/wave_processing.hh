@@ -44,6 +44,13 @@ public:
   }
 
   template <std::floating_point T>
+  static void fourierTransform(const std::vector<T> &input,
+                               std::vector<std::complex<T>> &output) {
+    std::vector<std::complex<T>> inputComplex(input.begin(), input.end());
+    fourierTransform(inputComplex, output);
+  }
+
+  template <std::floating_point T>
   static void inverseFourierTransform(const std::vector<std::complex<T>> &input,
                                       std::vector<std::complex<T>> &output) {
     std::size_t n = input.size();
@@ -72,6 +79,13 @@ public:
       output[i] = even[i] + t;
       output[i + n / 2] = even[i] - t;
     }
+  }
+
+  template <std::floating_point T>
+  static void inverseFourierTransform(const std::vector<T> &input,
+                                      std::vector<std::complex<T>> &output) {
+    std::vector<std::complex<T>> inputComplex(input.begin(), input.end());
+    inverseFourierTransform(inputComplex, output);
   }
 
   template <std::floating_point T>
