@@ -28,4 +28,9 @@ class Upsampler2x : public Upsampler {
 public:
   Upsampler2x(std::size_t blockSize);
 };
+
+class Upsampler4x : public Upsampler {
+public:
+  Upsampler4x(std::size_t blockSize);
+};
 } // namespace web_audio::detail
