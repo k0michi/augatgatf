@@ -25,7 +25,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
   src/web_audio/detail/render_quantum.cc
-  src/web_audio/detail/upsampler2x.cc
+  src/web_audio/detail/upsampler.cc
   src/web_audio/detail/vec3.cc
   src/web_audio/dom_exception.cc
   src/web_audio/gain_node.cc
@@ -86,7 +86,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
   src/web_audio/detail/render_quantum.cc
-  src/web_audio/detail/upsampler2x.cc
+  src/web_audio/detail/upsampler.cc
   src/web_audio/detail/vec3.cc
   src/web_audio/dom_exception.cc
   src/web_audio/gain_node.cc
