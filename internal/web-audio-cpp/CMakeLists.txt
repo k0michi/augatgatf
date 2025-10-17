@@ -25,6 +25,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
   src/web_audio/detail/render_quantum.cc
+  src/web_audio/detail/upsampler2x.cc
   src/web_audio/detail/vec3.cc
   src/web_audio/dom_exception.cc
   src/web_audio/gain_node.cc
@@ -85,6 +86,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/detail/message_queue.cc
   src/web_audio/detail/param_collection.cc
   src/web_audio/detail/render_quantum.cc
+  src/web_audio/detail/upsampler2x.cc
   src/web_audio/detail/vec3.cc
   src/web_audio/dom_exception.cc
   src/web_audio/gain_node.cc
@@ -154,3 +156,8 @@ target_link_libraries(iir_filter PRIVATE web-audio-cpp)
 
 add_executable(gain example/gain.cc)
 target_link_libraries(gain PRIVATE web-audio-cpp)
+
+# Debug
+
+add_executable(debug_upsampler2x debug/upsampler2x.cc)
+target_link_libraries(debug_upsampler2x PRIVATE web-audio-cpp)

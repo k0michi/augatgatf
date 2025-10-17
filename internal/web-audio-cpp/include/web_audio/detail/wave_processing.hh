@@ -27,13 +27,16 @@ public:
     fourierTransform(even, even);
     fourierTransform(odd, odd);
 
-    output.resize(n);
+    if (output.size() < n) {
+      output.resize(n);
+    }
 
     const T invN = 1.0 / static_cast<T>(n);
 
     for (std::size_t i = 0; i < n / 2; ++i) {
       constexpr auto kPi = std::numbers::pi_v<T>;
-      std::complex<T> t = std::polar(1.0, -2 * kPi * i * invN) * odd[i];
+      std::complex<T> t =
+          std::polar(static_cast<T>(1.0), -2 * kPi * i * invN) * odd[i];
       output[i] = even[i] + t;
       output[i + n / 2] = even[i] - t;
     }
@@ -69,13 +72,16 @@ public:
     inverseFourierTransform(even, even);
     inverseFourierTransform(odd, odd);
 
-    output.resize(n);
+    if (output.size() < n) {
+      output.resize(n);
+    }
 
     const T invN = 1.0 / static_cast<T>(n);
 
     for (std::size_t i = 0; i < n / 2; ++i) {
       constexpr auto kPi = std::numbers::pi_v<T>;
-      std::complex<T> t = std::polar(1.0, 2 * kPi * i * invN) * odd[i];
+      std::complex<T> t =
+          std::polar(static_cast<T>(1.0), 2 * kPi * i * invN) * odd[i];
       output[i] = even[i] + t;
       output[i + n / 2] = even[i] - t;
     }
