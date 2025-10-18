@@ -82,5 +82,6 @@
 #include "web_audio/promise.hh"
 #include "web_audio/stereo_panner_node.hh"
 #include "web_audio/stereo_panner_options.hh"
+#include "web_audio/wave_shaper_node.hh"
 #include "web_audio/wave_shaper_options.hh"
 // end

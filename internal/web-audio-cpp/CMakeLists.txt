@@ -35,6 +35,7 @@ add_library(web-audio-cpp STATIC
   src/web_audio/oscillator_node.cc
   src/web_audio/periodic_wave.cc
   src/web_audio/stereo_panner_node.cc
+  src/web_audio/wave_shaper_node.cc
 # end
 )
 target_include_directories(web-audio-cpp PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -97,6 +98,7 @@ set(WEB_AUDIO_TEST_SRC
   src/web_audio/oscillator_node.cc
   src/web_audio/periodic_wave.cc
   src/web_audio/stereo_panner_node.cc
+  src/web_audio/wave_shaper_node.cc
 # end
 # include test/**/*.cc
   test/test_audio_buffer.cc
@@ -113,6 +115,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_promise.cc
   test/test_render_quantum.cc
   test/test_wave_processing.cc
+  test/test_wave_shaper_node.cc
 # end
 )
 add_executable(test_web_audio ${WEB_AUDIO_TEST_SRC})
