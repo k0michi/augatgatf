@@ -38,6 +38,8 @@ public:
                      std::uint32_t channelNumber,
                      std::uint32_t bufferOffset = 0);
 
+  std::shared_ptr<AudioBuffer> copy() const;
+
   static std::shared_ptr<AudioBuffer> create(const AudioBufferOptions &options);
 
   WEB_AUDIO_PRIVATE :

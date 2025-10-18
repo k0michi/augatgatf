@@ -35,6 +35,7 @@
 #include "web_audio/channel_splitter_options.hh"
 #include "web_audio/constant_source_node.hh"
 #include "web_audio/constant_source_options.hh"
+#include "web_audio/convolver_node.hh"
 #include "web_audio/convolver_options.hh"
 #include "web_audio/delay_node.hh"
 #include "web_audio/delay_options.hh"

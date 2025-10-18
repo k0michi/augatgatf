@@ -77,6 +77,17 @@ void AudioBuffer::copyToChannel(const std::vector<float> &source,
               channelData_[channelNumber].data() + bufferOffset);
 }
 
+std::shared_ptr<AudioBuffer> AudioBuffer::copy() const {
+  auto newBuffer = AudioBuffer::create(
+      AudioBufferOptions{numberOfChannels_, length_, sampleRate_});
+
+  for (std::uint32_t ch = 0; ch < numberOfChannels_; ++ch) {
+    newBuffer->channelData_[ch] = channelData_[ch];
+  }
+
+  return newBuffer;
+}
+
 std::shared_ptr<AudioBuffer>
 AudioBuffer::create(const AudioBufferOptions &options) {
   auto buffer = std::shared_ptr<AudioBuffer>(new AudioBuffer());

@@ -30,7 +30,9 @@ public:
       throw std::invalid_argument("Input size must be equal to block size.");
     }
 
-    output.resize(blockSize_);
+    if (output.size() < blockSize_) {
+      output.resize(blockSize_);
+    }
 
     std::vector<T> inputPadded(fftSize_, static_cast<T>(0));
     std::copy(input.begin(), input.end(), inputPadded.begin());
