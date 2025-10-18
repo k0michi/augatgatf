@@ -79,6 +79,13 @@ void ConvolverNode::setBuffer(const std::shared_ptr<AudioBuffer> &buffer) {
           bufferCopy_->getChannelData(ch),
           getContext()->getRenderQuantumSize());
     }
+
+    // Copy convolver, so that the states are independent
+    if (bufferCopy_->getNumberOfChannels() == 1) {
+      convolvers_.push_back(std::make_unique<detail::Convolver<float>>(
+          bufferCopy_->getChannelData(0),
+          getContext()->getRenderQuantumSize()));
+    }
   } else {
     convolvers_.clear();
   }
@@ -94,16 +101,16 @@ void ConvolverNode::process(const std::vector<detail::RenderQuantum> &inputs,
   auto &input = inputs[0];
   auto &output = outputs[0];
 
-  if (convolvers_.size() == 1) {
+  if (bufferCopy_->getNumberOfChannels() == 1) {
     if (input.getNumberOfChannels() == 1) {
       output = detail::RenderQuantum(1, input.getLength());
       convolvers_[0]->process(input[0], output[0]);
     } else { // input.getNumberOfChannels == 2
       output = detail::RenderQuantum(2, input.getLength());
       convolvers_[0]->process(input[0], output[0]);
-      convolvers_[0]->process(input[1], output[1]);
+      convolvers_[1]->process(input[1], output[1]);
     }
-  } else if (convolvers_.size() == 2) {
+  } else if (bufferCopy_->getNumberOfChannels() == 2) {
     if (input.getNumberOfChannels() == 1) {
       output = detail::RenderQuantum(2, input.getLength());
       convolvers_[0]->process(input[0], output[0]);
@@ -113,7 +120,7 @@ void ConvolverNode::process(const std::vector<detail::RenderQuantum> &inputs,
       convolvers_[0]->process(input[0], output[0]);
       convolvers_[1]->process(input[1], output[1]);
     }
-  } else { // convolvers_.size() == 4
+  } else { // bufferCopy_->getNumberOfChannels() == 4
     if (input.getNumberOfChannels() == 1) {
       output = detail::RenderQuantum(2, input.getLength());
       std::vector<float> temp;
