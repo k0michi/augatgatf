@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <random>
+
 #include <web_audio.hh>
 
 #include "test_helper.hh"
@@ -87,4 +89,23 @@ TEST(ConvolverTest, LongerImpulse) {
   auto expectedOutput = naiveConvolve(input, impulseResponse);
   auto output = convolve(input, impulseResponse, 4);
   compareVectors(expectedOutput, output, 1e-6f);
+}
+
+TEST(ConvolverTest, Random) {
+  std::mt19937 rng(42);
+  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+
+  std::vector<float> impulseResponse(64);
+  std::vector<float> input(44100);
+
+  for (auto &v : impulseResponse) {
+    v = dist(rng);
+  }
+  for (auto &v : input) {
+    v = dist(rng);
+  }
+
+  auto expectedOutput = naiveConvolve(input, impulseResponse);
+  auto output = convolve(input, impulseResponse, 32);
+  compareVectors(expectedOutput, output, 1e-3f);
 }
