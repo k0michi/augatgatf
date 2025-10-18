@@ -43,6 +43,7 @@
 #include "web_audio/detail/audio_node_input.hh"
 #include "web_audio/detail/audio_node_output.hh"
 #include "web_audio/detail/common.hh"
+#include "web_audio/detail/convolver.hh"
 #include "web_audio/detail/downsampler.hh"
 #include "web_audio/detail/event_queue.hh"
 #include "web_audio/detail/math_helper.hh"

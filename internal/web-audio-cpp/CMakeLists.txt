@@ -107,6 +107,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_audio_param.cc
   test/test_biquad_filter_node.cc
   test/test_constant_source_node.cc
+  test/test_convolver.cc
   test/test_delay_node.cc
   test/test_message_queue.cc
   test/test_offline_audio_context.cc
