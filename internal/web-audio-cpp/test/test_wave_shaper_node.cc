@@ -17,26 +17,14 @@ TEST(WaveShaperNodeTest, Offline) {
       1.0f,
   });
 
-  auto promise = context->startRendering();
+  auto result = TestHelper::renderOffline(context);
 
-  bool called = false;
-  promise.then([&](std::shared_ptr<web_audio::AudioBuffer> buffer) {
-    EXPECT_EQ(buffer->getNumberOfChannels(), 2u);
-    EXPECT_EQ(buffer->getLength(), 128u);
-    for (std::uint32_t ch = 0; ch < buffer->getNumberOfChannels(); ++ch) {
-      auto &&data = buffer->getChannelData(ch);
-      for (std::uint32_t i = 0; i < buffer->getLength(); ++i) {
-        EXPECT_NEAR(data[i], 1.0f, 0.01f);
-      }
+  EXPECT_EQ(result->getNumberOfChannels(), 2u);
+  EXPECT_EQ(result->getLength(), 128u);
+  for (std::uint32_t ch = 0; ch < result->getNumberOfChannels(); ++ch) {
+    auto &&data = result->getChannelData(ch);
+    for (std::uint32_t i = 0; i < result->getLength(); ++i) {
+      EXPECT_NEAR(data[i], 1.0f, 0.01f);
     }
-    called = true;
-  });
-  promise.catch_([&](std::exception_ptr exception) {
-    called = true;
-    FAIL() << "Promise rejected";
-  });
-
-  while (!called) {
-    context->processEvents();
   }
 }
