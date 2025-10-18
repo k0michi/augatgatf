@@ -61,24 +61,23 @@ void compareVectors(const std::vector<T> &a, const std::vector<T> &b,
   }
 }
 
-// TEST(ConvolverTest, Identity) {
-//   std::vector<float> impulseResponse = {1.0f, 0.0f, 0.0f, 0.0f};
-//   std::vector<float> input = {0.5f,  -0.5f,  0.25f, -0.25f,
-//                               0.75f, -0.75f, 1.0f,  -1.0f};
-//   auto expectedOutput = naiveConvolve(input, impulseResponse);
-//   auto output = convolve(input, impulseResponse, 8);
-//   compareVectors(expectedOutput, output, 1e-6f);
-// }
-//
-// TEST(ConvolverTest, Delay) {
-//   std::vector<float> impulseResponse = {0.0f, 0.0f, 1.0f};
-//   std::vector<float> input = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-//   0.0f};
-//
-//   auto expectedOutput = naiveConvolve(input, impulseResponse);
-//   auto output = convolve(input, impulseResponse, 8);
-//   compareVectors(expectedOutput, output, 1e-6f);
-// }
+TEST(ConvolverTest, Identity) {
+  std::vector<float> impulseResponse = {1.0f, 0.0f, 0.0f, 0.0f};
+  std::vector<float> input = {0.5f,  -0.5f,  0.25f, -0.25f,
+                              0.75f, -0.75f, 1.0f,  -1.0f};
+  auto expectedOutput = naiveConvolve(input, impulseResponse);
+  auto output = convolve(input, impulseResponse, 8);
+  compareVectors(expectedOutput, output, 1e-6f);
+}
+
+TEST(ConvolverTest, Delay) {
+  std::vector<float> impulseResponse = {0.0f, 0.0f, 1.0f};
+  std::vector<float> input = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+
+  auto expectedOutput = naiveConvolve(input, impulseResponse);
+  auto output = convolve(input, impulseResponse, 8);
+  compareVectors(expectedOutput, output, 1e-6f);
+}
 
 TEST(ConvolverTest, LongerImpulse) {
   std::vector<float> impulseResponse = {0.2f, 0.4f, 0.6f, 0.8f, 1.0f,
