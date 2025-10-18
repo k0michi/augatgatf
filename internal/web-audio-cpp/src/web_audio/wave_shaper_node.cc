@@ -65,26 +65,51 @@ void WaveShaperNode::process(const std::vector<detail::RenderQuantum> &inputs,
   auto &input = inputs[0];
   auto &output = outputs[0];
 
+  std::vector<std::vector<float>> resampled;
+
+  if (upsampler_) {
+    for (std::uint32_t ch = 0; ch < input.getNumberOfChannels(); ++ch) {
+      std::vector<float> upsampledChannel;
+      upsampler_->process(input[ch], upsampledChannel);
+      resampled.push_back(std::move(upsampledChannel));
+    }
+  } else {
+    for (std::uint32_t ch = 0; ch < input.getNumberOfChannels(); ++ch) {
+      resampled.push_back(input[ch]);
+    }
+  }
+
   if (curve_) {
     auto curve = *curve_;
-    for (std::uint32_t i = 0; i < output.getLength(); ++i) {
+
+    for (std::uint32_t i = 0; i < resampled[0].size(); ++i) {
       auto N = curve.size();
-      auto v = (N - 1) / 2.0 * (i + 1);
+      auto v = (N - 1) / 2.0 * (resampled[0][i] + 1.0f);
       auto k = static_cast<std::uint32_t>(v);
       auto f = v - k;
 
-      for (std::uint32_t ch = 0; ch < output.getNumberOfChannels(); ++ch) {
+      for (std::uint32_t ch = 0; ch < resampled.size(); ++ch) {
         if (v < 0) {
-          output[ch][i] = curve[0];
+          resampled[ch][i] = curve[0];
         } else if (v >= N - 1) {
-          output[ch][i] = curve[N - 1];
+          resampled[ch][i] = curve[N - 1];
         } else {
-          output[ch][i] = (1 - f) * curve[k] + f * curve[k + 1];
+          resampled[ch][i] = (1 - f) * curve[k] + f * curve[k + 1];
         }
       }
     }
+  }
+
+  if (downsampler_) {
+    for (std::uint32_t ch = 0; ch < output.getNumberOfChannels(); ++ch) {
+      std::vector<float> downsampledChannel;
+      downsampler_->process(resampled[ch], downsampledChannel);
+      output[ch] = std::move(downsampledChannel);
+    }
   } else {
-    output = input;
+    for (std::uint32_t ch = 0; ch < output.getNumberOfChannels(); ++ch) {
+      output[ch] = resampled[ch];
+    }
   }
 }
 } // namespace web_audio
