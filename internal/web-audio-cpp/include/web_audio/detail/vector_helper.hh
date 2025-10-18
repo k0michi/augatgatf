@@ -36,5 +36,15 @@ public:
 
     return vector[index];
   }
+
+  template <typename T>
+  static void shiftLeft(std::vector<T> &vec, std::size_t shift) {
+    if (shift >= vec.size()) {
+      std::fill(vec.begin(), vec.end(), T{});
+      return;
+    }
+    std::move(vec.begin() + shift, vec.end(), vec.begin());
+    std::fill(vec.end() - shift, vec.end(), T{});
+  }
 };
 } // namespace web_audio::detail

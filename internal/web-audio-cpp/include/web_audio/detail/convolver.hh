@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "math_helper.hh"
+#include "vector_helper.hh"
 #include "wave_processing.hh"
 
 namespace web_audio::detail {
@@ -54,17 +55,10 @@ public:
       output[i] = sample;
     }
 
-    for (std::size_t i = 0; i + blockSize_ < impulseResponseSize_ - 1; ++i) {
-      overlapBuffer_[i] = overlapBuffer_[i + blockSize_];
-    }
-
-    for (std::size_t i = 0; i < blockSize_; ++i) {
-      overlapBuffer_[overlapBuffer_.size() - blockSize_ + i] =
-          static_cast<T>(0);
-    }
+    web_audio::detail::VectorHelper::shiftLeft(overlapBuffer_, blockSize_);
 
     for (std::size_t i = 0; i < impulseResponseSize_ - 1; ++i) {
-      overlapBuffer_[i] = outputTime[blockSize_ + i].real();
+      overlapBuffer_[i] += outputTime[blockSize_ + i].real();
     }
 
     return;
