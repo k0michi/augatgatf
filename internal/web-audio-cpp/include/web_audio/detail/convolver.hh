@@ -21,7 +21,7 @@ public:
     impulseResponse.resize(fftSize_, static_cast<T>(0));
     WaveProcessing::fourierTransform(impulseResponse,
                                      impulseResponseFrequency_);
-    overlapBuffer_.resize(fftSize_ - 1, static_cast<T>(0));
+    overlapBuffer_.resize(impulseResponseSize_ - 1, static_cast<T>(0));
   }
 
   void process(const std::vector<T> &input, std::vector<T> &output) {
@@ -54,9 +54,20 @@ public:
       output[i] = sample;
     }
 
+    for (std::size_t i = 0; i + blockSize_ < impulseResponseSize_ - 1; ++i) {
+      overlapBuffer_[i] = overlapBuffer_[i + blockSize_];
+    }
+
+    for (std::size_t i = 0; i < blockSize_; ++i) {
+      overlapBuffer_[overlapBuffer_.size() - blockSize_ + i] =
+          static_cast<T>(0);
+    }
+
     for (std::size_t i = 0; i < impulseResponseSize_ - 1; ++i) {
       overlapBuffer_[i] = outputTime[blockSize_ + i].real();
     }
+
+    return;
   }
 
   WEB_AUDIO_PRIVATE : std::size_t blockSize_;
