@@ -161,5 +161,5 @@ target_link_libraries(gain PRIVATE web-audio-cpp)
 
 # Debug
 
-add_executable(debug_upsampler2x debug/upsampler2x.cc)
-target_link_libraries(debug_upsampler2x PRIVATE web-audio-cpp)
+add_executable(debug_resampler debug/resampler.cc)
+target_link_libraries(debug_resampler PRIVATE web-audio-cpp)
