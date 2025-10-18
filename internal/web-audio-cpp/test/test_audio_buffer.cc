@@ -4,7 +4,7 @@
 
 using namespace web_audio;
 
-TEST(AudioBufferTest, Create) {
+TEST(TestAudioBuffer, Create) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -17,7 +17,7 @@ TEST(AudioBufferTest, Create) {
   EXPECT_NEAR(buffer->getDuration(), 128.0 / 44100.0, 0.0001f);
 }
 
-TEST(AudioBufferTest, CreateInvalid) {
+TEST(TestAudioBuffer, CreateInvalid) {
   AudioBufferOptions options;
 
   options.numberOfChannels = 0;
@@ -36,7 +36,7 @@ TEST(AudioBufferTest, CreateInvalid) {
   EXPECT_THROW(AudioBuffer::create(options), DOMException);
 }
 
-TEST(AudioBufferTest, CopyFromToChannel) {
+TEST(TestAudioBuffer, CopyFromToChannel) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -59,7 +59,7 @@ TEST(AudioBufferTest, CopyFromToChannel) {
   }
 }
 
-TEST(AudioBufferTest, CopyFromChannelOutOfRange) {
+TEST(TestAudioBuffer, CopyFromChannelOutOfRange) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -70,7 +70,7 @@ TEST(AudioBufferTest, CopyFromChannelOutOfRange) {
   EXPECT_THROW(buffer->copyFromChannel(dest, 2, 0), DOMException);
 }
 
-TEST(AudioBufferTest, CopyToChannel) {
+TEST(TestAudioBuffer, CopyToChannel) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -89,7 +89,7 @@ TEST(AudioBufferTest, CopyToChannel) {
   }
 }
 
-TEST(AudioBufferTest, CopyToChannelOutOfRange) {
+TEST(TestAudioBuffer, CopyToChannelOutOfRange) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -101,7 +101,7 @@ TEST(AudioBufferTest, CopyToChannelOutOfRange) {
   EXPECT_THROW(buffer->copyToChannel(src, 2, 0), DOMException);
 }
 
-TEST(AudioBufferTest, GetChannelData) {
+TEST(TestAudioBuffer, GetChannelData) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -115,7 +115,7 @@ TEST(AudioBufferTest, GetChannelData) {
   EXPECT_EQ(ch1, std::vector<float>(128, 0.0f));
 }
 
-TEST(AudioBufferTest, GetChannelDataOutOfRange) {
+TEST(TestAudioBuffer, GetChannelDataOutOfRange) {
   AudioBufferOptions options;
   options.numberOfChannels = 2;
   options.length = 128;

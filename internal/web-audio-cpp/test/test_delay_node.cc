@@ -8,13 +8,13 @@ std::shared_ptr<web_audio::OfflineAudioContext> createOfflineContext() {
 }
 } // namespace
 
-TEST(DelayNodeTest, Create) {
+TEST(TestDelayNode, Create) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
   EXPECT_NE(delayNode, nullptr);
 }
 
-TEST(DelayNodeTest, Delay1) {
+TEST(TestDelayNode, Delay1) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
   std::vector<web_audio::detail::RenderQuantum> inputs(
@@ -30,7 +30,7 @@ TEST(DelayNodeTest, Delay1) {
   EXPECT_FLOAT_EQ(outputs[0][0][1], 1.0f);
 }
 
-TEST(DelayNodeTest, Delay2) {
+TEST(TestDelayNode, Delay2) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
   std::vector<web_audio::detail::RenderQuantum> inputs(
@@ -46,7 +46,7 @@ TEST(DelayNodeTest, Delay2) {
   EXPECT_FLOAT_EQ(outputs[0][0][2], 1.0f);
 }
 
-TEST(DelayNodeTest, Delay1Quantum) {
+TEST(TestDelayNode, Delay1Quantum) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
   std::vector<web_audio::detail::RenderQuantum> inputs(
@@ -78,7 +78,7 @@ TEST(DelayNodeTest, Delay1Quantum) {
   EXPECT_FLOAT_EQ(outputs[1][0][0], 1.0f);
 }
 
-TEST(DelayNodeTest, DelayChannel) {
+TEST(TestDelayNode, DelayChannel) {
   auto context = createOfflineContext();
   auto delayNode = web_audio::DelayNode::create(context);
   std::vector<web_audio::detail::RenderQuantum> inputs(

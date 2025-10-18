@@ -10,7 +10,7 @@ std::shared_ptr<web_audio::OfflineAudioContext> createOfflineContext() {
 }
 } // namespace
 
-TEST(AudioNodeTest, ConnectNode) {
+TEST(TestAudioNode, ConnectNode) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -19,7 +19,7 @@ TEST(AudioNodeTest, ConnectNode) {
   EXPECT_NO_THROW(node1->disconnect(node2, 0, 0));
 }
 
-TEST(AudioNodeTest, ConnectNodeDifferentContext) {
+TEST(TestAudioNode, ConnectNodeDifferentContext) {
   auto context1 = createOfflineContext();
   auto context2 = createOfflineContext();
   auto node1 = DummyNode::create(context1);
@@ -27,21 +27,21 @@ TEST(AudioNodeTest, ConnectNodeDifferentContext) {
   EXPECT_THROW(node1->connect(node2, 0, 0), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, ConnectNodeInvalidOutput) {
+TEST(TestAudioNode, ConnectNodeInvalidOutput) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
   EXPECT_THROW(node1->connect(node2, 2, 0), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, ConnectNodeInvalidInput) {
+TEST(TestAudioNode, ConnectNodeInvalidInput) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
   EXPECT_THROW(node1->connect(node2, 0, 2), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, ConnectParam) {
+TEST(TestAudioNode, ConnectParam) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -50,7 +50,7 @@ TEST(AudioNodeTest, ConnectParam) {
   EXPECT_NO_THROW(node1->disconnect(param, 0));
 }
 
-TEST(AudioNodeTest, DisconnectAll) {
+TEST(TestAudioNode, DisconnectAll) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -61,7 +61,7 @@ TEST(AudioNodeTest, DisconnectAll) {
   EXPECT_NO_THROW(node1->disconnect());
 }
 
-TEST(AudioNodeTest, DisconnectOutput) {
+TEST(TestAudioNode, DisconnectOutput) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -74,7 +74,7 @@ TEST(AudioNodeTest, DisconnectOutput) {
   EXPECT_NO_THROW(node1->disconnect(1));
 }
 
-TEST(AudioNodeTest, DisconnectNode) {
+TEST(TestAudioNode, DisconnectNode) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -87,7 +87,7 @@ TEST(AudioNodeTest, DisconnectNode) {
   EXPECT_THROW(node1->disconnect(node3), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, DisconnectNodeOutput) {
+TEST(TestAudioNode, DisconnectNodeOutput) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -103,7 +103,7 @@ TEST(AudioNodeTest, DisconnectNodeOutput) {
   EXPECT_THROW(node1->disconnect(node3, 0), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, DisconnectNodeOutputInput) {
+TEST(TestAudioNode, DisconnectNodeOutputInput) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -119,7 +119,7 @@ TEST(AudioNodeTest, DisconnectNodeOutputInput) {
   EXPECT_THROW(node1->disconnect(node3, 0, 0), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, DisconnectParam) {
+TEST(TestAudioNode, DisconnectParam) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);
@@ -129,7 +129,7 @@ TEST(AudioNodeTest, DisconnectParam) {
   EXPECT_THROW(node1->disconnect(param), web_audio::DOMException);
 }
 
-TEST(AudioNodeTest, DisconnectParamOutput) {
+TEST(TestAudioNode, DisconnectParamOutput) {
   auto context = createOfflineContext();
   auto node1 = DummyNode::create(context);
   auto node2 = DummyNode::create(context);

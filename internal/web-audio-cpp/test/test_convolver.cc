@@ -63,7 +63,7 @@ void compareVectors(const std::vector<T> &a, const std::vector<T> &b,
   }
 }
 
-TEST(ConvolverTest, Identity) {
+TEST(TestConvolver, Identity) {
   std::vector<float> impulseResponse = {1.0f, 0.0f, 0.0f, 0.0f};
   std::vector<float> input = {0.5f,  -0.5f,  0.25f, -0.25f,
                               0.75f, -0.75f, 1.0f,  -1.0f};
@@ -72,7 +72,7 @@ TEST(ConvolverTest, Identity) {
   compareVectors(expectedOutput, output, 1e-6f);
 }
 
-TEST(ConvolverTest, Delay) {
+TEST(TestConvolver, Delay) {
   std::vector<float> impulseResponse = {0.0f, 0.0f, 1.0f};
   std::vector<float> input = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -81,7 +81,7 @@ TEST(ConvolverTest, Delay) {
   compareVectors(expectedOutput, output, 1e-6f);
 }
 
-TEST(ConvolverTest, LongerImpulse) {
+TEST(TestConvolver, LongerImpulse) {
   std::vector<float> impulseResponse = {0.2f, 0.4f, 0.6f, 0.8f, 1.0f,
                                         0.8f, 0.6f, 0.4f, 0.2f};
   std::vector<float> input = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -91,7 +91,7 @@ TEST(ConvolverTest, LongerImpulse) {
   compareVectors(expectedOutput, output, 1e-6f);
 }
 
-TEST(ConvolverTest, Random) {
+TEST(TestConvolver, Random) {
   std::mt19937 rng(42);
   std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
 

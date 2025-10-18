@@ -4,7 +4,7 @@
 
 #include "test_helper.hh"
 
-TEST(WaveShaperNodeTest, Offline) {
+TEST(TestWaveShaperNode, Offline) {
   auto context = TestHelper::createOfflineContext();
   auto node = web_audio::ConstantSourceNode::create(context);
   auto waveShaperNode = web_audio::WaveShaperNode::create(context);
@@ -29,7 +29,7 @@ TEST(WaveShaperNodeTest, Offline) {
   }
 }
 
-TEST(WaveShaperNodeTest, Offline_Interpolation) {
+TEST(TestWaveShaperNode, Offline_Interpolation) {
   auto context = TestHelper::createOfflineContext();
   auto node = web_audio::ConstantSourceNode::create(context);
   auto waveShaperNode = web_audio::WaveShaperNode::create(context);
@@ -54,7 +54,7 @@ TEST(WaveShaperNodeTest, Offline_Interpolation) {
   }
 }
 
-TEST(WaveShaperNodeTest, Offline_TwoPoints) {
+TEST(TestWaveShaperNode, Offline_TwoPoints) {
   auto context = TestHelper::createOfflineContext();
   auto node = web_audio::ConstantSourceNode::create(context);
   auto waveShaperNode = web_audio::WaveShaperNode::create(context);

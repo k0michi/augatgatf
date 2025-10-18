@@ -30,7 +30,7 @@ createAudioParam1(std::shared_ptr<web_audio::OfflineAudioContext> context) {
 }
 } // namespace
 
-TEST(AudioParamTest, Create) {
+TEST(TestAudioParam, Create) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   EXPECT_EQ(param->getValue(), 0.0f);
@@ -40,14 +40,14 @@ TEST(AudioParamTest, Create) {
   EXPECT_EQ(param->getAutomationRate(), web_audio::AutomationRate::eARate);
 }
 
-TEST(AudioParamTest, SetValue) {
+TEST(TestAudioParam, SetValue) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValue(1.0f);
   EXPECT_EQ(param->getValue(), 1.0f);
 }
 
-TEST(AudioParamTest, getEndValue) {
+TEST(TestAudioParam, getEndValue) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1);
@@ -55,7 +55,7 @@ TEST(AudioParamTest, getEndValue) {
   EXPECT_EQ(param->getEndValue(e), 1.0f);
 }
 
-TEST(AudioParamTest, getEndValue_LinearRamp) {
+TEST(TestAudioParam, getEndValue_LinearRamp) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1);
@@ -64,7 +64,7 @@ TEST(AudioParamTest, getEndValue_LinearRamp) {
   EXPECT_EQ(param->getEndValue(e), 2.0f);
 }
 
-TEST(AudioParamTest, getEndValue_ExponentialRamp) {
+TEST(TestAudioParam, getEndValue_ExponentialRamp) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1);
@@ -73,7 +73,7 @@ TEST(AudioParamTest, getEndValue_ExponentialRamp) {
   EXPECT_EQ(param->getEndValue(e), 2.0f);
 }
 
-TEST(AudioParamTest, getEndValue_SetTarget) {
+TEST(TestAudioParam, getEndValue_SetTarget) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setTargetAtTime(1.0f, 0, 1.0f);
@@ -82,7 +82,7 @@ TEST(AudioParamTest, getEndValue_SetTarget) {
   EXPECT_NEAR(param->getEndValue(e), 1 + (-1.0 / std::exp(1.0)), 0.01);
 }
 
-TEST(AudioParamTest, getEndValue_SetTarget_1) {
+TEST(TestAudioParam, getEndValue_SetTarget_1) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setTargetAtTime(1.0f, 0, 1.0f);
@@ -91,7 +91,7 @@ TEST(AudioParamTest, getEndValue_SetTarget_1) {
   EXPECT_NEAR(param->getEndValue(e), 1 + (-1.0 / std::exp(2.0)), 0.01);
 }
 
-TEST(AudioParamTest, getEndValue_SetValueCurve) {
+TEST(TestAudioParam, getEndValue_SetValueCurve) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0, 2);
@@ -99,7 +99,7 @@ TEST(AudioParamTest, getEndValue_SetValueCurve) {
   EXPECT_EQ(param->getEndValue(e), 2.0f);
 }
 
-TEST(AudioParamTest, EventInValueCurve) {
+TEST(TestAudioParam, EventInValueCurve) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 0, 2);
@@ -113,7 +113,7 @@ TEST(AudioParamTest, EventInValueCurve) {
                web_audio::DOMException);
 }
 
-TEST(AudioParamTest, EventOverlapValueCurve) {
+TEST(TestAudioParam, EventOverlapValueCurve) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 1.0);
@@ -123,7 +123,7 @@ TEST(AudioParamTest, EventOverlapValueCurve) {
   EXPECT_NO_THROW(param->setValueCurveAtTime({0.0f, 1.0f, 2.0f}, 1.0, 1.0));
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_SetValue) {
+TEST(TestAudioParam, ComputeIntrinsicValues_SetValue) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 0.0);
@@ -135,7 +135,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_SetValue) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_LinearRamp) {
+TEST(TestAudioParam, ComputeIntrinsicValues_LinearRamp) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 0.0);
@@ -150,7 +150,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_LinearRamp) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_ExponentialRamp) {
+TEST(TestAudioParam, ComputeIntrinsicValues_ExponentialRamp) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 0.0);
@@ -165,7 +165,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_ExponentialRamp) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_SetTarget) {
+TEST(TestAudioParam, ComputeIntrinsicValues_SetTarget) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setTargetAtTime(1.0f, 0.0, 0.5f);
@@ -179,7 +179,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_SetTarget) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_SetValueCurve) {
+TEST(TestAudioParam, ComputeIntrinsicValues_SetValueCurve) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueCurveAtTime({0.0f, 1.0f, 0.0f}, 0.0, 1.0);
@@ -193,7 +193,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_SetValueCurve) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_DuplicateEvents) {
+TEST(TestAudioParam, ComputeIntrinsicValues_DuplicateEvents) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueAtTime(1.0f, 0.0);
@@ -206,7 +206,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_DuplicateEvents) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_NoEvents) {
+TEST(TestAudioParam, ComputeIntrinsicValues_NoEvents) {
   auto context = createOfflineContext();
   auto param = createAudioParam1(context);
   std::vector<float> outputs(context->getSampleRate(), 0.0f);
@@ -217,7 +217,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_NoEvents) {
   }
 }
 
-TEST(AudioParamTest, ComputeIntrinsicValues_LinearAfterCurve) {
+TEST(TestAudioParam, ComputeIntrinsicValues_LinearAfterCurve) {
   auto context = createOfflineContext();
   auto param = createAudioParam(context);
   param->setValueCurveAtTime({0.0f, 1.0f, 0.0f}, 0.0, 1.0);
@@ -237,7 +237,7 @@ TEST(AudioParamTest, ComputeIntrinsicValues_LinearAfterCurve) {
   }
 }
 
-TEST(AudioParamTest, CurrentValue) {
+TEST(TestAudioParam, CurrentValue) {
   auto context = createOfflineContext();
   auto param = createAudioParam1(context);
   EXPECT_EQ(param->getValue(), 1.0f);

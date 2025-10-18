@@ -5,7 +5,7 @@
 
 #include <numbers>
 
-TEST(WaveProcessingTest, FourierTransformAndInverse) {
+TEST(TestWaveProcessing, FourierTransformAndInverse) {
   std::vector<std::complex<double>> input = {
       {1.0, 0.0}, {0.0, 1.0}, {-1.0, 0.0}, {0.0, -1.0}};
   std::vector<std::complex<double>> output;
@@ -22,7 +22,7 @@ TEST(WaveProcessingTest, FourierTransformAndInverse) {
   }
 }
 
-TEST(WaveProcessingTest, FourierTransformAndInverse_1) {
+TEST(TestWaveProcessing, FourierTransformAndInverse_1) {
   std::vector<std::complex<double>> input;
 
   for (int i = 0; i < 128; ++i) {
@@ -45,7 +45,7 @@ TEST(WaveProcessingTest, FourierTransformAndInverse_1) {
   }
 }
 
-TEST(WaveProcessingTest, Convolve) {
+TEST(TestWaveProcessing, Convolve) {
   std::vector<std::complex<double>> a = {{1.0, 0.0}, {2.0, 0.0}, {3.0, 0.0}};
   std::vector<std::complex<double>> b = {{0.0, 0.0}, {1.0, 0.0}, {0.5, 0.0}};
   std::vector<std::complex<double>> result;

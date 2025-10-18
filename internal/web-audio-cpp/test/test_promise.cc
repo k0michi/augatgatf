@@ -2,7 +2,7 @@
 
 #include "web_audio.hh"
 
-TEST(PromiseTest, Then) {
+TEST(TestPromise, Then) {
   web_audio::detail::EventQueue queue;
   web_audio::Promise<int> promise(queue);
   bool called = false;
@@ -17,7 +17,7 @@ TEST(PromiseTest, Then) {
   EXPECT_TRUE(called);
 }
 
-TEST(PromiseTest, Catch) {
+TEST(TestPromise, Catch) {
   web_audio::detail::EventQueue queue;
   web_audio::Promise<int> promise(queue);
   bool called = false;
@@ -39,7 +39,7 @@ TEST(PromiseTest, Catch) {
   EXPECT_TRUE(called);
 }
 
-TEST(PromiseTest, ThenAfterResolve) {
+TEST(TestPromise, ThenAfterResolve) {
   web_audio::detail::EventQueue queue;
   web_audio::Promise<int> promise(queue);
   bool called = false;
@@ -54,7 +54,7 @@ TEST(PromiseTest, ThenAfterResolve) {
   EXPECT_TRUE(called);
 }
 
-TEST(PromiseTest, CatchAfterReject) {
+TEST(TestPromise, CatchAfterReject) {
   web_audio::detail::EventQueue queue;
   web_audio::Promise<int> promise(queue);
   bool called = false;

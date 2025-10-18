@@ -4,7 +4,7 @@
 
 using namespace web_audio;
 
-TEST(OfflineAudioContextTest, Create) {
+TEST(TestOfflineAudioContext, Create) {
   OfflineAudioContextOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -17,7 +17,7 @@ TEST(OfflineAudioContextTest, Create) {
   EXPECT_EQ(context->getState(), AudioContextState::eSuspended);
 }
 
-TEST(OfflineAudioContextTest, StartRendering) {
+TEST(TestOfflineAudioContext, StartRendering) {
   OfflineAudioContextOptions options;
   options.numberOfChannels = 2;
   options.length = 128;
@@ -44,7 +44,7 @@ TEST(OfflineAudioContextTest, StartRendering) {
   }
 }
 
-TEST(OfflineAudioContextTest, StartRendering_NotDivisibleBy128) {
+TEST(TestOfflineAudioContext, StartRendering_NotDivisibleBy128) {
   OfflineAudioContextOptions options;
   options.numberOfChannels = 2;
   options.length = 128 + 5;

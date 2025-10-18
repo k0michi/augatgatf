@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-TEST(BiquadFilterNodeTest, Create) {
+TEST(TestBiquadFilterNode, Create) {
   auto context = web_audio::AudioContext::create();
   auto node = web_audio::BiquadFilterNode::create(context);
 
@@ -39,7 +39,7 @@ void testGetFrequencyResponse(const web_audio::BiquadFilterOptions &options,
   }
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Lowpass) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Lowpass) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -68,7 +68,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Lowpass) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Highpass) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Highpass) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -96,7 +96,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Highpass) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Bandpass) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Bandpass) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -125,7 +125,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Bandpass) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Lowshelf) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Lowshelf) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -153,7 +153,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Lowshelf) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Highshelf) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Highshelf) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -181,7 +181,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Highshelf) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Peaking) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Peaking) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -209,7 +209,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Peaking) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Notch) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Notch) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -238,7 +238,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Notch) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_Allpass) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_Allpass) {
   std::vector<float> frequencyHz = {
       1.000,    2.000,     3.000,     4.000,    5.000,    6.000,    7.000,
       8.000,    9.000,     10.000,    20.000,   30.000,   40.000,   50.000,
@@ -267,7 +267,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResponse_Allpass) {
                            expectedPhaseResponse);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResnpose_InvalidLength) {
+TEST(TestBiquadFilterNode, GetFrequencyResnpose_InvalidLength) {
   auto context = web_audio::AudioContext::create();
   auto node = web_audio::BiquadFilterNode::create(context);
   std::vector<float> frequencyHz = {100.0, 200.0, 300.0};
@@ -283,7 +283,7 @@ TEST(BiquadFilterNodeTest, GetFrequencyResnpose_InvalidLength) {
       web_audio::DOMException);
 }
 
-TEST(BiquadFilterNodeTest, GetFrequencyResponse_OverSampleRate) {
+TEST(TestBiquadFilterNode, GetFrequencyResponse_OverSampleRate) {
   auto context = web_audio::AudioContext::create({.sampleRate = 44100});
   auto node = web_audio::BiquadFilterNode::create(context);
   std::vector<float> frequencyHz = {100.0, 200.0, 300.0, 50000.0};

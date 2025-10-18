@@ -9,7 +9,7 @@ constexpr double kPi = std::numbers::pi;
 
 using namespace web_audio;
 
-// TEST(OscillatorNodeTest, OutputOffline) {
+// TEST(TestOscillatorNode, OutputOffline) {
 //   OfflineAudioContextOptions options;
 //   options.numberOfChannels = 2;
 //   options.length = 44100;

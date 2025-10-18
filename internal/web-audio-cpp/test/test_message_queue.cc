@@ -2,7 +2,7 @@
 
 #include "web_audio.hh"
 
-TEST(MessageQueueTest, PushPop) {
+TEST(TestMessageQueue, PushPop) {
   web_audio::detail::MessageQueue mq;
   web_audio::detail::MessageAudioScheduledSourceNodeStart msg1{0.0, 0.0, 1.0,
                                                                nullptr};

@@ -12,13 +12,13 @@ std::shared_ptr<OfflineAudioContext> createOfflineContext() {
 }
 } // namespace
 
-TEST(PeriodicWaveTest, DefaultConstructor) {
+TEST(TestPeriodicWave, DefaultConstructor) {
   auto ctx = createOfflineContext();
   auto wave = PeriodicWave::create(ctx);
   EXPECT_NE(wave, nullptr);
 }
 
-TEST(PeriodicWaveTest, RealImagConstructor) {
+TEST(TestPeriodicWave, RealImagConstructor) {
   auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 2, 3};
@@ -27,7 +27,7 @@ TEST(PeriodicWaveTest, RealImagConstructor) {
   EXPECT_NE(wave, nullptr);
 }
 
-TEST(PeriodicWaveTest, RealOnly) {
+TEST(TestPeriodicWave, RealOnly) {
   auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 2, 3};
@@ -35,7 +35,7 @@ TEST(PeriodicWaveTest, RealOnly) {
   EXPECT_NE(wave, nullptr);
 }
 
-TEST(PeriodicWaveTest, ImagOnly) {
+TEST(TestPeriodicWave, ImagOnly) {
   auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.imag = std::vector<float>{0, 4, 5};
@@ -43,7 +43,7 @@ TEST(PeriodicWaveTest, ImagOnly) {
   EXPECT_NE(wave, nullptr);
 }
 
-TEST(PeriodicWaveTest, InvalidLength) {
+TEST(TestPeriodicWave, InvalidLength) {
   auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0};
@@ -51,7 +51,7 @@ TEST(PeriodicWaveTest, InvalidLength) {
   EXPECT_THROW(PeriodicWave::create(ctx, opts), DOMException);
 }
 
-TEST(PeriodicWaveTest, InvalidLength2) {
+TEST(TestPeriodicWave, InvalidLength2) {
   auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 0};
@@ -59,7 +59,7 @@ TEST(PeriodicWaveTest, InvalidLength2) {
   EXPECT_THROW(PeriodicWave::create(ctx, opts), DOMException);
 }
 
-TEST(PeriodicWaveTest, InvalidLengthMismatch) {
+TEST(TestPeriodicWave, InvalidLengthMismatch) {
   auto ctx = createOfflineContext();
   PeriodicWaveOptions opts;
   opts.real = std::vector<float>{0, 2};

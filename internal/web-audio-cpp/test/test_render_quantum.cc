@@ -4,7 +4,7 @@
 
 using namespace web_audio;
 
-TEST(RenderQuantumTest, MixMonoToStereo) {
+TEST(TestRenderQuantum, MixMonoToStereo) {
   detail::RenderQuantum rq(1, 128);
   rq[0][0] = 1.0f;
   rq.mix(2, ChannelInterpretation::eSpeakers);
@@ -13,7 +13,7 @@ TEST(RenderQuantumTest, MixMonoToStereo) {
   EXPECT_EQ(rq[1][0], 1.0f);
 }
 
-TEST(RenderQuantumTest, MixMonoToQuad) {
+TEST(TestRenderQuantum, MixMonoToQuad) {
   detail::RenderQuantum rq(1, 128);
   rq[0][0] = 1.0f;
   rq.mix(4, ChannelInterpretation::eSpeakers);
@@ -24,7 +24,7 @@ TEST(RenderQuantumTest, MixMonoToQuad) {
   EXPECT_EQ(rq[3][0], 0.0f);
 }
 
-TEST(RenderQuantumTest, MixMonoTo5_1) {
+TEST(TestRenderQuantum, MixMonoTo5_1) {
   detail::RenderQuantum rq(1, 128);
   rq[0][0] = 1.0f;
   rq.mix(6, ChannelInterpretation::eSpeakers);
@@ -37,7 +37,7 @@ TEST(RenderQuantumTest, MixMonoTo5_1) {
   EXPECT_EQ(rq[5][0], 0.0f);
 }
 
-TEST(RenderQuantumTest, MixStereoToQuad) {
+TEST(TestRenderQuantum, MixStereoToQuad) {
   detail::RenderQuantum rq(2, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -49,7 +49,7 @@ TEST(RenderQuantumTest, MixStereoToQuad) {
   EXPECT_EQ(rq[3][0], 0.0f);
 }
 
-TEST(RenderQuantumTest, MixStereoTo5_1) {
+TEST(TestRenderQuantum, MixStereoTo5_1) {
   detail::RenderQuantum rq(2, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -63,7 +63,7 @@ TEST(RenderQuantumTest, MixStereoTo5_1) {
   EXPECT_EQ(rq[5][0], 0.0f);
 }
 
-TEST(RenderQuantumTest, MixQuadTo5_1) {
+TEST(TestRenderQuantum, MixQuadTo5_1) {
   detail::RenderQuantum rq(4, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -79,7 +79,7 @@ TEST(RenderQuantumTest, MixQuadTo5_1) {
   EXPECT_EQ(rq[5][0], 0.125f);
 }
 
-TEST(RenderQuantumTest, MixStereoToMono) {
+TEST(TestRenderQuantum, MixStereoToMono) {
   detail::RenderQuantum rq(2, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -88,7 +88,7 @@ TEST(RenderQuantumTest, MixStereoToMono) {
   EXPECT_NEAR(rq[0][0], 0.5f * (1.0f + 0.5f), 0.01f);
 }
 
-TEST(RenderQuantumTest, MixQuadToMono) {
+TEST(TestRenderQuantum, MixQuadToMono) {
   detail::RenderQuantum rq(4, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -99,7 +99,7 @@ TEST(RenderQuantumTest, MixQuadToMono) {
   EXPECT_NEAR(rq[0][0], 0.25f * (1.0f + 0.5f + 0.25f + 0.125f), 0.01f);
 }
 
-TEST(RenderQuantumTest, Mix5_1ToMono) {
+TEST(TestRenderQuantum, Mix5_1ToMono) {
   detail::RenderQuantum rq(6, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -115,7 +115,7 @@ TEST(RenderQuantumTest, Mix5_1ToMono) {
               0.01f);
 }
 
-TEST(RenderQuantumTest, MixQuadToStereo) {
+TEST(TestRenderQuantum, MixQuadToStereo) {
   detail::RenderQuantum rq(4, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -127,7 +127,7 @@ TEST(RenderQuantumTest, MixQuadToStereo) {
   EXPECT_NEAR(rq[1][0], 0.5f * (0.5f + 0.125f), 0.01f);
 }
 
-TEST(RenderQuantumTest, Mix5_1ToStereo) {
+TEST(TestRenderQuantum, Mix5_1ToStereo) {
   detail::RenderQuantum rq(6, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;
@@ -141,7 +141,7 @@ TEST(RenderQuantumTest, Mix5_1ToStereo) {
   EXPECT_NEAR(rq[1][0], 0.5f + std::sqrt(0.5f) * (0.25f + 0.03125f), 0.01f);
 }
 
-TEST(RenderQuantumTest, Mix5_1ToQuad) {
+TEST(TestRenderQuantum, Mix5_1ToQuad) {
   detail::RenderQuantum rq(6, 128);
   rq[0][0] = 1.0f;
   rq[1][0] = 0.5f;

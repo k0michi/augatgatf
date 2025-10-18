@@ -4,7 +4,7 @@
 
 #include "test_helper.hh"
 
-TEST(ConstantSourceNodeTest, Create) {
+TEST(TestConstantSourceNode, Create) {
   auto context = TestHelper::createOfflineContext();
   auto node = web_audio::ConstantSourceNode::create(context);
   ASSERT_NE(node, nullptr);
@@ -17,7 +17,7 @@ TEST(ConstantSourceNodeTest, Create) {
             web_audio::ChannelInterpretation::eSpeakers);
 }
 
-TEST(ConstantSourceNodeTest, Offline) {
+TEST(TestConstantSourceNode, Offline) {
   auto context = TestHelper::createOfflineContext();
   auto node = web_audio::ConstantSourceNode::create(context);
   node->getOffset()->setValue(0.5f);
