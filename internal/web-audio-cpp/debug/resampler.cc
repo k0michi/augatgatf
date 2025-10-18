@@ -1,7 +1,9 @@
 #include <cmath>
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <vector>
+
 #include <web_audio/detail/downsampler.hh>
 #include <web_audio/detail/upsampler.hh>
 
