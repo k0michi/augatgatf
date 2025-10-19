@@ -16,5 +16,15 @@ public:
 
     return power;
   }
+
+  template <typename T> static T normalizeDegrees(T degrees) {
+    auto result = std::fmod(degrees, static_cast<T>(360));
+
+    if (result < 0) {
+      result += static_cast<T>(360);
+    }
+
+    return result;
+  }
 };
 } // namespace web_audio::detail

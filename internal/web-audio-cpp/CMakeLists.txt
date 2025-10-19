@@ -112,6 +112,7 @@ set(WEB_AUDIO_TEST_SRC
   test/test_convolver.cc
   test/test_convolver_node.cc
   test/test_delay_node.cc
+  test/test_math_helper.cc
   test/test_message_queue.cc
   test/test_offline_audio_context.cc
   test/test_oscillator_node.cc
