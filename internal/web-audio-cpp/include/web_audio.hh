@@ -2,6 +2,7 @@
 #include "web_audio/analyzer_options.hh"
 #include "web_audio/audio_buffer.hh"
 #include "web_audio/audio_buffer_options.hh"
+#include "web_audio/audio_buffer_source_node.hh"
 #include "web_audio/audio_buffer_source_options.hh"
 #include "web_audio/audio_context.hh"
 #include "web_audio/audio_context_latency_category.hh"
