@@ -52,7 +52,7 @@ TEST(AudioBufferSourceNodeTest, LoopAttributes) {
   EXPECT_DOUBLE_EQ(node->getLoopEnd(), 1.5);
 }
 
-TEST(AudioBufferSourceNodeTest, StartAndProcess) {
+TEST(AudioBufferSourceNodeTest, Start) {
   auto context = TestHelper::createOfflineContext();
   AudioBufferOptions bufferOptions;
   bufferOptions.numberOfChannels = 1;
@@ -73,6 +73,59 @@ TEST(AudioBufferSourceNodeTest, StartAndProcess) {
 
   for (std::uint32_t i = 0; i < rendered->getLength(); ++i) {
     float expected = static_cast<float>(i) / buffer->getLength();
+    EXPECT_NEAR(rendered->getChannelData(0)[i], expected, 0.01f);
+  }
+}
+
+TEST(AudioBufferSourceNodeTest, LoopPlayback) {
+  auto context = TestHelper::createOfflineContext();
+  AudioBufferOptions bufferOptions;
+  bufferOptions.numberOfChannels = 1;
+  bufferOptions.length = 16;
+  bufferOptions.sampleRate = 44100.0f;
+  auto buffer = AudioBuffer::create(bufferOptions);
+  for (std::uint32_t i = 0; i < buffer->getLength(); ++i) {
+    buffer->getChannelData(0)[i] = static_cast<float>(i);
+  }
+  auto node = AudioBufferSourceNode::create(context);
+  node->setBuffer(buffer);
+  node->setLoop(true);
+  node->setLoopStart(4.0 / 44100.0f);
+  node->setLoopEnd(12.0 / 44100.0f);
+  node->connect(context->getDestination());
+  node->start();
+
+  auto rendered = TestHelper::renderOffline(context);
+  for (std::uint32_t i = 0; i < rendered->getLength(); ++i) {
+    float expected = 0.0f;
+    if (i < 4) {
+      expected = static_cast<float>(i);
+    } else {
+      expected = static_cast<float>(((i - 4) % 8) + 4);
+    }
+    EXPECT_NEAR(rendered->getChannelData(0)[i], expected, 0.01f);
+  }
+}
+
+TEST(AudioBufferSourceNodeTest, StartWithOffset) {
+  auto context = TestHelper::createOfflineContext();
+  AudioBufferOptions bufferOptions;
+  bufferOptions.numberOfChannels = 1;
+  bufferOptions.length = 16;
+  bufferOptions.sampleRate = 44100.0f;
+  auto buffer = AudioBuffer::create(bufferOptions);
+  for (std::uint32_t i = 0; i < buffer->getLength(); ++i) {
+    buffer->getChannelData(0)[i] = static_cast<float>(i);
+  }
+  auto node = AudioBufferSourceNode::create(context);
+  node->setBuffer(buffer);
+  node->connect(context->getDestination());
+  node->start(0.0, 5.0 / 44100.0f);
+
+  auto rendered = TestHelper::renderOffline(context);
+  for (std::uint32_t i = 0; i < rendered->getLength(); ++i) {
+    float expected =
+        (i + 5 < buffer->getLength()) ? static_cast<float>(i + 5) : 0.0f;
     EXPECT_NEAR(rendered->getChannelData(0)[i], expected, 0.01f);
   }
 }
