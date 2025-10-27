@@ -98,6 +98,26 @@ void AudioBufferSourceNode::start(double when, double offset) {
 }
 
 void AudioBufferSourceNode::start(double when, double offset, double duration) {
+  // SPEC: A RangeError exception MUST be thrown if when is negative.
+  if (when < 0) {
+    throw DOMException(
+        "AudioBufferSourceNode: playbackRate must be a positive value",
+        "RangeError");
+  }
+
+  // SPEC: A RangeError exception MUST be thrown if offset is negative.
+  if (offset < 0) {
+    throw DOMException("AudioBufferSourceNode: offset must be a positive value",
+                       "RangeError");
+  }
+
+  // SPEC: A RangeError exception MUST be thrown if duration is negative.
+  if (duration < 0) {
+    throw DOMException(
+        "AudioBufferSourceNode: duration must be a positive value",
+        "RangeError");
+  }
+
   // TODO: Dispatch to rendering thread
   start_ = when;
   offset_ = offset;
