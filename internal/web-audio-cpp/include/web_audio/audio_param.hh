@@ -23,6 +23,7 @@ class BiquadFilterNode;
 class GainNode;
 class ConstantSourceNode;
 class StereoPannerNode;
+class AudioBufferSourceNode;
 
 namespace detail {
 class AudioGraph;
@@ -154,5 +155,6 @@ public:
   friend class GainNode;
   friend class ConstantSourceNode;
   friend class StereoPannerNode;
+  friend class AudioBufferSourceNode;
 };
 } // namespace web_audio

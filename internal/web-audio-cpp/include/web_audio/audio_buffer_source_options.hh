@@ -2,10 +2,12 @@
 
 #include <memory>
 
+#include "audio_node_options.hh"
+
 namespace web_audio {
 class AudioBuffer;
 
-struct AudioBufferSourceOptions {
+struct AudioBufferSourceOptions : public AudioNodeOptions {
   std::shared_ptr<AudioBuffer> buffer = nullptr;
   float detune = 0;
   bool loop = false;

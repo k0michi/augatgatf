@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(web-audio-cpp STATIC
 # include src/**/*.cc
   src/web_audio/audio_buffer.cc
+  src/web_audio/audio_buffer_source_node.cc
   src/web_audio/audio_context.cc
   src/web_audio/audio_destination_node.cc
   src/web_audio/audio_listener.cc
@@ -72,6 +73,7 @@ enable_testing()
 set(WEB_AUDIO_TEST_SRC
 # include src/**/*.cc
   src/web_audio/audio_buffer.cc
+  src/web_audio/audio_buffer_source_node.cc
   src/web_audio/audio_context.cc
   src/web_audio/audio_destination_node.cc
   src/web_audio/audio_listener.cc
@@ -104,6 +106,7 @@ set(WEB_AUDIO_TEST_SRC
 # end
 # include test/**/*.cc
   test/test_audio_buffer.cc
+  test/test_audio_buffer_source_node.cc
   test/test_audio_graph.cc
   test/test_audio_node.cc
   test/test_audio_param.cc
