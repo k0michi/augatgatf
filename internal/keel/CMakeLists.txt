@@ -87,6 +87,7 @@ add_library(keel STATIC
   src/kl/graphics/texture.cc
   src/kl/graphics/vertex_input_state.cc
   src/kl/io/file_system.cc
+  src/kl/io/loop.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/keyboard_state.cc
@@ -121,6 +122,7 @@ enable_testing()
 
 add_executable(test_keel
 # include test/**/*.cc
+  test/test_loop.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
   test/test_task.cc
