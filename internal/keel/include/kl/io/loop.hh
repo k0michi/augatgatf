@@ -18,6 +18,11 @@ public:
   uv_loop_t *getUVLoop() noexcept { return loop_; }
   const uv_loop_t *getUVLoop() const noexcept { return loop_; }
 
+  void run();
+  void poll();
+  void wait();
+  void stop();
+
   static std::shared_ptr<Loop> getDefault();
 
 private:

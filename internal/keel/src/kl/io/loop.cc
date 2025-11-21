@@ -8,11 +8,17 @@ std::shared_ptr<Loop> Loop::create() {
   return ptr;
 }
 
+void Loop::run() { uv_run(loop_, UV_RUN_DEFAULT); }
+
+void Loop::poll() { uv_run(loop_, UV_RUN_NOWAIT); }
+
+void Loop::wait() { uv_run(loop_, UV_RUN_ONCE); }
+
+void Loop::stop() { uv_stop(loop_); }
+
 Loop::~Loop() noexcept {
-  if (loop_) {
-    uv_loop_close(loop_);
-    delete loop_;
-  }
+  uv_loop_close(loop_);
+  delete loop_;
 }
 
 std::shared_ptr<Loop> Loop::getDefault() {
