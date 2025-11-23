@@ -88,6 +88,7 @@ add_library(keel STATIC
   src/kl/io/file.cc
   src/kl/io/file_system.cc
   src/kl/io/loop.cc
+  src/kl/io/stdout.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
   src/kl/platform/keyboard_state.cc
@@ -126,6 +127,7 @@ add_executable(test_keel
   test/test_loop.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
+  test/test_stdout.cc
   test/test_task.cc
   test/test_vector2.cc
 # end
