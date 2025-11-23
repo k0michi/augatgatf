@@ -1,4 +1,5 @@
 #include "kl/io/stdout.hh"
+#include <cstring>
 #include <gtest/gtest.h>
 #include <span>
 #include <vector>
