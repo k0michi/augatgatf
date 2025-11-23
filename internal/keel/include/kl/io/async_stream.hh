@@ -9,17 +9,10 @@
 #include <string>
 
 #include "kl/concurrent/task.hh"
+#include "kl/io/io_exception.hh"
 #include "kl/io/loop.hh"
 
 namespace kl::io {
-class IOException : public std::runtime_error {
-public:
-  explicit IOException(const std::string &message)
-      : std::runtime_error(message) {}
-};
-
-template <typename T> using Expected = std::expected<T, IOException>;
-
 template <typename T>
 concept AsyncReadable = requires(T &stream, std::shared_ptr<kl::io::Loop> loop,
                                  std::span<std::byte> buffer) {
