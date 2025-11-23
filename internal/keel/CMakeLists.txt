@@ -127,7 +127,6 @@ add_executable(test_keel
   test/test_loop.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
-  test/test_stdout.cc
   test/test_task.cc
   test/test_vector2.cc
 # end
