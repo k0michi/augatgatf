@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 project(keel LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 17)
@@ -47,6 +47,29 @@ if(NOT EMSCRIPTEN)
   )
   FetchContent_MakeAvailable(libuv)
 endif()
+
+# zlib
+
+set(ZLIB_BUILD_SHARED ON CACHE BOOL "Build zlib as static library" FORCE)
+set(ZLIB_BUILD_STATIC ON CACHE BOOL "Build zlib as static library" FORCE)
+
+FetchContent_Declare(
+  zlib
+  GIT_REPOSITORY https://github.com/madler/zlib.git
+  GIT_TAG 5a82f71ed1dfc0bec044d9702463dbdf84ea3b71
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(zlib)
+
+# libpng
+
+FetchContent_Declare(
+  libpng
+  GIT_REPOSITORY https://github.com/pnggroup/libpng.git
+  GIT_TAG v1.6.51
+  OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(libpng)
 
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 add_library(coverage_config INTERFACE)
@@ -101,6 +124,7 @@ target_link_libraries(keel PUBLIC web-audio-cpp)
 target_link_libraries(keel PUBLIC SDL3::SDL3)
 target_link_libraries(keel PUBLIC glad)
 target_link_libraries(keel PUBLIC spirv-cross-core spirv-cross-glsl)
+target_link_libraries(keel PUBLIC png_static)
 target_link_libraries(keel PUBLIC coverage_config)
 
 if(EMSCRIPTEN)
