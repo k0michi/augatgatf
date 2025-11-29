@@ -61,6 +61,7 @@ FetchContent_MakeAvailable(zlib)
 # libpng
 
 set(AWK "OFF")
+set(PNG_TESTS "OFF")
 FetchContent_Declare(
   libpng
   GIT_REPOSITORY https://github.com/pnggroup/libpng.git
