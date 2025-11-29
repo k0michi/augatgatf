@@ -50,9 +50,6 @@ endif()
 
 # zlib
 
-set(ZLIB_BUILD_SHARED ON CACHE BOOL "Build zlib as static library" FORCE)
-set(ZLIB_BUILD_STATIC ON CACHE BOOL "Build zlib as static library" FORCE)
-
 FetchContent_Declare(
   zlib
   GIT_REPOSITORY https://github.com/madler/zlib.git
@@ -63,6 +60,7 @@ FetchContent_MakeAvailable(zlib)
 
 # libpng
 
+set(AWK "OFF")
 FetchContent_Declare(
   libpng
   GIT_REPOSITORY https://github.com/pnggroup/libpng.git
@@ -70,6 +68,7 @@ FetchContent_Declare(
   OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(libpng)
+unset(AWK)
 
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 add_library(coverage_config INTERFACE)
