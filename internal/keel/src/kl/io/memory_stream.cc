@@ -1,5 +1,8 @@
 #include "kl/io/memory_stream.hh"
 
+#include <algorithm>
+#include <cstring>
+
 namespace kl::io {
 MemoryStream::MemoryStream() = default;
 
