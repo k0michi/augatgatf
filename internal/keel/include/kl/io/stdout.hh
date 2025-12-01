@@ -10,7 +10,6 @@
 #include "kl/concurrent/task.hh"
 #include "kl/io/async_stream.hh"
 #include "kl/io/loop.hh"
-#include "kl/io/open_flag.hh"
 
 namespace kl::io {
 class Stdout {
