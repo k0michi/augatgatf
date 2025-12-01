@@ -89,6 +89,8 @@ add_library(keel STATIC
   src/kl/io/file_system.cc
   src/kl/io/loop.cc
   src/kl/io/memory_stream.cc
+  src/kl/io/stderr.cc
+  src/kl/io/stdin.cc
   src/kl/io/stdout.cc
   src/kl/platform/frame_awaiter.cc
   src/kl/platform/instance.cc
