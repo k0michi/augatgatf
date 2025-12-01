@@ -48,6 +48,19 @@ if(NOT EMSCRIPTEN)
   FetchContent_MakeAvailable(libuv)
 endif()
 
+# stb
+
+FetchContent_Declare(
+    stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG        f1c79c02822848a9bed4315b12c8c8f3761e1296
+)
+
+FetchContent_MakeAvailable(stb)
+
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}")
+
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 add_library(coverage_config INTERFACE)
 
@@ -104,6 +117,7 @@ target_link_libraries(keel PUBLIC web-audio-cpp)
 target_link_libraries(keel PUBLIC SDL3::SDL3)
 target_link_libraries(keel PUBLIC glad)
 target_link_libraries(keel PUBLIC spirv-cross-core spirv-cross-glsl)
+target_link_libraries(keel PUBLIC stb)
 target_link_libraries(keel PUBLIC coverage_config)
 
 if(EMSCRIPTEN)
