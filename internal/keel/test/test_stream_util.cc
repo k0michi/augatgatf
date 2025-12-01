@@ -23,6 +23,7 @@ TEST_F(StreamUtilTest, ReadExactSuccess) {
     auto result =
         co_await readExact(loop, stream, std::span<std::byte>(buffer));
     EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(*result, buffer.size());
     EXPECT_EQ(buffer, data);
   };
   task();

@@ -6,7 +6,7 @@
 
 namespace kl::io {
 template <kl::io::AsyncReadable T>
-kl::concurrent::Task<Expected<void>>
+kl::concurrent::Task<Expected<std::size_t>>
 readExact(std::shared_ptr<Loop> loop, T &stream, std::span<std::byte> buffer) {
   std::size_t totalRead = 0;
 
@@ -24,7 +24,7 @@ readExact(std::shared_ptr<Loop> loop, T &stream, std::span<std::byte> buffer) {
     totalRead += *nread;
   }
 
-  co_return {};
+  co_return totalRead;
 }
 } // namespace kl::io
 
