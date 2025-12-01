@@ -27,6 +27,12 @@ add_executable(hello
 target_link_libraries(hello PRIVATE keel)
 set_property(TARGET hello PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
+add_executable(echo
+  src/echo.cc
+)
+target_link_libraries(echo PRIVATE keel)
+set_property(TARGET echo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
 endif()
