@@ -12,7 +12,7 @@ kl::concurrent::Task<Expected<std::size_t>>
 MemoryStream::read(std::shared_ptr<Loop> loop, std::span<std::byte> buffer) {
   std::size_t nread = 0;
   std::size_t available = buffer_.size() - offset_;
-  nread = std::min(buffer.size(), available);
+  nread = std::min<std::size_t>(buffer.size(), available);
   std::memcpy(buffer.data(), buffer_.data() + offset_, nread);
   offset_ += nread;
   co_return nread;
