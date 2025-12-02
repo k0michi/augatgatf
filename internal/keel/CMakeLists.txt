@@ -58,6 +58,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(stb)
 
+# fmt
+
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt
+  GIT_TAG        12.1.0
+)
+
+FetchContent_MakeAvailable(fmt)
+
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}")
 
@@ -118,6 +128,7 @@ target_link_libraries(keel PUBLIC SDL3::SDL3)
 target_link_libraries(keel PUBLIC glad)
 target_link_libraries(keel PUBLIC spirv-cross-core spirv-cross-glsl)
 target_link_libraries(keel PUBLIC stb)
+target_link_libraries(keel PUBLIC fmt)
 target_link_libraries(keel PUBLIC coverage_config)
 
 if(EMSCRIPTEN)
