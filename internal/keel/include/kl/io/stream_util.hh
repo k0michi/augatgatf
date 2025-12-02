@@ -35,6 +35,29 @@ readExact(std::shared_ptr<Loop> loop, T &stream, std::span<std::byte> buffer) {
 }
 
 template <kl::io::AsyncReadable T>
+kl::concurrent::Task<Expected<std::vector<std::byte>>>
+readAll(std::shared_ptr<Loop> loop, T &stream) {
+  std::vector<std::byte> result;
+  std::array<std::byte, 4096> buffer;
+
+  while (true) {
+    auto nread = co_await stream.read(loop, std::span{buffer});
+
+    if (!nread) {
+      co_return std::unexpected(nread.error());
+    }
+
+    if (*nread == 0) {
+      break;
+    }
+
+    result.insert(result.end(), buffer.data(), buffer.data() + *nread);
+  }
+
+  co_return result;
+}
+
+template <kl::io::AsyncReadable T>
 kl::concurrent::Task<Expected<void>>
 writeExact(std::shared_ptr<Loop> loop, T &stream,
            std::span<const std::byte> buffer) {

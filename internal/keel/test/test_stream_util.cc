@@ -64,6 +64,22 @@ TEST_F(StreamUtilTest, ReadExactUnexpectedEnd) {
   loop->run();
 }
 
+TEST_F(StreamUtilTest, ReadAll) {
+  MemoryStream stream;
+  std::vector<std::byte> data;
+  for (std::size_t i = 0; i < 10000; ++i) {
+    data.push_back(static_cast<std::byte>(i % 256));
+  }
+  [&]() -> kl::concurrent::Task<void> {
+    co_await writeExact(loop, stream, std::span<const std::byte>(data));
+    co_await stream.seek(loop, 0, SeekDirection::eBegin);
+    auto result = co_await readAll(loop, stream);
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(*result, data);
+  }();
+  loop->run();
+}
+
 TEST_F(StreamUtilTest, Uint8) {
   MemoryStream stream;
   auto task = [&]() -> kl::concurrent::Task<void> {
