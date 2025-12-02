@@ -301,7 +301,7 @@ kl::concurrent::Task<Expected<void>> writeUint8(std::shared_ptr<Loop> loop,
                                                 T &stream, std::uint8_t value) {
   std::array<std::byte, 1> buffer;
   buffer[0] = static_cast<std::byte>(value);
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 
@@ -319,7 +319,7 @@ kl::concurrent::Task<Expected<void>> writeUint16(std::shared_ptr<Loop> loop,
     buffer[1] = static_cast<std::byte>(value & 0xFF);
   }
 
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 
@@ -341,7 +341,7 @@ kl::concurrent::Task<Expected<void>> writeUint32(std::shared_ptr<Loop> loop,
     buffer[3] = static_cast<std::byte>(value & 0xFF);
   }
 
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 
@@ -371,7 +371,7 @@ kl::concurrent::Task<Expected<void>> writeUint64(std::shared_ptr<Loop> loop,
     buffer[7] = static_cast<std::byte>(value & 0xFF);
   }
 
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 
@@ -395,7 +395,7 @@ kl::concurrent::Task<Expected<void>> writeFloat32(std::shared_ptr<Loop> loop,
     buffer[3] = static_cast<std::byte>(intValue & 0xFF);
   }
 
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 
@@ -427,7 +427,7 @@ kl::concurrent::Task<Expected<void>> writeFloat64(std::shared_ptr<Loop> loop,
     buffer[7] = static_cast<std::byte>(intValue & 0xFF);
   }
 
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 
@@ -452,7 +452,7 @@ kl::concurrent::Task<Expected<void>>
 writeString(std::shared_ptr<Loop> loop, T &stream, std::u8string_view str) {
   std::vector<std::byte> buffer(str.size());
   std::memcpy(buffer.data(), str.data(), str.size());
-  co_await stream.write(loop, std::span{buffer});
+  co_await writeExact(loop, stream, std::span{buffer});
   co_return {};
 }
 } // namespace kl::io
