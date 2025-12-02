@@ -3,6 +3,7 @@
 
 #include <array>
 #include <bit>
+#include <cstring>
 #include <span>
 #include <string>
 #include <string_view>
