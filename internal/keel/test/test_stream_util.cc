@@ -3,6 +3,7 @@
 #include "kl/io/stream_util.hh"
 #include <gtest/gtest.h>
 #include <span>
+#include <string>
 #include <vector>
 
 using namespace kl::io;
@@ -210,6 +211,51 @@ TEST_F(StreamUtilTest, Float64LE_BE) {
     EXPECT_TRUE(result2.has_value());
     EXPECT_DOUBLE_EQ(*result1, 1.23456789012345);
     EXPECT_DOUBLE_EQ(*result2, -9.87654321098765);
+  };
+  task();
+  loop->run();
+}
+
+TEST_F(StreamUtilTest, WriteReadString) {
+  MemoryStream stream;
+  std::u8string testStr = u8"あいうabcXYZ012!@#";
+  auto task = [&]() -> kl::concurrent::Task<void> {
+    co_await kl::io::writeString(loop, stream, testStr);
+    co_await stream.seek(loop, 0, SeekDirection::eBegin);
+    auto result = co_await kl::io::readString(loop, stream, testStr.size());
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(*result, testStr);
+    co_return;
+  };
+  task();
+  loop->run();
+}
+
+TEST_F(StreamUtilTest, WriteReadString_Empty) {
+  MemoryStream stream;
+  std::u8string testStr = u8"";
+  auto task = [&]() -> kl::concurrent::Task<void> {
+    co_await kl::io::writeString(loop, stream, testStr);
+    co_await stream.seek(loop, 0, SeekDirection::eBegin);
+    auto result = co_await kl::io::readString(loop, stream, testStr.size());
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(*result, testStr);
+    co_return;
+  };
+  task();
+  loop->run();
+}
+
+TEST_F(StreamUtilTest, ReadString_Partial) {
+  MemoryStream stream;
+  std::u8string testStr = u8"abcdefg";
+  auto task = [&]() -> kl::concurrent::Task<void> {
+    co_await kl::io::writeString(loop, stream, testStr);
+    co_await stream.seek(loop, 0, SeekDirection::eBegin);
+    auto result = co_await kl::io::readString(loop, stream, 3);
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(*result, u8"abc");
+    co_return;
   };
   task();
   loop->run();

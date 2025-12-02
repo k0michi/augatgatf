@@ -3,6 +3,9 @@
 
 #include <array>
 #include <bit>
+#include <span>
+#include <string>
+#include <string_view>
 
 #include "kl/concurrent/task.hh"
 #include "kl/io/async_stream.hh"
@@ -404,6 +407,31 @@ kl::concurrent::Task<Expected<void>> writeFloat64(std::shared_ptr<Loop> loop,
     buffer[7] = static_cast<std::byte>(intValue & 0xFF);
   }
 
+  co_await stream.write(loop, std::span{buffer});
+  co_return {};
+}
+
+template <kl::io::AsyncReadable T>
+kl::concurrent::Task<Expected<std::u8string>>
+readString(std::shared_ptr<Loop> loop, T &stream, std::size_t length) {
+  std::vector<std::byte> buffer(length);
+  auto result = co_await readExact(loop, stream, std::span{buffer});
+
+  if (!result) {
+    co_return std::unexpected(result.error());
+  }
+
+  std::u8string str;
+  str.resize(length);
+  std::memcpy(str.data(), buffer.data(), length);
+  co_return str;
+}
+
+template <kl::io::AsyncWritable T>
+kl::concurrent::Task<Expected<void>>
+writeString(std::shared_ptr<Loop> loop, T &stream, std::u8string_view str) {
+  std::vector<std::byte> buffer(str.size());
+  std::memcpy(buffer.data(), str.data(), str.size());
   co_await stream.write(loop, std::span{buffer});
   co_return {};
 }
