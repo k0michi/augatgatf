@@ -145,6 +145,7 @@ add_executable(test_keel
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
   test/test_memory_stream.cc
+  test/test_png.cc
   test/test_stream_util.cc
   test/test_task.cc
   test/test_vector2.cc
@@ -154,3 +155,5 @@ add_executable(test_keel
 add_test(NAME test_keel COMMAND test_keel)
 target_link_libraries(test_keel PRIVATE coverage_config gtest_main keel)
 set_property(TARGET test_keel PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/test/test_data" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
