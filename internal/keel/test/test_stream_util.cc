@@ -31,6 +31,24 @@ TEST_F(StreamUtilTest, ReadExactSuccess) {
   loop->run();
 }
 
+TEST_F(StreamUtilTest, WriteExactSuccess) {
+  MemoryStream stream;
+  std::array<std::byte, 4> src = {std::byte{0x11}, std::byte{0x22},
+                                  std::byte{0x33}, std::byte{0x44}};
+  auto task = [&]() -> kl::concurrent::Task<void> {
+    auto result = co_await kl::io::writeExact(loop, stream, std::span{src});
+    EXPECT_TRUE(result.has_value());
+    co_await stream.seek(loop, 0, SeekDirection::eBegin);
+    std::array<std::byte, 4> dst;
+    auto readResult = co_await kl::io::readExact(loop, stream, std::span{dst});
+    EXPECT_TRUE(readResult.has_value());
+    EXPECT_EQ(dst, src);
+    co_return;
+  };
+  task();
+  loop->run();
+}
+
 TEST_F(StreamUtilTest, ReadExactUnexpectedEnd) {
   MemoryStream stream;
   std::vector<std::byte> data = {std::byte{0x10}, std::byte{0x20}};
