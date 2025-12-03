@@ -10,6 +10,44 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 include(FetchContent)
 
+find_package(Git)
+
+function(get_version)
+if(GIT_FOUND)
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_DESCRIBE_OUT
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+    )
+  endif()
+
+  if("${GIT_DESCRIBE_OUT}" STREQUAL "")
+    set(GIT_DESCRIBE_OUT "v0.0.0-unknown")
+  endif()
+
+  if(GIT_DESCRIBE_OUT MATCHES "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)")
+    set(ver_major ${CMAKE_MATCH_1})
+    set(ver_minor ${CMAKE_MATCH_2})
+    set(ver_patch ${CMAKE_MATCH_3})
+  else()
+    set(ver_major 0)
+    set(ver_minor 0)
+    set(ver_patch 0)
+  endif()
+
+  set(PROJECT_VERSION_MAJOR ${ver_major} PARENT_SCOPE)
+  set(PROJECT_VERSION_MINOR ${ver_minor} PARENT_SCOPE)
+  set(PROJECT_VERSION_PATCH ${ver_patch} PARENT_SCOPE)
+  set(KL_REVISION ${GIT_DESCRIBE_OUT} PARENT_SCOPE)
+endfunction()
+
+get_version()
+
+message(STATUS "Keel version: ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+message(STATUS "Keel revision: ${KL_REVISION}")
+
 # SDL3
 
 FetchContent_Declare(
@@ -89,6 +127,8 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
+# keel
+
 add_library(keel STATIC
 # include src/kl/**/*.cc
   src/kl/graphics/buffer.cc
@@ -119,10 +159,17 @@ add_library(keel STATIC
   src/kl/platform/instance.cc
   src/kl/platform/keyboard_state.cc
   src/kl/platform/window.cc
+  src/kl/version.cc
 # end
 )
 
-target_include_directories(keel PUBLIC include)
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/kl/version.hh.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/kl/version.hh"
+  @ONLY
+)
+
+target_include_directories(keel PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include")
 target_link_libraries(keel PUBLIC web-audio-cpp)
 target_link_libraries(keel PUBLIC SDL3::SDL3)
 target_link_libraries(keel PUBLIC glad)

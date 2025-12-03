@@ -1,0 +1,32 @@
+#ifndef KL_VERSION_HH
+#define KL_VERSION_HH
+
+#include <compare>
+#include <cstdint>
+#include <string_view>
+
+namespace kl {
+#define KL_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define KL_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define KL_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+struct Version {
+  std::uint32_t major;
+  std::uint32_t minor;
+  std::uint32_t patch;
+
+  constexpr auto operator<=>(const Version &) const = default;
+};
+
+inline constexpr Version kHeaderVersion{
+    KL_VERSION_MAJOR,
+    KL_VERSION_MINOR,
+    KL_VERSION_PATCH,
+};
+
+inline constexpr std::string_view kRevision = "@KL_REVISION@";
+
+Version getVersion() noexcept;
+std::string_view getRevision() noexcept;
+} // namespace kl
+#endif
