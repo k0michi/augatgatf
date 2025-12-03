@@ -71,23 +71,21 @@ FetchContent_MakeAvailable(fmt)
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}")
 
-# https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 add_library(coverage_config INTERFACE)
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
-if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  # Add required flags (GCC & LLVM/Clang)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options(coverage_config INTERFACE
-    -O0        # no optimization
-    -g         # generate debug info
-    --coverage # sets all required flags
+    -O0
+    -g
+    -fprofile-instr-generate
+    -fcoverage-mapping
   )
-  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-    target_link_options(coverage_config INTERFACE --coverage)
-  else()
-    target_link_libraries(coverage_config INTERFACE --coverage)
-  endif()
-endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_link_options(coverage_config INTERFACE
+    -fprofile-instr-generate
+    -fcoverage-mapping
+  )
+endif()
 
 add_library(keel STATIC
 # include src/kl/**/*.cc

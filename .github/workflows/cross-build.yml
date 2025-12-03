@@ -34,6 +34,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install glslangValidator (macOS)
         if: matrix.os == 'macos-latest'
         run: brew install glslang
@@ -100,17 +105,19 @@ jobs:
       - name: Run Tests (ctest)
         run: |
           cd build/internal/keel
-          ctest -C Debug -V --timeout 60
+          LLVM_PROFILE_FILE="coverage-%p-%m.profraw" ctest -C Debug -V --timeout 60
 
-      - name: Generate coverage report (Ubuntu)
-        if: matrix.id == 'ubuntu-x86_64-gcc'
+      - name: Generate coverage report (Ubuntu / Clang)
+        if: matrix.id == 'ubuntu-x86_64-clang'
         run: |
           cd build
-          gcovr -r .. --xml -o coverage.xml
+          llvm-profdata merge -sparse coverage-*.profraw -o coverage.profdata
+          TEST_BINS=$(ctest --show-only=json-v1 | node -e 'const p=require("path");let s="";process.stdin.on("data",c=>s+=c).on("end",()=>{const j=JSON.parse(s);const bins=new Set;for(const t of j.tests||[]){const cmd=t.command||[];if(!cmd.length)continue;let exe=cmd[0];if(!exe.startsWith("/")&&!/^[A-Za-z]:[\\/]/.test(exe))exe=p.resolve(exe);bins.add(exe);}console.log([...bins].join("\n"));});'
+          llvm-cov export -instr-profile=coverage.profdata -format=lcov $TEST_BINS > coverage.lcov
 
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.id == 'ubuntu-x86_64-clang'
         uses: codecov/codecov-action@v4
         with:
-          files: build/coverage.xml
+          files: build/coverage.lcov
           disable_search: true
