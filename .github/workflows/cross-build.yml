@@ -119,5 +119,5 @@ jobs:
         if: matrix.id == 'ubuntu-x86_64-clang'
         uses: codecov/codecov-action@v4
         with:
-          files: build/coverage.lcov
+          files: build/internal/keel/coverage.lcov
           disable_search: true
