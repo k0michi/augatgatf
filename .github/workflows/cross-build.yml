@@ -17,7 +17,6 @@ jobs:
             id: ubuntu-x86_64-gcc
             cc: gcc
             cxx: g++
-            cxx_flags: -stdlib=libstdc++
           - os: ubuntu-latest
             id: ubuntu-x86_64-clang
             cc: clang
@@ -67,6 +66,12 @@ jobs:
           libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev \
           gcovr
+    
+      - name: Install clang (Ubuntu)
+        if: matrix.id == 'ubuntu-x86_64-clang'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libc++-dev libc++abi-dev lld
 
       - name: Configure CMake (Ninja)
         if: matrix.os != 'windows-latest'
