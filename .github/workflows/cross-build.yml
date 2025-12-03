@@ -17,10 +17,12 @@ jobs:
             id: ubuntu-x86_64-gcc
             cc: gcc
             cxx: g++
+            cxx_flags: -stdlib=libstdc++
           - os: ubuntu-latest
             id: ubuntu-x86_64-clang
             cc: clang
             cxx: clang++
+            cxx_flags: -stdlib=libc++
           - os: macos-latest
             id: macos-x86_64-appleclang
             cc: clang
@@ -73,7 +75,8 @@ jobs:
           cd build
           cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON \
             -DCMAKE_C_COMPILER=${{ matrix.cc }} \
-            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
+            -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
           
       - name: Configure CMake (Visual Studio)
         if: matrix.os == 'windows-latest'
