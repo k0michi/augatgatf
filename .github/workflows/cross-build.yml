@@ -23,9 +23,10 @@ jobs:
             cxx: clang++
             cxx_flags: -stdlib=libc++
           - os: macos-latest
-            id: macos-x86_64-appleclang
+            id: macos-arm64-appleclang
             cc: clang
             cxx: clang++
+            osx_arch: arm64
           - os: windows-latest
             id: windows-x86_64-msvc
             compiler: msvc
@@ -81,7 +82,8 @@ jobs:
           cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON \
             -DCMAKE_C_COMPILER=${{ matrix.cc }} \
             -DCMAKE_CXX_COMPILER=${{ matrix.cxx }} \
-            -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+            -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}" \
+            ${{ matrix.os == 'macos-latest' && format('-DCMAKE_OSX_ARCHITECTURES={}', matrix.osx_arch) || '' }}
           
       - name: Configure CMake (Visual Studio)
         if: matrix.os == 'windows-latest'
