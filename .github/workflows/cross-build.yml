@@ -77,7 +77,7 @@ jobs:
         if: matrix.id == 'ubuntu-x86_64-clang'
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang libc++-dev libc++abi-dev lld
+          sudo apt-get install -y clang libc++-dev libc++abi-dev lld llvm
 
       - name: Configure CMake (Ninja)
         if: matrix.os != 'windows-latest'
