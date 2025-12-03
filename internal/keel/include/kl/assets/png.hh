@@ -1,5 +1,5 @@
-#ifndef KL_ASSETS_PNGREADER_HH
-#define KL_ASSETS_PNGREADER_HH
+#ifndef streaKL_ASSETS_PNG_HH
+#define streaKL_ASSETS_PNG_HH
 
 #include <expected>
 #include <memory>
