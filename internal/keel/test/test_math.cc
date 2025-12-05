@@ -75,3 +75,20 @@ TEST(MathTest, MixBool) {
   EXPECT_EQ(Math::mix(true, false, true), false);
   EXPECT_EQ(Math::mix(true, false, false), true);
 }
+
+TEST(MathTest, Step) {
+  EXPECT_FLOAT_EQ(Math::step(0.5f, 0.4f), 0.0f);
+  EXPECT_FLOAT_EQ(Math::step(0.5f, 0.5f), 1.0f);
+  EXPECT_FLOAT_EQ(Math::step(0.5f, 0.6f), 1.0f);
+  EXPECT_FLOAT_EQ(Math::step(-1.0f, -2.0f), 0.0f);
+  EXPECT_FLOAT_EQ(Math::step(-1.0f, 0.0f), 1.0f);
+}
+
+TEST(MathTest, Smoothstep) {
+  EXPECT_FLOAT_EQ(Math::smoothstep(0.0f, 1.0f, -1.0f), 0.0f);
+  EXPECT_NEAR(Math::smoothstep(0.0f, 1.0f, 0.0f), 0.0f, kEps);
+  EXPECT_NEAR(Math::smoothstep(0.0f, 1.0f, 1.0f), 1.0f, kEps);
+  EXPECT_FLOAT_EQ(Math::smoothstep(0.0f, 1.0f, 2.0f), 1.0f);
+  EXPECT_NEAR(Math::smoothstep(0.0f, 1.0f, 0.5f), 0.5f, kEps);
+  EXPECT_NEAR(Math::smoothstep(-1.0f, 1.0f, 0.0f), 0.5f, kEps);
+}

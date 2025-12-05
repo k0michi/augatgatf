@@ -73,5 +73,16 @@ public:
   }
 
   static bool mix(bool x, bool y, bool a) { return a ? y : x; }
+
+  template <std::floating_point T> static T step(T edge, T x) {
+    return x < edge ? static_cast<T>(0) : static_cast<T>(1);
+  }
+
+  template <std::floating_point T> static T smoothstep(T edge0, T edge1, T x) {
+    T t = clamp((x - edge0) / (edge1 - edge0), static_cast<T>(0),
+                static_cast<T>(1));
+
+    return t * t * (static_cast<T>(3) - static_cast<T>(2) * t);
+  }
 };
 #endif
