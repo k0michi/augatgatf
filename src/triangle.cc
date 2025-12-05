@@ -149,10 +149,6 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
                       .value()},
   });
 
-  auto buffer = device->createBuffer({
-      .size = 1024,
-  });
-
   auto vertexInputState = device->createVertexInputState({
       .bindings = {{
           .binding = 0,
@@ -168,7 +164,7 @@ kl::concurrent::Task<void> pseudoMain(int argc, char **argv) {
   });
 
   std::array<float, 9> vertexData = {
-      -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+      -0.6f, -0.4f, 0.0f, 0.6f, -0.4f, 0.0f, 0.0f, 0.6f, 0.0f,
   };
 
   auto vertexBuffer = device->createBuffer({
