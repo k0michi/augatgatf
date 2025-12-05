@@ -305,6 +305,52 @@ struct Colors {
 
   static constexpr kl::math::Vector4 kTransparent = {0.0f, 0.0f, 0.0f, 0.0f};
 };
+
+// REF: https://www.w3.org/TR/css-color-4/#rgb-to-hsl
+constexpr kl::math::Vector4 rgbToHSL(const kl::math::Vector4 &rgb) {
+  float red = rgb.x;
+  float green = rgb.y;
+  float blue = rgb.z;
+
+  auto max = std::max({red, green, blue});
+  auto min = std::min({red, green, blue});
+  auto hue = std::numeric_limits<float>::quiet_NaN();
+  float sat = 0.0f;
+  float light = (max + min) / 2.0f;
+  auto d = max - min;
+  auto epsilon = 1.0f / 100000;
+
+  if (d != 0) {
+    sat = (light == 0 || light == 1)
+              ? 0
+              : (max - light) / std::min(light, 1 - light);
+
+    if (max == red) {
+      hue = (green - blue) / d + (green < blue ? 6.0f : 0.0f);
+    } else if (max == green) {
+      hue = (blue - red) / d + 2.0f;
+    } else if (max == blue) {
+      hue = (red - green) / d + 4.0f;
+    }
+
+    hue = hue * 60.0f;
+  }
+
+  if (sat < epsilon) {
+    hue += 180;
+    sat = std::abs(sat);
+  }
+
+  if (hue >= 360.0f) {
+    hue -= 360.0f;
+  }
+
+  if (sat < epsilon) {
+    sat = std::numeric_limits<float>::quiet_NaN();
+  }
+
+  return {hue, sat, light, rgb.w};
+}
 } // namespace kl::common
 
 #endif
