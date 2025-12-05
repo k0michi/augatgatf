@@ -235,6 +235,10 @@ void Context::writeBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
       GL_ARRAY_BUFFER, static_cast<GLintptr>(offset),
       static_cast<GLsizeiptr>(data.size_bytes()), data.data());
   glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, 0);
+  // TODO: Proper synchronization
+  // Operations performed on the default context may not be executed without
+  // flush. This phenomenon is observed especially on macOS.
+  glContext->gladGLContext()->Flush();
 }
 
 void Context::readBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
@@ -258,6 +262,7 @@ void Context::readBuffer(std::shared_ptr<Buffer> buffer, std::uint32_t offset,
       GL_ARRAY_BUFFER, static_cast<GLintptr>(offset),
       static_cast<GLsizeiptr>(data.size_bytes()), data.data());
   glContext->gladGLContext()->BindBuffer(GL_ARRAY_BUFFER, 0);
+  glContext->gladGLContext()->Flush();
 }
 
 void Context::writeTexture(std::shared_ptr<Texture> dstTexture,
@@ -311,6 +316,7 @@ void Context::writeTexture(std::shared_ptr<Texture> dstTexture,
 
   glContext->gladGLContext()->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glContext->gladGLContext()->PixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0);
+  glContext->gladGLContext()->Flush();
 }
 
 void Context::generateMipmaps(std::shared_ptr<Texture> texture) noexcept {
@@ -548,6 +554,8 @@ void Context::applyState() noexcept {
 
     if (descriptor.depthBiasEnable) {
       glContext->gladGLContext()->Enable(GL_POLYGON_OFFSET_FILL);
+    } else {
+      glContext->gladGLContext()->Disable(GL_POLYGON_OFFSET_FILL);
     }
 
     glContext->gladGLContext()->PolygonOffset(
@@ -647,6 +655,11 @@ void Context::applyState() noexcept {
           }
 
           auto attrib = *attribOpt;
+
+          if (attribute.binding >= mState.vertexBufferBindings.size()) {
+            // TODO: Report error
+            continue;
+          }
 
           auto &&binding = mState.vertexBufferBindings[attribute.binding];
 
