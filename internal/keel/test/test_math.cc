@@ -4,6 +4,8 @@
 
 constexpr float kEps = 1e-4f;
 
+using kl::math::Math;
+
 TEST(MathTest, ToRadians) {
   EXPECT_NEAR(Math::toRadians(0.0f), 0.0f, kEps);
   EXPECT_NEAR(Math::toRadians(180.0f), static_cast<float>(std::numbers::pi),

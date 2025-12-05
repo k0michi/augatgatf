@@ -8,6 +8,7 @@
 #include <numbers>
 #include <stdexcept>
 
+namespace kl::math {
 class Math {
 public:
   template <std::floating_point T> static T toRadians(T degrees) {
@@ -85,4 +86,5 @@ public:
     return t * t * (static_cast<T>(3) - static_cast<T>(2) * t);
   }
 };
+} // namespace kl::math
 #endif
