@@ -1,6 +1,10 @@
 #ifndef KL_COMMON_COLORS_HH
 #define KL_COMMON_COLORS_HH
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
 #include "kl/math/vector4.hh"
 
 namespace kl::common {
