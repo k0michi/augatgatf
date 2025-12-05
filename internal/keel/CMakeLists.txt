@@ -201,6 +201,7 @@ add_executable(test_keel
   test/test_colors.cc
   test/test_file.cc
   test/test_loop.cc
+  test/test_math.cc
   test/test_matrix2x2.cc
   test/test_matrix4x4.cc
   test/test_memory_stream.cc
