@@ -68,7 +68,18 @@ Shader::create(std::shared_ptr<Device> device,
 #else
                                false
 #endif
-  });
+                           ,
+                           .enable_420pack_extension = false});
+
+  for (auto &resource : glsl.get_shader_resources().uniform_buffers) {
+    auto loc = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    shader->mUniformBindings[resource.name] = loc;
+  }
+
+  for (auto &resource : glsl.get_shader_resources().sampled_images) {
+    auto loc = glsl.get_decoration(resource.id, spv::DecorationBinding);
+    shader->mSamplerBindings[resource.name] = loc;
+  }
 
   if (descriptor.stage == ShaderStage::eVertex) {
     for (auto &resource : glsl.get_shader_resources().stage_outputs) {
@@ -118,7 +129,7 @@ Shader::create(std::shared_ptr<Device> device,
   try {
     source = glsl.compile();
   } catch (const std::exception &e) {
-    return std::unexpected(std::runtime_error("Failed to compile shader: " +
+    return std::unexpected(std::runtime_error("Failed to translate shader: " +
                                               std::string(e.what())));
   }
 

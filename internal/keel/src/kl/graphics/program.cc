@@ -63,6 +63,32 @@ Program::create(std::shared_ptr<Device> device,
         std::runtime_error("Failed to link program: " + log));
   }
 
+  (*context)->gladGLContext()->UseProgram(program->mProgram);
+
+  for (auto &shader : descriptor.shaders) {
+    auto uniformBindings = shader->uniformBindings();
+
+    for (const auto &[name, binding] : uniformBindings) {
+      auto index = (*context)->gladGLContext()->GetUniformBlockIndex(
+          program->mProgram, name.c_str());
+
+      if (index != GL_INVALID_INDEX) {
+        (*context)->gladGLContext()->UniformBlockBinding(program->mProgram,
+                                                         index, binding);
+      }
+    }
+
+    for (const auto &[name, binding] : shader->samplerBindings()) {
+      auto location = (*context)->gladGLContext()->GetUniformLocation(
+          program->mProgram, name.c_str());
+
+      if (location != -1) {
+        (*context)->gladGLContext()->Uniform1i(location, binding);
+      }
+    }
+  }
+
+  (*context)->gladGLContext()->UseProgram(0);
   return program;
 }
 
