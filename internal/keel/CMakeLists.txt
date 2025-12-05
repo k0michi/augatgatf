@@ -198,6 +198,7 @@ enable_testing()
 
 add_executable(test_keel
 # include test/**/*.cc
+  test/test_colors.cc
   test/test_file.cc
   test/test_loop.cc
   test/test_matrix2x2.cc
