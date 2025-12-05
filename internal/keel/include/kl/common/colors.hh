@@ -351,6 +351,23 @@ constexpr kl::math::Vector4 rgbToHSL(const kl::math::Vector4 &rgb) {
 
   return {hue, sat, light, rgb.w};
 }
-} // namespace kl::common
 
+// REF: https://www.w3.org/TR/css-color-4/#hsl-to-rgb
+constexpr kl::math::Vector4 hslToRGB(const kl::math::Vector4 &hsl) {
+  auto hue = hsl.x;
+  auto sat = hsl.y;
+  auto light = hsl.z;
+
+  sat /= 100;
+  light /= 100;
+
+  auto f = [&](float n) {
+    auto k = std::fmod(n + hue / 30.0f, 12.0f);
+    auto a = sat * std::min(light, 1 - light);
+    return light - a * std::max<float>(-1, std::min<float>({k - 3, 9 - k, 1}));
+  };
+
+  return {f(0.f), f(8.f), f(4.f), hsl.w};
+}
+} // namespace kl::common
 #endif

@@ -55,3 +55,59 @@ TEST(RGBToHSLTest, Gray) {
   EXPECT_TRUE(std::isnan(hsl.y));
   EXPECT_NEAR(hsl.z, 0.5f, kEps);
 }
+
+using kl::common::hslToRGB;
+
+TEST(HSLToRGBTest, Red) {
+  Vector4 hsl{0.0f, 100.0f, 50.0f, 1.0f};
+  auto rgb = hslToRGB(hsl);
+  EXPECT_NEAR(rgb.x, 1.0f, kEps);
+  EXPECT_NEAR(rgb.y, 0.0f, kEps);
+  EXPECT_NEAR(rgb.z, 0.0f, kEps);
+  EXPECT_NEAR(rgb.w, 1.0f, kEps);
+}
+
+TEST(HSLToRGBTest, Green) {
+  Vector4 hsl{120.0f, 100.0f, 50.0f, 1.0f};
+  auto rgb = hslToRGB(hsl);
+  EXPECT_NEAR(rgb.x, 0.0f, kEps);
+  EXPECT_NEAR(rgb.y, 1.0f, kEps);
+  EXPECT_NEAR(rgb.z, 0.0f, kEps);
+  EXPECT_NEAR(rgb.w, 1.0f, kEps);
+}
+
+TEST(HSLToRGBTest, Blue) {
+  Vector4 hsl{240.0f, 100.0f, 50.0f, 1.0f};
+  auto rgb = hslToRGB(hsl);
+  EXPECT_NEAR(rgb.x, 0.0f, kEps);
+  EXPECT_NEAR(rgb.y, 0.0f, kEps);
+  EXPECT_NEAR(rgb.z, 1.0f, kEps);
+  EXPECT_NEAR(rgb.w, 1.0f, kEps);
+}
+
+TEST(HSLToRGBTest, White) {
+  Vector4 hsl{0.0f, 0.0f, 100.0f, 1.0f};
+  auto rgb = hslToRGB(hsl);
+  EXPECT_NEAR(rgb.x, 1.0f, kEps);
+  EXPECT_NEAR(rgb.y, 1.0f, kEps);
+  EXPECT_NEAR(rgb.z, 1.0f, kEps);
+  EXPECT_NEAR(rgb.w, 1.0f, kEps);
+}
+
+TEST(HSLToRGBTest, Black) {
+  Vector4 hsl{0.0f, 0.0f, 0.0f, 1.0f};
+  auto rgb = hslToRGB(hsl);
+  EXPECT_NEAR(rgb.x, 0.0f, kEps);
+  EXPECT_NEAR(rgb.y, 0.0f, kEps);
+  EXPECT_NEAR(rgb.z, 0.0f, kEps);
+  EXPECT_NEAR(rgb.w, 1.0f, kEps);
+}
+
+TEST(HSLToRGBTest, Gray) {
+  Vector4 hsl{0.0f, 0.0f, 50.0f, 1.0f};
+  auto rgb = hslToRGB(hsl);
+  EXPECT_NEAR(rgb.x, 0.5f, kEps);
+  EXPECT_NEAR(rgb.y, 0.5f, kEps);
+  EXPECT_NEAR(rgb.z, 0.5f, kEps);
+  EXPECT_NEAR(rgb.w, 1.0f, kEps);
+}
