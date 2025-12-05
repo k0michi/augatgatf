@@ -21,6 +21,12 @@ add_executable(main
 target_link_libraries(main PRIVATE keel)
 set_property(TARGET main PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
+add_executable(triangle
+  src/triangle.cc
+)
+target_link_libraries(triangle PRIVATE keel)
+set_property(TARGET triangle PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 add_executable(hello
   src/hello.cc
 )
