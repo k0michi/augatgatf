@@ -66,7 +66,7 @@ foreach(GLSL_FILE ${GLSL_FILES})
   add_custom_command(
     OUTPUT ${SPIRV_OUT}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${GLSL_DIR}
-    COMMAND ${GLSLANG_VALIDATOR} -V ${GLSL_ABS} -o ${SPIRV_OUT}
+    COMMAND ${GLSLANG_VALIDATOR} -V ${GLSL_ABS} -o ${SPIRV_OUT} --target-env opengl
     DEPENDS ${GLSL_ABS}
     COMMENT "Compiling GLSL to SPIR-V: ${GLSL_FILE}"
   )
