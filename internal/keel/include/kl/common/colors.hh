@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 
 #include "kl/math/vector4.hh"
