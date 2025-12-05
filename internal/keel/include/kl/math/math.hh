@@ -59,5 +59,19 @@ public:
 
     return value;
   }
+
+  template <std::floating_point T> static T mix(T x, T y, T a) {
+    return x * (static_cast<T>(1) - a) + y * a;
+  }
+
+  template <std::floating_point T> static T mix(T x, T y, bool a) {
+    return a ? y : x;
+  }
+
+  template <std::integral T> static T mix(T x, T y, bool a) {
+    return a ? y : x;
+  }
+
+  static bool mix(bool x, bool y, bool a) { return a ? y : x; }
 };
 #endif

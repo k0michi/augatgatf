@@ -48,3 +48,30 @@ TEST(MathTest, ClampFloatingPointInvalidArgs) {
   EXPECT_THROW(Math::clamp(0.0f, 1.0f, std::nanf("")), std::invalid_argument);
   EXPECT_THROW(Math::clamp(0.0f, 0.0f, -0.0f), std::invalid_argument);
 }
+
+TEST(MathTest, MixFloat) {
+  EXPECT_FLOAT_EQ(Math::mix(0.0f, 1.0f, 0.0f), 0.0f);
+  EXPECT_FLOAT_EQ(Math::mix(0.0f, 1.0f, 1.0f), 1.0f);
+  EXPECT_FLOAT_EQ(Math::mix(0.0f, 1.0f, 0.5f), 0.5f);
+  EXPECT_FLOAT_EQ(Math::mix(-1.0f, 1.0f, 0.25f), -0.5f);
+  EXPECT_FLOAT_EQ(Math::mix(0.0f, 1.0f, 2.0f), 2.0f);
+}
+
+TEST(MathTest, MixFloatBool) {
+  EXPECT_FLOAT_EQ(Math::mix(1.0f, 2.0f, true), 2.0f);
+  EXPECT_FLOAT_EQ(Math::mix(1.0f, 2.0f, false), 1.0f);
+}
+
+TEST(MathTest, MixIntBool) {
+  EXPECT_EQ(Math::mix(10, 20, true), 20);
+  EXPECT_EQ(Math::mix(10, 20, false), 10);
+  EXPECT_EQ(Math::mix(-5, 5, true), 5);
+  EXPECT_EQ(Math::mix(-5, 5, false), -5);
+}
+
+TEST(MathTest, MixBool) {
+  EXPECT_EQ(Math::mix(false, true, true), true);
+  EXPECT_EQ(Math::mix(false, true, false), false);
+  EXPECT_EQ(Math::mix(true, false, true), false);
+  EXPECT_EQ(Math::mix(true, false, false), true);
+}
