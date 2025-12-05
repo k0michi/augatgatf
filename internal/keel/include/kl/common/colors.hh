@@ -369,5 +369,72 @@ constexpr kl::math::Vector4 hslToRGB(const kl::math::Vector4 &hsl) {
 
   return {f(0.f), f(8.f), f(4.f), hsl.w};
 }
+
+// REF: https://www.w3.org/TR/css-color-4/#hwb-to-rgb
+constexpr kl::math::Vector4 hwbToRGB(const kl::math::Vector4 &hwb) {
+  auto hue = hwb.x;
+  auto white = hwb.y;
+  auto black = hwb.z;
+
+  white /= 100;
+  black /= 100;
+
+  if (white + black >= 1) {
+    auto gray = white / (white + black);
+    return {gray, gray, gray, hwb.w};
+  }
+
+  auto rgb = hslToRGB({hue, 100.0f, 50.0f, hwb.w});
+
+  for (std::uint32_t i = 0; i < 3; ++i) {
+    rgb[i] *= (1 - white - black);
+    rgb[i] += white;
+  }
+
+  return rgb;
+}
+
+// REF: https://www.w3.org/TR/css-color-4/#rgb-to-hwb
+constexpr kl::math::Vector4 rgbToHWB(const kl::math::Vector4 &rgb) {
+  float red = rgb.x;
+  float green = rgb.y;
+  float blue = rgb.z;
+
+  auto rgbToHue = [](float red, float green, float blue) {
+    auto max = std::max({red, green, blue});
+    auto min = std::min({red, green, blue});
+    auto hue = std::numeric_limits<float>::quiet_NaN();
+    auto d = max - min;
+
+    if (d != 0) {
+      if (max == red) {
+        hue = (green - blue) / d + (green < blue ? 6.0f : 0.0f);
+      } else if (max == green) {
+        hue = (blue - red) / d + 2.0f;
+      } else if (max == blue) {
+        hue = (red - green) / d + 4.0f;
+      }
+
+      hue = hue * 60.0f;
+    }
+
+    if (hue >= 360.0f) {
+      hue -= 360.0f;
+    }
+
+    return hue;
+  };
+
+  auto epsilon = 1.0f / 100000;
+  auto hue = rgbToHue(red, green, blue);
+  auto white = std::min({red, green, blue});
+  auto black = 1.0f - std::max({red, green, blue});
+
+  if (white + black >= 1 - epsilon) {
+    hue = std::numeric_limits<float>::quiet_NaN();
+  }
+
+  return {hue, white * 100.0f, black * 100.0f, rgb.w};
+}
 } // namespace kl::common
 #endif
