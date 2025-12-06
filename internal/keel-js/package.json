@@ -1,0 +1,21 @@
+{
+  "name": "keel",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "cmake-js compile",
+    "run": "node index.js"
+  },
+  "author": "Komichi <k0michi@koyomi.co> (https://koyomiji.com/)",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cmake-js": "^7.4.0",
+    "node-addon-api": "^8.5.0"
+  },
+  "binary": {
+    "napi_versions": [
+      7
+    ]
+  }
+}
