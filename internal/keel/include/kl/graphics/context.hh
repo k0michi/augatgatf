@@ -14,7 +14,7 @@
 #include "depth_stencil_state.hh"
 #include "device_child.hh"
 #include "framebuffer.hh"
-#include "kl/common/rectangle2.hh"
+#include "kl/common/rect.hh"
 #include "opengl/gl_context.hh"
 #include "primitive_topology.hh"
 #include "program.hh"

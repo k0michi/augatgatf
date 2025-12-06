@@ -1,5 +1,5 @@
-#ifndef KL_COMMON_RECTANGLE2_HH
-#define KL_COMMON_RECTANGLE2_HH
+#ifndef KL_COMMON_RECT_HH
+#define KL_COMMON_RECT_HH
 
 #include <type_traits>
 
@@ -7,10 +7,9 @@
 #include "kl/common/offset2.hh"
 
 namespace kl::common {
-template <typename T, typename U = std::make_unsigned_t<T>>
-struct Rectangle2 final {
+template <typename T, typename U = std::make_unsigned_t<T>> struct Rect final {
   Offset2<T> offset;
   Extent2<U> extent;
 };
 } // namespace kl::common
-#endif // KL_COMMON_RECTANGLE2_HH
+#endif // KL_COMMON_RECT_HH
