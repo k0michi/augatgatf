@@ -248,6 +248,8 @@ std::ostream &operator<<(std::ostream &os, const Matrix<T, 3, 3> &mat) {
 }
 
 using Matrix3x3 = Matrix<float, 3, 3>;
+using Matrix3 = Matrix<float, 3, 3>;
 using DMatrix3x3 = Matrix<double, 3, 3>;
+using DMatrix3 = Matrix<double, 3, 3>;
 } // namespace kl::math
 #endif // KL_MATH_MATRIX3X3_HH

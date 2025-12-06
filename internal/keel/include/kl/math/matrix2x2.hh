@@ -215,5 +215,7 @@ std::ostream &operator<<(std::ostream &os, const Matrix<T, 2, 2> &mat) {
 
 using Matrix2x2 = Matrix<float, 2, 2>;
 using Matrix2 = Matrix<float, 2, 2>;
+using DMatrix2x2 = Matrix<double, 2, 2>;
+using DMatrix2 = Matrix<double, 2, 2>;
 } // namespace kl::math
 #endif // KL_MATH_MATRIX2X2_HH
