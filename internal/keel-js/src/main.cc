@@ -1,23 +1,28 @@
 #include <napi.h>
 
-Napi::Number Add(const Napi::CallbackInfo &info) {
+#include <kl/version.hh>
+
+Napi::Object getVersion(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
+  Napi::Object versionObj = Napi::Object::New(env);
+  auto version = kl::getVersion();
+  versionObj.Set("major", Napi::Number::New(env, version.major));
+  versionObj.Set("minor", Napi::Number::New(env, version.minor));
+  versionObj.Set("patch", Napi::Number::New(env, version.patch));
+  return versionObj;
+}
 
-  if (info.Length() < 2 || !info[0].IsNumber() || !info[1].IsNumber()) {
-    Napi::TypeError::New(env, "Two numbers expected")
-        .ThrowAsJavaScriptException();
-    return Napi::Number::New(env, 0);
-  }
-
-  double arg0 = info[0].As<Napi::Number>().DoubleValue();
-  double arg1 = info[1].As<Napi::Number>().DoubleValue();
-  Napi::Number sum = Napi::Number::New(env, arg0 + arg1);
-
-  return sum;
+Napi::String getRevision(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  auto revision = kl::getRevision();
+  return Napi::String::New(env, revision.data(), revision.size());
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(Napi::String::New(env, "add"), Napi::Function::New(env, Add));
+  exports.Set(Napi::String::New(env, "getVersion"),
+              Napi::Function::New(env, getVersion));
+  exports.Set(Napi::String::New(env, "getRevision"),
+              Napi::Function::New(env, getRevision));
   return exports;
 }
 
