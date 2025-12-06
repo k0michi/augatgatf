@@ -206,6 +206,7 @@ add_executable(test_keel
   test/test_matrix4x4.cc
   test/test_memory_stream.cc
   test/test_png.cc
+  test/test_sphere.cc
   test/test_stream_util.cc
   test/test_task.cc
   test/test_vector2.cc
