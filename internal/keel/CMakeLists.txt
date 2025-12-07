@@ -106,6 +106,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(fmt)
 
+# icu
+
+FetchContent_Declare(
+  icu-portable
+  GIT_REPOSITORY https://github.com/k0michi/icu-portable
+  GIT_TAG        4695e0c00e16b036595e4e800e32c4b802786dac
+)
+
+FetchContent_MakeAvailable(icu-portable)
+
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}")
 
@@ -148,6 +158,7 @@ add_library(keel STATIC
   src/kl/graphics/swapchain.cc
   src/kl/graphics/texture.cc
   src/kl/graphics/vertex_input_state.cc
+  src/kl/graphicsx/sprite_batcher.cc
   src/kl/io/file.cc
   src/kl/io/file_system.cc
   src/kl/io/loop.cc
@@ -176,6 +187,7 @@ target_link_libraries(keel PUBLIC glad)
 target_link_libraries(keel PUBLIC spirv-cross-core spirv-cross-glsl)
 target_link_libraries(keel PUBLIC stb)
 target_link_libraries(keel PUBLIC fmt)
+target_link_libraries(keel PUBLIC ICU::data ICU::i18n ICU::io ICU::uc)
 target_link_libraries(keel PUBLIC coverage_config)
 
 if(EMSCRIPTEN)
