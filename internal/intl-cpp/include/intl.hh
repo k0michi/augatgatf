@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <expected>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
