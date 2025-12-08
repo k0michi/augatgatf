@@ -46,3 +46,22 @@ TEST(IntlString, ToLowerCase) {
   expected = u8"íñtérnâtiônålîzâtîön";
   EXPECT_EQ(toLowerCase(input), expected);
 }
+
+TEST(IntlString, Normalize) {
+  std::u8string input = u8"Café";
+  auto result = normalize(input, NormalizationForm::eNFC);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"Café";
+  EXPECT_EQ(result.value(), expected);
+
+  input = u8"Cafe\u0301"; // 'e' + combining acute accent
+  result = normalize(input, NormalizationForm::eNFC);
+  ASSERT_TRUE(result.has_value());
+  expected = u8"Café";
+  EXPECT_EQ(result.value(), expected);
+
+  result = normalize(input, NormalizationForm::eNFD);
+  ASSERT_TRUE(result.has_value());
+  expected = u8"Cafe\u0301";
+  EXPECT_EQ(result.value(), expected);
+}

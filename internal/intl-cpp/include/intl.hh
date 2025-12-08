@@ -17,6 +17,10 @@ std::u8string toLowerCase(std::u8string_view str);
 
 std::expected<std::u8string, std::runtime_error>
 toLocaleLowerCase(std::u8string_view str, std::u8string_view locale);
-} // namespace intl_cpp
 
+enum class NormalizationForm { eNFC, eNFD, eNFKC, eNFKD };
+
+std::expected<std::u8string, std::runtime_error>
+normalize(std::u8string_view str, NormalizationForm form);
+} // namespace intl_cpp
 #endif
