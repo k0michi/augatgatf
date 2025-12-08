@@ -188,4 +188,43 @@ bool isNormalized(std::u8string_view str, NormalizationForm form) {
 
   return result != 0;
 }
+
+std::expected<std::u8string, std::runtime_error>
+toWellFormed(std::u8string_view str) {
+  UErrorCode status = U_ZERO_ERROR;
+  int32_t destCapacity = 0;
+  u_strFromUTF8WithSub(
+      nullptr, 0, &destCapacity, reinterpret_cast<const char *>(str.data()),
+      static_cast<int32_t>(str.size()), 0xFFFD, nullptr, &status);
+
+  if (status != U_BUFFER_OVERFLOW_ERROR && U_FAILURE(status)) {
+    return std::unexpected(
+        std::runtime_error("Failed to calculate well-formed string size"));
+  }
+
+  status = U_ZERO_ERROR;
+  std::vector<UChar> buffer(destCapacity);
+  u_strFromUTF8WithSub(buffer.data(), destCapacity, nullptr,
+                       reinterpret_cast<const char *>(str.data()),
+                       static_cast<int32_t>(str.size()), 0xFFFD, nullptr,
+                       &status);
+
+  if (U_FAILURE(status)) {
+    return std::unexpected(
+        std::runtime_error("Failed to convert to well-formed string"));
+  }
+
+  icu::UnicodeString wellFormedStr(buffer.data(), destCapacity);
+  return toU8String(wellFormedStr);
+}
+
+bool isWellFormed(std::u8string_view str) {
+  UErrorCode status = U_ZERO_ERROR;
+  int32_t destCapacity = 0;
+  u_strFromUTF8(nullptr, 0, &destCapacity,
+                reinterpret_cast<const char *>(str.data()),
+                static_cast<int32_t>(str.size()), &status);
+
+  return status != U_INVALID_CHAR_FOUND;
+}
 } // namespace intl_cpp

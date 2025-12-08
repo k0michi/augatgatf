@@ -90,3 +90,28 @@ TEST(IntlString, IsNormalized) {
   EXPECT_FALSE(isNormalized(input, NormalizationForm::eNFC));
   EXPECT_TRUE(isNormalized(input, NormalizationForm::eNFD));
 }
+
+TEST(IntlString, ToWellFormed) {
+  std::u8string input = u8"Hello, World!";
+  auto result = toWellFormed(input);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"Hello, World!";
+  EXPECT_EQ(result.value(), expected);
+
+  input = std::u8string{0xC3, 0x28}; // Invalid 2-byte sequence
+  result = toWellFormed(input);
+  ASSERT_TRUE(result.has_value());
+  expected = std::u8string{0xEF, 0xBF, 0xBD, 0x28}; // U+FFFD + '('
+  EXPECT_EQ(result.value(), expected);
+}
+
+TEST(IntlString, IsWellFormed) {
+  std::u8string input = u8"Hello, World!";
+  EXPECT_TRUE(isWellFormed(input));
+
+  input = std::u8string{0xC3, 0x28}; // Invalid 2-byte sequence
+  EXPECT_FALSE(isWellFormed(input));
+
+  input = std::u8string{0x28, 0xC3}; // Invalid sequence at end
+  EXPECT_FALSE(isWellFormed(input));
+}

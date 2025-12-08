@@ -26,5 +26,10 @@ std::expected<std::u8string, std::runtime_error>
 normalize(std::u8string_view str, NormalizationForm form);
 
 bool isNormalized(std::u8string_view str, NormalizationForm form);
+
+std::expected<std::u8string, std::runtime_error>
+toWellFormed(std::u8string_view str);
+
+bool isWellFormed(std::u8string_view str);
 } // namespace intl_cpp
 #endif
