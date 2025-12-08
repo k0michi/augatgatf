@@ -152,7 +152,6 @@ add_library(keel STATIC
   src/kl/graphics/swapchain.cc
   src/kl/graphics/texture.cc
   src/kl/graphics/vertex_input_state.cc
-  src/kl/graphicsx/sprite_batcher.cc
   src/kl/io/file.cc
   src/kl/io/file_system.cc
   src/kl/io/loop.cc
