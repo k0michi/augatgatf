@@ -108,13 +108,7 @@ FetchContent_MakeAvailable(fmt)
 
 # icu
 
-FetchContent_Declare(
-  icu-portable
-  GIT_REPOSITORY https://github.com/k0michi/icu-portable
-  GIT_TAG        4695e0c00e16b036595e4e800e32c4b802786dac
-)
-
-FetchContent_MakeAvailable(icu-portable)
+add_subdirectory(../intl-cpp ${CMAKE_CURRENT_BINARY_DIR}/intl-cpp)
 
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}")
@@ -187,7 +181,7 @@ target_link_libraries(keel PUBLIC glad)
 target_link_libraries(keel PUBLIC spirv-cross-core spirv-cross-glsl)
 target_link_libraries(keel PUBLIC stb)
 target_link_libraries(keel PUBLIC fmt)
-target_link_libraries(keel PUBLIC ICU::data ICU::i18n ICU::io ICU::uc)
+target_link_libraries(keel PUBLIC intl-cpp)
 target_link_libraries(keel PUBLIC coverage_config)
 
 if(EMSCRIPTEN)
