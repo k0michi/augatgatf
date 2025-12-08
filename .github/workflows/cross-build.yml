@@ -58,7 +58,6 @@ jobs:
           arch: x64
 
       - name: Configure CMake
-        if: matrix.os != 'windows-latest'
         run: |
           mkdir build
           cd build
