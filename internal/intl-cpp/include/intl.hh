@@ -24,5 +24,7 @@ enum class NormalizationForm { eNFC, eNFD, eNFKC, eNFKD };
 
 std::expected<std::u8string, std::runtime_error>
 normalize(std::u8string_view str, NormalizationForm form);
+
+bool isNormalized(std::u8string_view str, NormalizationForm form);
 } // namespace intl_cpp
 #endif

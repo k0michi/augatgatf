@@ -80,3 +80,13 @@ TEST(IntlString, Normalize) {
   expected = u8"Cafe\u0301";
   EXPECT_EQ(result.value(), expected);
 }
+
+TEST(IntlString, IsNormalized) {
+  std::u8string input = u8"Café";
+  EXPECT_TRUE(isNormalized(input, NormalizationForm::eNFC));
+  EXPECT_FALSE(isNormalized(input, NormalizationForm::eNFD));
+
+  input = u8"Cafe\u0301"; // 'e' + combining acute accent
+  EXPECT_FALSE(isNormalized(input, NormalizationForm::eNFC));
+  EXPECT_TRUE(isNormalized(input, NormalizationForm::eNFD));
+}

@@ -167,4 +167,25 @@ normalize(std::u8string_view str, NormalizationForm form) {
   icu::UnicodeString normalizedStr(buffer.data(), actualLen);
   return toU8String(normalizedStr);
 }
+
+bool isNormalized(std::u8string_view str, NormalizationForm form) {
+  UErrorCode status = U_ZERO_ERROR;
+  auto norm2Result = getNormalizer(form);
+
+  if (!norm2Result) {
+    return false;
+  }
+
+  auto norm2 = norm2Result.value();
+  auto unicodeStr = toUnicodeString(str);
+
+  UBool result = unorm2_isNormalized(norm2, unicodeStr.getBuffer(),
+                                     unicodeStr.length(), &status);
+
+  if (U_FAILURE(status)) {
+    return false;
+  }
+
+  return result != 0;
+}
 } // namespace intl_cpp
