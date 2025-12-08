@@ -47,6 +47,21 @@ TEST(IntlString, ToLowerCase) {
   EXPECT_EQ(toLowerCase(input), expected);
 }
 
+TEST(IntlString, ToLocaleLowerCase) {
+  std::u8string input = u8"İI";
+  std::u8string locale = u8"tr";
+  auto result = toLocaleLowerCase(input, locale);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"iı";
+  EXPECT_EQ(result.value(), expected);
+
+  locale = u8"en";
+  result = toLocaleLowerCase(input, locale);
+  ASSERT_TRUE(result.has_value());
+  expected = u8"i̇i";
+  EXPECT_EQ(result.value(), expected);
+}
+
 TEST(IntlString, Normalize) {
   std::u8string input = u8"Café";
   auto result = normalize(input, NormalizationForm::eNFC);

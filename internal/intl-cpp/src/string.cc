@@ -89,6 +89,11 @@ toLowerCase(std::u8string_view str) {
   return toCase(str, u8"", false);
 }
 
+std::expected<std::u8string, std::runtime_error>
+toLocaleLowerCase(std::u8string_view str, std::u8string_view locale) {
+  return toCase(str, locale, false);
+}
+
 std::expected<const UNormalizer2 *, std::runtime_error>
 getNormalizer(NormalizationForm form) {
   UErrorCode status = U_ZERO_ERROR;
