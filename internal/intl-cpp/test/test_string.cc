@@ -18,6 +18,21 @@ TEST(IntlString, ToUpperCase) {
   EXPECT_EQ(toUpperCase(input), expected);
 }
 
+TEST(IntlString, ToLocaleUpperCase) {
+  std::u8string input = u8"iı";
+  std::u8string locale = u8"tr";
+  auto result = toLocaleUpperCase(input, locale);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"İI";
+  EXPECT_EQ(result.value(), expected);
+
+  locale = u8"en";
+  result = toLocaleUpperCase(input, locale);
+  ASSERT_TRUE(result.has_value());
+  expected = u8"II";
+  EXPECT_EQ(result.value(), expected);
+}
+
 TEST(IntlString, ToLowerCase) {
   std::u8string input = u8"Hello, World!";
   std::u8string expected = u8"hello, world!";

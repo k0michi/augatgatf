@@ -2,14 +2,20 @@
 #define INTL_HH
 
 #include <cstdint>
+#include <expected>
 #include <string>
 #include <string_view>
 
 namespace intl_cpp {
 std::u8string toUpperCase(std::u8string_view str);
 
+std::expected<std::u8string, std::runtime_error>
+toLocaleUpperCase(std::u8string_view str, std::u8string_view locale);
+
 std::u8string toLowerCase(std::u8string_view str);
 
+std::expected<std::u8string, std::runtime_error>
+toLocaleLowerCase(std::u8string_view str, std::u8string_view locale);
 } // namespace intl_cpp
 
 #endif
