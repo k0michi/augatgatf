@@ -148,3 +148,31 @@ TEST(IntlString, TrimEnd) {
   std::u8string expected = u8"Hello, World!";
   EXPECT_EQ(result.value(), expected);
 }
+
+TEST(IntlString, PadStart) {
+  std::u8string input = u8"Hello";
+  auto result = padStart(input, 10, u8"!@#");
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"!@#!@Hello";
+  EXPECT_EQ(result.value(), expected);
+
+  input = u8"Hello";
+  result = padStart(input, 3, u8"*");
+  ASSERT_TRUE(result.has_value());
+  expected = u8"Hello";
+  EXPECT_EQ(result.value(), expected);
+}
+
+TEST(IntlString, PadEnd) {
+  std::u8string input = u8"Hello";
+  auto result = padEnd(input, 10, u8"!@#");
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"Hello!@#!@";
+  EXPECT_EQ(result.value(), expected);
+
+  input = u8"Hello";
+  result = padEnd(input, 3, u8"*");
+  ASSERT_TRUE(result.has_value());
+  expected = u8"Hello";
+  EXPECT_EQ(result.value(), expected);
+}

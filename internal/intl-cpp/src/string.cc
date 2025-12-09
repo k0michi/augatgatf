@@ -1,5 +1,6 @@
 #include "intl.hh"
 
+#include <algorithm>
 #include <vector>
 
 #include <unicode/ucasemap.h>
@@ -270,5 +271,41 @@ trimStart(std::u8string_view str) {
 std::expected<std::u8string, std::runtime_error>
 trimEnd(std::u8string_view str) {
   return trim(str, TrimWhere::eEnd);
+}
+
+std::expected<std::u8string, std::runtime_error>
+padStart(std::u8string_view str, std::size_t maxLength,
+         std::u8string_view fillString) {
+  std::u8string result;
+  std::size_t length = std::max(str.size(), maxLength);
+  result.reserve(length);
+
+  for (std::size_t i = 0; i < length; ++i) {
+    if (i < length - str.size()) {
+      result += fillString[i % fillString.size()];
+    } else {
+      result += str[i - (length - str.size())];
+    }
+  }
+
+  return result;
+}
+
+std::expected<std::u8string, std::runtime_error>
+padEnd(std::u8string_view str, std::size_t maxLength,
+       std::u8string_view fillString) {
+  std::u8string result;
+  std::size_t length = std::max(str.size(), maxLength);
+  result.reserve(length);
+
+  for (std::size_t i = 0; i < length; ++i) {
+    if (i < str.size()) {
+      result += str[i];
+    } else {
+      result += fillString[(i - str.size()) % fillString.size()];
+    }
+  }
+
+  return result;
 }
 } // namespace intl_cpp

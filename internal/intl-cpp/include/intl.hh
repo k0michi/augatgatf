@@ -39,5 +39,13 @@ trimStart(std::u8string_view str);
 
 std::expected<std::u8string, std::runtime_error>
 trimEnd(std::u8string_view str);
+
+std::expected<std::u8string, std::runtime_error>
+padStart(std::u8string_view str, std::size_t maxLength,
+         std::u8string_view fillString = u8" ");
+
+std::expected<std::u8string, std::runtime_error>
+padEnd(std::u8string_view str, std::size_t maxLength,
+       std::u8string_view fillString = u8" ");
 } // namespace intl_cpp
 #endif
