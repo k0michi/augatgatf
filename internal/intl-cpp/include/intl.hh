@@ -31,5 +31,13 @@ std::expected<std::u8string, std::runtime_error>
 toWellFormed(std::u8string_view str);
 
 bool isWellFormed(std::u8string_view str);
+
+std::expected<std::u8string, std::runtime_error> trim(std::u8string_view str);
+
+std::expected<std::u8string, std::runtime_error>
+trimStart(std::u8string_view str);
+
+std::expected<std::u8string, std::runtime_error>
+trimEnd(std::u8string_view str);
 } // namespace intl_cpp
 #endif

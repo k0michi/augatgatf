@@ -115,3 +115,36 @@ TEST(IntlString, IsWellFormed) {
   input = std::u8string{0x28, 0xC3}; // Invalid sequence at end
   EXPECT_FALSE(isWellFormed(input));
 }
+
+TEST(IntlString, Trim) {
+  std::u8string input = u8"\u0020\u00A0\u1680\u2000\u2001\u2002\u2003"
+                        u8"\u2004\u2005\u2006\u2007\u2008\u2009\u200A"
+                        u8"\u202F\u205F\u3000Hello, World!\u0020\u00A0"
+                        u8"\u1680\u2000\u2001\u2002\u2003\u2004\u2005"
+                        u8"\u2006\u2007\u2008\u2009\u200A\u202F\u205F"
+                        u8"\u3000";
+  auto result = trim(input);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"Hello, World!";
+  EXPECT_EQ(result.value(), expected);
+}
+
+TEST(IntlString, TrimStart) {
+  std::u8string input = u8"\u0020\u00A0\u1680\u2000\u2001\u2002\u2003"
+                        u8"\u2004\u2005\u2006\u2007\u2008\u2009\u200A"
+                        u8"\u202F\u205F\u3000Hello, World!";
+  auto result = trimStart(input);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"Hello, World!";
+  EXPECT_EQ(result.value(), expected);
+}
+
+TEST(IntlString, TrimEnd) {
+  std::u8string input = u8"Hello, World!\u0020\u00A0\u1680\u2000\u2001"
+                        u8"\u2002\u2003\u2004\u2005\u2006\u2007\u2008"
+                        u8"\u2009\u200A\u202F\u205F\u3000";
+  auto result = trimEnd(input);
+  ASSERT_TRUE(result.has_value());
+  std::u8string expected = u8"Hello, World!";
+  EXPECT_EQ(result.value(), expected);
+}

@@ -227,4 +227,48 @@ bool isWellFormed(std::u8string_view str) {
 
   return status != U_INVALID_CHAR_FOUND;
 }
+
+enum class TrimWhere {
+  eStart,
+  eEnd,
+  eStartEnd,
+};
+
+std::expected<std::u8string, std::runtime_error> trim(std::u8string_view str,
+                                                      TrimWhere where) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::UnicodeString unicodeStr = toUnicodeString(str);
+
+  int32_t start = 0;
+  int32_t end = unicodeStr.length();
+
+  if (where == TrimWhere::eStart || where == TrimWhere::eStartEnd) {
+    while (start < end && u_isUWhiteSpace(unicodeStr.charAt(start))) {
+      ++start;
+    }
+  }
+
+  if (where == TrimWhere::eEnd || where == TrimWhere::eStartEnd) {
+    while (end > start && u_isUWhiteSpace(unicodeStr.charAt(end - 1))) {
+      --end;
+    }
+  }
+
+  icu::UnicodeString trimmedStr = unicodeStr.tempSubStringBetween(start, end);
+  return toU8String(trimmedStr);
+}
+
+std::expected<std::u8string, std::runtime_error> trim(std::u8string_view str) {
+  return trim(str, TrimWhere::eStartEnd);
+}
+
+std::expected<std::u8string, std::runtime_error>
+trimStart(std::u8string_view str) {
+  return trim(str, TrimWhere::eStart);
+}
+
+std::expected<std::u8string, std::runtime_error>
+trimEnd(std::u8string_view str) {
+  return trim(str, TrimWhere::eEnd);
+}
 } // namespace intl_cpp
