@@ -12,7 +12,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - id: macos
+            os: macos-latest
+          - id: windows
+            os: windows-latest
+          - id: ubuntu
+            os: ubuntu-latest
+          - id: emscripten
+            os: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,6 +41,12 @@ jobs:
           echo "VulkanSDK path: $($sdkRoot.FullName)"
           echo "$($sdkRoot.FullName)\Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         shell: powershell
+      
+      - name: Set up Emscripten
+        if: matrix.id == 'emscripten'
+        uses: mymindstorm/setup-emsdk@v13
+        with:
+          version: 4.0.15
 
       - name: Set up CMake
         uses: lukka/get-cmake@v3.27.0
@@ -58,29 +72,27 @@ jobs:
           arch: x64
 
       - name: Configure CMake
-        run: |
-          mkdir build
-          cd build
-          cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+        run: ${{ matrix.id == 'emscripten'
+            && 'emcmake cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON'
+            || 'cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON' }}
 
       - name: Build
-        run: |
-          cd build
-          cmake --build . --config Debug --parallel
+        run: cmake --build build --config Debug --parallel
 
       - name: Run Tests (ctest)
+        if: matrix.id != 'emscripten'
         run: |
           cd build/internal/keel
           ctest -C Debug -V --timeout 60
 
       - name: Generate coverage report (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.id == 'ubuntu'
         run: |
           cd build
           gcovr -r .. --xml -o coverage.xml
 
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.id == 'ubuntu'
         uses: codecov/codecov-action@v4
         with:
           files: build/coverage.xml
