@@ -65,6 +65,9 @@ public:
   virtual kl::concurrent::Task<Expected<std::size_t>>
   write(std::shared_ptr<kl::io::Loop> loop,
         std::span<const std::byte> buffer) = 0;
+
+  virtual kl::concurrent::Task<Expected<void>>
+  flush(std::shared_ptr<kl::io::Loop> loop) = 0;
 };
 
 enum class SeekDirection {

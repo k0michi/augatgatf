@@ -37,3 +37,22 @@ TEST_P(BufferedStreamSeedTest, BufferedReader) {
 
 INSTANTIATE_TEST_SUITE_P(Seeds, BufferedStreamSeedTest,
                          ::testing::Range<uint_fast32_t>(0, 100));
+
+TEST_P(BufferedStreamSeedTest, BufferedWriter) {
+  auto loop = Loop::getDefault();
+
+  [&]() -> kl::concurrent::Task<void> {
+    std::string_view data = "Hello, BufferedWriter!";
+    uint_fast32_t seed = GetParam();
+    RandomizedAsyncWritable randWritable(seed);
+    kl::io::BufferedWriter bufferedWriter{randWritable};
+    bufferedWriter.write(
+        loop, std::span{reinterpret_cast<const std::byte *>(data.data()),
+                        data.size()});
+    auto flushResult = co_await bufferedWriter.flush(loop);
+    EXPECT_TRUE(flushResult.has_value());
+    EXPECT_EQ(randWritable.getDataAsString(), "Hello, BufferedWriter!");
+  }();
+
+  loop->run();
+}

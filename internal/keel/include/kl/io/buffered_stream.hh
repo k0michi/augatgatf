@@ -66,5 +66,96 @@ private:
   std::size_t head_;
   std::size_t tail_;
 };
+
+class BufferedWriter final {
+public:
+  static constexpr std::size_t kDefaultBufferSize = 8192;
+
+  template <AsyncWritable T>
+  explicit BufferedWriter(T &writable,
+                          std::size_t bufferSize = kDefaultBufferSize)
+      : writable_(std::make_unique<Wrapper<T>>(writable)), buffer_(bufferSize),
+        position_(0) {}
+
+  kl::concurrent::Task<Expected<std::size_t>>
+  write(std::shared_ptr<Loop> loop, std::span<const std::byte> buffer) {
+    std::size_t totalWritten = 0;
+
+    while (totalWritten < buffer.size()) {
+      std::size_t spaceLeft = buffer_.size() - position_;
+
+      if (spaceLeft == 0) {
+        // Buffer is full
+        auto flushResult = co_await flushInternal(loop);
+        if (!flushResult) {
+          co_return std::unexpected(flushResult.error());
+        }
+        spaceLeft = buffer_.size();
+      }
+
+      std::size_t toCopy = std::min(buffer.size() - totalWritten, spaceLeft);
+      std::memcpy(buffer_.data() + position_, buffer.data() + totalWritten,
+                  toCopy);
+      position_ += toCopy;
+      totalWritten += toCopy;
+    }
+
+    co_return totalWritten;
+  }
+
+  kl::concurrent::Task<Expected<void>> flush(std::shared_ptr<Loop> loop) {
+    auto flushResult = co_await flushInternal(loop);
+
+    if (!flushResult) {
+      co_return std::unexpected(flushResult.error());
+    }
+
+    co_return co_await writable_->flush(loop);
+  }
+
+private:
+  kl::concurrent::Task<Expected<void>>
+  flushInternal(std::shared_ptr<Loop> loop) {
+    std::size_t totalWritten = 0;
+
+    while (totalWritten < position_) {
+      auto nwritten = co_await writable_->write(
+          loop,
+          std::span{buffer_.data() + totalWritten, position_ - totalWritten});
+
+      if (!nwritten) {
+        co_return std::unexpected(nwritten.error());
+      }
+
+      totalWritten += *nwritten;
+    }
+
+    position_ = 0;
+    co_return {};
+  }
+
+  template <AsyncWritable T> class Wrapper : public IAsyncWritable {
+  public:
+    explicit Wrapper(T &inner) : inner_(inner) {}
+
+    kl::concurrent::Task<Expected<std::size_t>>
+    write(std::shared_ptr<kl::io::Loop> loop,
+          std::span<const std::byte> buffer) override {
+      co_return co_await inner_.write(loop, buffer);
+    }
+
+    kl::concurrent::Task<Expected<void>>
+    flush(std::shared_ptr<kl::io::Loop> loop) override {
+      co_return co_await inner_.flush(loop);
+    }
+
+  private:
+    T &inner_;
+  };
+
+  std::unique_ptr<IAsyncWritable> writable_;
+  std::vector<std::byte> buffer_;
+  std::size_t position_;
+};
 } // namespace kl::io
 #endif
