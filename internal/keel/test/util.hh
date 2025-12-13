@@ -1,6 +1,7 @@
 #ifndef KL_TEST_UTIL_HH
 #define KL_TEST_UTIL_HH
 
+#include <cstring>
 #include <random>
 
 #include "kl/io/async_stream.hh"

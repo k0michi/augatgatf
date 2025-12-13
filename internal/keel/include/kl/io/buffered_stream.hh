@@ -1,7 +1,7 @@
 #ifndef KL_IO_PATH_HH
 #define KL_IO_PATH_HH
 
-#include <string>
+#include <cstring>
 
 #include "kl/io/async_stream.hh"
 
