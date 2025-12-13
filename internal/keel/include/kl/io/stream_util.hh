@@ -222,7 +222,7 @@ readInt32(std::shared_ptr<Loop> loop, T &stream, std::endian endian) {
 }
 
 template <kl::io::AsyncReadable T>
-kl::concurrent::Task<Expected<std::int64_t>>
+kl::concurrent::Task<Expected<std::uint64_t>>
 readInt64(std::shared_ptr<Loop> loop, T &stream, std::endian endian) {
   std::array<std::byte, 8> buffer;
 

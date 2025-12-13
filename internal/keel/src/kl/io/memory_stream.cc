@@ -34,7 +34,7 @@ MemoryStream::flush(std::shared_ptr<Loop> loop) {
   co_return {};
 }
 
-kl::concurrent::Task<Expected<std::int64_t>>
+kl::concurrent::Task<Expected<std::uint64_t>>
 MemoryStream::seek(std::shared_ptr<Loop> loop, std::int64_t offset,
                    SeekDirection dir) {
   switch (dir) {

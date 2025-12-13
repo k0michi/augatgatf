@@ -22,7 +22,7 @@ public:
   kl::concurrent::Task<Expected<std::size_t>>
   write(std::shared_ptr<Loop> loop, std::span<const std::byte> buffer);
   kl::concurrent::Task<Expected<void>> flush(std::shared_ptr<Loop> loop);
-  kl::concurrent::Task<Expected<std::int64_t>>
+  kl::concurrent::Task<Expected<std::uint64_t>>
   seek(std::shared_ptr<Loop> loop, std::int64_t offset, SeekDirection dir);
 
   static kl::concurrent::Task<Expected<std::shared_ptr<File>>>

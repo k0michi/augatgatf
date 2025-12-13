@@ -100,7 +100,7 @@ kl::concurrent::Task<Expected<void>> File::flush(std::shared_ptr<Loop> loop) {
   co_return co_await awaiter;
 }
 
-kl::concurrent::Task<Expected<std::int64_t>>
+kl::concurrent::Task<Expected<std::uint64_t>>
 File::seek(std::shared_ptr<Loop> loop, std::int64_t offset, SeekDirection dir) {
   switch (dir) {
   case SeekDirection::eBegin:
