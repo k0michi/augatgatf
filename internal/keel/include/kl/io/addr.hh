@@ -45,6 +45,12 @@ struct Addr {
         uv_ip6_addr(reinterpret_cast<const char *>(ip.c_str()), port,
                     reinterpret_cast<struct sockaddr_in6 *>(&addr.nativeAddr_));
 
+    if (result < 0) {
+      return std::unexpected(
+          IOException(std::string("Failed to create IPv6 address: ") +
+                      uv_strerror(result)));
+    }
+
     return addr;
   }
 
