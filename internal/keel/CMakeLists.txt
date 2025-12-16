@@ -203,6 +203,7 @@ enable_testing()
 
 add_executable(test_keel
 # include test/**/*.cc
+  test/test_addr.cc
   test/test_buffered_stream.cc
   test/test_colors.cc
   test/test_file.cc
