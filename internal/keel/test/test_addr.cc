@@ -29,5 +29,5 @@ TEST(AddrTest, CreateInvalidIPv4) {
 
 TEST(AddrTest, CreateInvalidIPv6) {
   auto result = Addr::createIPv6(u8"gggg::gggg", 80);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.has_value());
 }
