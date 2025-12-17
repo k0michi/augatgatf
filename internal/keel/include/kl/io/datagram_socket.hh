@@ -2,6 +2,7 @@
 #define KL_IO_DATAGRAM_SOCKET_HH
 
 #include <coroutine>
+#include <cstring>
 #include <type_traits>
 #include <utility>
 #include <vector>
