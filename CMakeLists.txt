@@ -39,6 +39,12 @@ add_executable(echo
 target_link_libraries(echo PRIVATE keel)
 set_property(TARGET echo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
+add_executable(receive_udp
+  src/receive_udp.cc
+)
+target_link_libraries(receive_udp PRIVATE keel)
+set_property(TARGET receive_udp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX .html)
 endif()

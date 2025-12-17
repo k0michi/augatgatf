@@ -54,14 +54,49 @@ struct Addr {
     return addr;
   }
 
+  static Expected<Addr> fromPosixAddr(const PosixAddr *addr) {
+    if (addr->sa_family == AF_INET) {
+      auto inAddr = reinterpret_cast<const struct sockaddr_in *>(addr);
+      char ip[INET_ADDRSTRLEN];
+      uv_ip4_name(inAddr, ip, sizeof(ip));
+      return createIPv4(std::u8string(reinterpret_cast<const char8_t *>(ip)),
+                        ntohs(inAddr->sin_port));
+    } else if (addr->sa_family == AF_INET6) {
+      auto in6Addr = reinterpret_cast<const struct sockaddr_in6 *>(addr);
+      char ip[INET6_ADDRSTRLEN];
+      uv_ip6_name(in6Addr, ip, sizeof(ip));
+      return createIPv6(std::u8string(reinterpret_cast<const char8_t *>(ip)),
+                        ntohs(in6Addr->sin6_port));
+    } else {
+      return std::unexpected(IOException("Unsupported address family"));
+    }
+  }
+
   AddrFamily family() const { return family_; }
 
   std::u8string_view ip() const { return ip_; }
 
   uint16_t port() const { return port_; }
 
-  const PosixAddr *posixAddr() const {
+  const PosixAddr *asPosixAddr() const {
     return reinterpret_cast<const PosixAddr *>(&nativeAddr_);
+  }
+
+  Addr() = default;
+
+  Addr(const Addr &other) {
+    family_ = other.family_;
+    ip_ = other.ip_;
+    port_ = other.port_;
+    nativeAddr_ = other.nativeAddr_;
+  }
+
+  Addr &operator=(const Addr &other) {
+    family_ = other.family_;
+    ip_ = other.ip_;
+    port_ = other.port_;
+    nativeAddr_ = other.nativeAddr_;
+    return *this;
   }
 
 private:

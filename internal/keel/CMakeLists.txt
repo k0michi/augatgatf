@@ -206,6 +206,7 @@ add_executable(test_keel
   test/test_addr.cc
   test/test_buffered_stream.cc
   test/test_colors.cc
+  test/test_datagram_socket.cc
   test/test_file.cc
   test/test_loop.cc
   test/test_math.cc
