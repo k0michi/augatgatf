@@ -3,6 +3,22 @@
 #include "kl/io/awaiter.hh"
 
 namespace kl::io {
+File::~File() noexcept {
+  if (fd_ >= 0) {
+    uv_fs_t req;
+    uv_fs_close(nullptr, &req, fd_, nullptr);
+    uv_fs_req_cleanup(&req);
+  }
+}
+
+File::File(File &&other) noexcept { swap(*this, other); }
+
+File &File::operator=(File &&other) noexcept {
+  File temp(std::move(other));
+  swap(*this, temp);
+  return *this;
+}
+
 kl::concurrent::Task<Expected<std::shared_ptr<File>>>
 File::open(std::shared_ptr<Loop> loop, std::string_view path, OpenFlag flags,
            std::uint32_t mode) {
@@ -43,14 +59,6 @@ kl::concurrent::Task<Expected<void>> File::close(std::shared_ptr<Loop> loop) {
 
 kl::concurrent::Task<Expected<void>> File::close() {
   co_return co_await close(Loop::getDefault());
-}
-
-File::~File() {
-  if (fd_ >= 0) {
-    uv_fs_t req;
-    uv_fs_close(nullptr, &req, fd_, nullptr);
-    uv_fs_req_cleanup(&req);
-  }
 }
 
 kl::concurrent::Task<Expected<std::size_t>>

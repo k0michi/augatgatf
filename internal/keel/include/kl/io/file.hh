@@ -15,7 +15,23 @@
 namespace kl::io {
 class File {
 public:
-  ~File();
+  File() noexcept = default;
+  ~File() noexcept;
+
+  File(const File &) = delete;
+  File &operator=(const File &) = delete;
+
+  File(File &&) noexcept;
+  File &operator=(File &&) noexcept;
+
+  friend void swap(File &first, File &second) noexcept {
+    using std::swap;
+    swap(first.fd_, second.fd_);
+    swap(first.path_, second.path_);
+    swap(first.flags_, second.flags_);
+    swap(first.mode_, second.mode_);
+    swap(first.offset_, second.offset_);
+  }
 
   kl::concurrent::Task<Expected<std::size_t>> read(std::shared_ptr<Loop> loop,
                                                    std::span<std::byte> buffer);
@@ -35,7 +51,7 @@ public:
   kl::concurrent::Task<Expected<void>> close();
 
 private:
-  uv_file fd_;
+  uv_file fd_ = -1;
   std::string path_;
   OpenFlag flags_;
   std::uint32_t mode_;
