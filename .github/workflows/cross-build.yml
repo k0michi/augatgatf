@@ -29,6 +29,7 @@ jobs:
             cache-key: apt
           - id: emscripten
             os: ubuntu-latest
+            cache-key: apt-emscripten
             cache-path: |
               /var/cache/apt/archives
               /var/lib/apt/lists
