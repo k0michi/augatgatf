@@ -13,26 +13,52 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - id: macos
-            os: macos-latest
-            cache-path: ~/Library/Caches/Homebrew
-            cache-key: brew
-          - id: windows
-            os: windows-latest
-            cache-path: ~/AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/diag
-            cache-key: winget
           - id: ubuntu
             os: ubuntu-latest
+            shell: bash
+            cache-key: apt
             cache-path: |
               /var/cache/apt/archives
               /var/lib/apt/lists
-            cache-key: apt
+            install-cmd: sudo apt-get update && sudo apt-get install -y
+            packages: >-
+              glslang-tools build-essential git make pkg-config cmake ninja-build 
+              gnome-desktop-testing libasound2-dev libpulse-dev libaudio-dev 
+              libjack-dev libsndio-dev libx11-dev libxext-dev libxrandr-dev 
+              libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev 
+              libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev 
+              libgles2-mesa-dev libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev 
+              libudev-dev gcovr
+
           - id: emscripten
             os: ubuntu-latest
+            shell: bash
             cache-key: apt-emscripten
             cache-path: |
               /var/cache/apt/archives
               /var/lib/apt/lists
+            install-cmd: sudo apt-get update && sudo apt-get install -y
+            packages: build-essential cmake ninja-build
+
+          - id: macos
+            os: macos-latest
+            shell: bash
+            cache-key: brew
+            cache-path: ~/Library/Caches/Homebrew
+            install-cmd: brew install
+            packages: glslang ninja
+
+          - id: windows
+            os: windows-latest
+            shell: pwsh
+            cache-key: winget
+            cache-path: ~/AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/diag
+            install-cmd: winget install -e --accept-source-agreements --accept-package-agreements --id
+            packages: KhronosGroup.VulkanSDK
+            post-install: |
+              $sdkRoot = Get-ChildItem 'C:\VulkanSDK' | Sort-Object Name -Descending | Select-Object -First 1
+              echo "$($sdkRoot.FullName)\Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,26 +68,17 @@ jobs:
         with:
           path: ${{ matrix.cache-path }}
           key: ${{ runner.os }}-${{ matrix.cache-key }}-${{ hashFiles('.github/workflows/cross-build.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.cache-key }}-
+          restore-keys: ${{ runner.os }}-${{ matrix.cache-key }}-
 
-      - name: Install glslangValidator (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install glslang
+      - name: Install dependencies
+        shell: ${{ matrix.shell }}
+        run: ${{ matrix.install-cmd }} ${{ matrix.packages }}
 
-      - name: Install glslangValidator (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y glslang-tools
+      - name: Post Install (Environment Setup)
+        shell: ${{ matrix.shell }}
+        if: matrix.post-install != ''
+        run: ${{ matrix.post-install }}
 
-      - name: Install glslangValidator (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          winget install --id=KhronosGroup.VulkanSDK -e --accept-source-agreements --accept-package-agreements
-          $sdkRoot = Get-ChildItem 'C:\VulkanSDK' | Sort-Object Name -Descending | Select-Object -First 1
-          echo "VulkanSDK path: $($sdkRoot.FullName)"
-          echo "$($sdkRoot.FullName)\Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        shell: powershell
-      
       - name: Set up Emscripten
         if: matrix.id == 'emscripten'
         uses: mymindstorm/setup-emsdk@v13
@@ -71,20 +88,6 @@ jobs:
       - name: Set up CMake
         uses: lukka/get-cmake@v3.27.0
 
-      - name: Set up dependencies (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        # https://github.com/libsdl-org/SDL/blob/main/docs/README-linux.md
-        # gcovr for code coverage
-        run: |
-          sudo apt-get update
-          sudo apt-get install build-essential git make \
-          pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
-          libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev \
-          gcovr
-
       - name: Enable MSVC dev cmd
         if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1
@@ -92,25 +95,31 @@ jobs:
           arch: x64
 
       - name: Configure CMake
-        run: ${{ matrix.id == 'emscripten'
-            && 'emcmake cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON'
-            || 'cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON' }}
+        shell: ${{ matrix.shell }}
+        run: |
+          ${{ matrix.id == 'emscripten' && 'emcmake' || '' }} \
+          cmake -S . -B build -G Ninja \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCODE_COVERAGE=${{ matrix.id == 'ubuntu' && 'ON' || 'OFF' }}
 
       - name: Build
+        shell: ${{ matrix.shell }}
         run: cmake --build build --config Debug --parallel
 
       - name: Run Tests (ctest)
+        shell: ${{ matrix.shell }}
         if: matrix.id != 'emscripten'
         run: |
           cd build/internal/keel
           ctest -C Debug -V --timeout 60
 
-      - name: Generate coverage report (Ubuntu)
+      - name: Generate and Upload coverage
+        shell: ${{ matrix.shell }}
         if: matrix.id == 'ubuntu'
         run: |
           cd build
           gcovr -r .. --xml -o coverage.xml
-
+      
       - name: Upload coverage to Codecov
         if: matrix.id == 'ubuntu'
         uses: codecov/codecov-action@v4
