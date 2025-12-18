@@ -102,14 +102,32 @@ enum class DatagramSocketFlag : unsigned int {
 };
 
 class DatagramSocket {
-private:
-  DatagramSocket() = default;
+public:
+  DatagramSocket() noexcept = default;
+
+  DatagramSocket(const DatagramSocket &) = delete;
+  DatagramSocket &operator=(const DatagramSocket &) = delete;
+
+  DatagramSocket(DatagramSocket &&other) noexcept { swap(*this, other); }
+
+  DatagramSocket &operator=(DatagramSocket &&other) noexcept {
+    DatagramSocket temp(std::move(other));
+    swap(*this, temp);
+    return *this;
+  }
+
+  friend void swap(DatagramSocket &first, DatagramSocket &second) noexcept {
+    using std::swap;
+    swap(first.own_, second.own_);
+    swap(first.udpHandle_, second.udpHandle_);
+  }
 
 public:
   static Expected<std::shared_ptr<DatagramSocket>>
   create(std::shared_ptr<Loop> loop) {
     auto datagram = std::shared_ptr<DatagramSocket>(new DatagramSocket());
     int result = uv_udp_init(loop->getUVLoop(), &datagram->udpHandle_);
+    datagram->own_ = true;
 
     if (result < 0) {
       return std::unexpected(IOException(uv_strerror(result)));
@@ -150,10 +168,13 @@ public:
   }
 
   ~DatagramSocket() noexcept {
-    uv_close(reinterpret_cast<uv_handle_t *>(&udpHandle_), nullptr);
+    if (own_) {
+      uv_close(reinterpret_cast<uv_handle_t *>(&udpHandle_), nullptr);
+    }
   }
 
 private:
+  bool own_ = false;
   uv_udp_t udpHandle_;
 };
 } // namespace kl::io
