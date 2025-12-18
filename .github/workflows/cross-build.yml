@@ -15,7 +15,6 @@ jobs:
         include:
           - id: ubuntu
             os: ubuntu-latest
-            shell: bash
             cache-key: apt
             cache-path: |
               /var/cache/apt/archives
@@ -32,7 +31,6 @@ jobs:
 
           - id: emscripten
             os: ubuntu-latest
-            shell: bash
             cache-key: apt-emscripten
             cache-path: |
               /var/cache/apt/archives
@@ -42,7 +40,6 @@ jobs:
 
           - id: macos
             os: macos-latest
-            shell: bash
             cache-key: brew
             cache-path: ~/Library/Caches/Homebrew
             install-cmd: brew install
@@ -50,14 +47,13 @@ jobs:
 
           - id: windows
             os: windows-latest
-            shell: pwsh
             cache-key: winget
             cache-path: ~/AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/diag
             install-cmd: winget install -e --accept-source-agreements --accept-package-agreements --id
             packages: KhronosGroup.VulkanSDK
             post-install: |
-              $sdkRoot = Get-ChildItem 'C:\VulkanSDK' | Sort-Object Name -Descending | Select-Object -First 1
-              echo "$($sdkRoot.FullName)\Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+              SDK_ROOT=$(ls -d /c/VulkanSDK/*/ | sort -Vr | head -n 1)
+              echo "${SDK_ROOT}Bin" >> "$GITHUB_PATH"
 
     steps:
       - name: Checkout code
@@ -71,11 +67,9 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.cache-key }}-
 
       - name: Install dependencies
-        shell: ${{ matrix.shell }}
         run: ${{ matrix.install-cmd }} ${{ matrix.packages }}
 
       - name: Post Install (Environment Setup)
-        shell: ${{ matrix.shell }}
         if: matrix.post-install != ''
         run: ${{ matrix.post-install }}
 
@@ -95,7 +89,6 @@ jobs:
           arch: x64
 
       - name: Configure CMake
-        shell: ${{ matrix.shell }}
         run: |
           ${{ matrix.id == 'emscripten' && 'emcmake' || '' }} \
           cmake -S . -B build -G Ninja \
@@ -103,18 +96,15 @@ jobs:
           -DCODE_COVERAGE=${{ matrix.id == 'ubuntu' && 'ON' || 'OFF' }}
 
       - name: Build
-        shell: ${{ matrix.shell }}
         run: cmake --build build --config Debug --parallel
 
       - name: Run Tests (ctest)
-        shell: ${{ matrix.shell }}
         if: matrix.id != 'emscripten'
         run: |
           cd build/internal/keel
           ctest -C Debug -V --timeout 60
 
       - name: Generate and Upload coverage
-        shell: ${{ matrix.shell }}
         if: matrix.id == 'ubuntu'
         run: |
           cd build
