@@ -8,7 +8,7 @@ using namespace kl::io;
 
 class MemoryStreamTest : public ::testing::Test {
 protected:
-  std::shared_ptr<Loop> loop = Loop::getDefault();
+  std::shared_ptr<Loop> loop = Loop::create();
 };
 
 TEST_F(MemoryStreamTest, WriteAndRead) {

@@ -5,7 +5,7 @@
 
 class PngTest : public ::testing::Test {
 protected:
-  std::shared_ptr<kl::io::Loop> loop = kl::io::Loop::getDefault();
+  std::shared_ptr<kl::io::Loop> loop = kl::io::Loop::create();
 };
 
 TEST_F(PngTest, LoadPngImage) {

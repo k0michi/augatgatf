@@ -11,7 +11,7 @@ class BufferedStreamSeedTest : public ::testing::TestWithParam<uint_fast32_t> {
 };
 
 TEST_P(BufferedStreamSeedTest, BufferedReader) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
 
   [&]() -> kl::concurrent::Task<void> {
     std::string_view data = "Hello, BufferedReader!";
@@ -39,7 +39,7 @@ INSTANTIATE_TEST_SUITE_P(Seeds, BufferedStreamSeedTest,
                          ::testing::Range<uint_fast32_t>(0, 100));
 
 TEST_P(BufferedStreamSeedTest, BufferedWriter) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
 
   [&]() -> kl::concurrent::Task<void> {
     std::string_view data = "Hello, BufferedWriter!";

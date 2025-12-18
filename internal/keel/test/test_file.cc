@@ -28,7 +28,7 @@ protected:
 };
 
 TEST_F(FileTest, Open) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult =
         co_await File::open(testFilePath, OpenFlag::eRdWr | OpenFlag::eCreat);
@@ -41,7 +41,7 @@ TEST_F(FileTest, Open) {
 }
 
 TEST_F(FileTest, Read) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdOnly);
     EXPECT_TRUE(openResult.has_value());
@@ -59,7 +59,7 @@ TEST_F(FileTest, Read) {
 }
 
 TEST_F(FileTest, Write) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdWr);
     EXPECT_TRUE(openResult.has_value());
@@ -74,7 +74,7 @@ TEST_F(FileTest, Write) {
 }
 
 TEST_F(FileTest, Flush) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdWr);
     EXPECT_TRUE(openResult.has_value());
@@ -88,7 +88,7 @@ TEST_F(FileTest, Flush) {
 }
 
 TEST_F(FileTest, Seek) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdWr);
     EXPECT_TRUE(openResult.has_value());
@@ -103,7 +103,7 @@ TEST_F(FileTest, Seek) {
 }
 
 TEST_F(FileTest, SeekRead) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdOnly);
     EXPECT_TRUE(openResult.has_value());
@@ -125,7 +125,7 @@ TEST_F(FileTest, SeekRead) {
 }
 
 TEST_F(FileTest, SeekEndIsFileSize) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdOnly);
     EXPECT_TRUE(openResult.has_value());
@@ -140,7 +140,7 @@ TEST_F(FileTest, SeekEndIsFileSize) {
 }
 
 TEST_F(FileTest, CloseTwice) {
-  auto loop = Loop::getDefault();
+  auto loop = Loop::create();
   [&]() -> kl::concurrent::Task<void> {
     auto openResult = co_await File::open(testFilePath, OpenFlag::eRdOnly);
     EXPECT_TRUE(openResult.has_value());

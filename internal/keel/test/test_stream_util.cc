@@ -10,7 +10,7 @@ using namespace kl::io;
 
 class StreamUtilTest : public ::testing::Test {
 protected:
-  std::shared_ptr<Loop> loop = Loop::getDefault();
+  std::shared_ptr<Loop> loop = Loop::create();
 };
 
 TEST_F(StreamUtilTest, ReadExactSuccess) {
