@@ -58,13 +58,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Prepare Cache Key
+        run: echo "${{ matrix.packages }}" > packages.txt
 
       - name: Cache packages
         uses: actions/cache@v4
         with:
           path: ${{ matrix.cache-path }}
-          key: ${{ runner.os }}-${{ matrix.cache-key }}-${{ hashFiles('.github/workflows/cross-build.yml') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.cache-key }}-
+          key: ${{ runner.os }}-${{ matrix.id }}-${{ hashFiles('packages.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.id }}-
 
       - name: Install dependencies
         shell: bash
