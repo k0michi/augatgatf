@@ -15,15 +15,34 @@ jobs:
         include:
           - id: macos
             os: macos-latest
+            cache-path: ~/Library/Caches/Homebrew
+            cache-key: brew
           - id: windows
             os: windows-latest
+            cache-path: ~/AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/diag
+            cache-key: winget
           - id: ubuntu
             os: ubuntu-latest
+            cache-path: |
+              /var/cache/apt/archives
+              /var/lib/apt/lists
+            cache-key: apt
           - id: emscripten
             os: ubuntu-latest
+            cache-path: |
+              /var/cache/apt/archives
+              /var/lib/apt/lists
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Cache packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.cache-path }}
+          key: ${{ runner.os }}-${{ matrix.cache-key }}-${{ hashFiles('.github/workflows/cross-build.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.cache-key }}-
 
       - name: Install glslangValidator (macOS)
         if: matrix.os == 'macos-latest'
