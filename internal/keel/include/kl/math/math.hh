@@ -85,6 +85,80 @@ public:
 
     return t * t * (static_cast<T>(3) - static_cast<T>(2) * t);
   }
+
+  /**
+   * @see https://doc.rust-lang.org/std/primitive.i32.html#method.overflowing_add
+   * @tparam T 
+   * @param a 
+   * @param b 
+   * @return std::pair<T, bool> 
+   */
+  template <std::integral T>
+  static std::pair<T, bool> overflowingAdd(T a, T b) {
+    if constexpr (std::is_unsigned_v<T>) {
+      T result = a + b;
+      bool overflow = result < a;
+      return {result, overflow};
+    } else {
+      using U = std::make_unsigned_t<T>;
+      U ua = static_cast<U>(a);
+      U ub = static_cast<U>(b);
+      U uresult = ua + ub;
+      T result = static_cast<T>(uresult);
+      bool overflow = ((b > 0) && (result < a)) || ((b < 0) && (result > a));
+      return {result, overflow};
+    }
+  }
+
+  /**
+   * @see https://doc.rust-lang.org/std/primitive.i32.html#method.checked_add
+   * @tparam T 
+   * @param a 
+   * @param b 
+   * @return std::optional<T> 
+   */
+  template <std::integral T> static std::optional<T> checkedAdd(T a, T b) {
+    auto [result, overflow] = overflowingAdd<T>(a, b);
+
+    if (overflow) {
+      return std::nullopt;
+    }
+
+    return result;
+  }
+
+  /**
+   * @see https://doc.rust-lang.org/std/primitive.i32.html#method.wrapping_add
+   * @tparam T 
+   * @param a 
+   * @param b 
+   * @return T 
+   */
+  template <std::integral T> static T wrappingAdd(T a, T b) {
+    return static_cast<T>(static_cast<std::make_unsigned_t<T>>(a) +
+                          static_cast<std::make_unsigned_t<T>>(b));
+  }
+
+  /**
+   * @see https://doc.rust-lang.org/std/primitive.i32.html#method.saturating_add
+   * @tparam T 
+   * @param a 
+   * @param b 
+   * @return T 
+   */
+  template <std::integral T> static T saturatingAdd(T a, T b) {
+    auto [result, overflow] = overflowingAdd<T>(a, b);
+
+    if (overflow) {
+      if (b > 0) {
+        return std::numeric_limits<T>::max();
+      } else {
+        return std::numeric_limits<T>::min();
+      }
+    }
+
+    return result;
+  }
 };
 } // namespace kl::math
 #endif

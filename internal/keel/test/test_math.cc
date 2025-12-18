@@ -94,3 +94,102 @@ TEST(MathTest, Smoothstep) {
   EXPECT_NEAR(Math::smoothstep(0.0f, 1.0f, 0.5f), 0.5f, kEps);
   EXPECT_NEAR(Math::smoothstep(-1.0f, 1.0f, 0.0f), 0.5f, kEps);
 }
+
+TEST(MathTest, OverflowingAdd) {
+  for (int16_t i = -128; i <= 127; ++i) {
+    for (int16_t j = -128; j <= 127; ++j) {
+      int16_t sum = i + j;
+      int8_t expectedResult = static_cast<int8_t>(sum);
+      bool expectedOverflow = (sum < -128 || sum > 127);
+      auto [result, overflow] = Math::overflowingAdd<int8_t>(i, j);
+      EXPECT_EQ(result, expectedResult);
+      EXPECT_EQ(overflow, expectedOverflow);
+    }
+  }
+}
+
+TEST(MathTest, OverflowingAddUnsigned) {
+  for (uint16_t i = 0; i <= 255; ++i) {
+    for (uint16_t j = 0; j <= 255; ++j) {
+      uint16_t sum = i + j;
+      uint8_t expectedResult = static_cast<uint8_t>(sum);
+      bool expectedOverflow = (sum > 255);
+      auto [result, overflow] = Math::overflowingAdd<uint8_t>(i, j);
+      EXPECT_EQ(result, expectedResult);
+      EXPECT_EQ(overflow, expectedOverflow);
+    }
+  }
+}
+
+TEST(MathTest, CheckedAdd) {
+  for (int16_t i = -128; i <= 127; ++i) {
+    for (int16_t j = -128; j <= 127; ++j) {
+      int16_t sum = i + j;
+      bool overflow = (sum < -128 || sum > 127);
+      auto result = Math::checkedAdd<int8_t>(i, j);
+      if (overflow) {
+        EXPECT_FALSE(result.has_value());
+      } else {
+        EXPECT_TRUE(result.has_value());
+        EXPECT_EQ(result.value(), static_cast<int8_t>(sum));
+      }
+    }
+  }
+}
+
+TEST(MathTest, CheckedAddUnsigned) {
+  for (uint16_t i = 0; i <= 255; ++i) {
+    for (uint16_t j = 0; j <= 255; ++j) {
+      uint16_t sum = i + j;
+      bool overflow = (sum > 255);
+      auto result = Math::checkedAdd<uint8_t>(i, j);
+      if (overflow) {
+        EXPECT_FALSE(result.has_value());
+      } else {
+        EXPECT_TRUE(result.has_value());
+        EXPECT_EQ(result.value(), static_cast<uint8_t>(sum));
+      }
+    }
+  }
+}
+
+TEST(MathTest, WrappingAdd) {
+  for (int16_t i = -128; i <= 127; ++i) {
+    for (int16_t j = -128; j <= 127; ++j) {
+      int8_t expected = static_cast<int8_t>(static_cast<uint8_t>(i) +
+                                            static_cast<uint8_t>(j));
+      EXPECT_EQ(Math::wrappingAdd<int8_t>(i, j), expected);
+    }
+  }
+}
+
+TEST(MathTest, WrappingAddUnsigned) {
+  for (uint16_t i = 0; i <= 255; ++i) {
+    for (uint16_t j = 0; j <= 255; ++j) {
+      uint8_t expected = static_cast<uint8_t>(static_cast<uint16_t>(i) +
+                                              static_cast<uint16_t>(j));
+      EXPECT_EQ(Math::wrappingAdd<uint8_t>(i, j), expected);
+    }
+  }
+}
+
+TEST(MathTest, SaturatingAdd) {
+  for (int16_t i = -128; i <= 127; ++i) {
+    for (int16_t j = -128; j <= 127; ++j) {
+      int16_t sum = i + j;
+      int8_t expected =
+          sum < -128 ? -128 : (sum > 127 ? 127 : static_cast<int8_t>(sum));
+      EXPECT_EQ(Math::saturatingAdd<int8_t>(i, j), expected);
+    }
+  }
+}
+
+TEST(MathTest, SaturatingAddUnsigned) {
+  for (uint16_t i = 0; i <= 255; ++i) {
+    for (uint16_t j = 0; j <= 255; ++j) {
+      uint16_t sum = i + j;
+      uint8_t expected = sum > 255 ? 255 : static_cast<uint8_t>(sum);
+      EXPECT_EQ(Math::saturatingAdd<uint8_t>(i, j), expected);
+    }
+  }
+}
