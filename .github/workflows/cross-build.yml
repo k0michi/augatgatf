@@ -67,9 +67,11 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.cache-key }}-
 
       - name: Install dependencies
+        shell: bash
         run: ${{ matrix.install-cmd }} ${{ matrix.packages }}
 
       - name: Post Install (Environment Setup)
+        shell: bash
         if: matrix.post-install != ''
         run: ${{ matrix.post-install }}
 
@@ -89,6 +91,7 @@ jobs:
           arch: x64
 
       - name: Configure CMake
+        shell: bash
         run: |
           ${{ matrix.id == 'emscripten' && 'emcmake' || '' }} \
           cmake -S . -B build -G Ninja \
@@ -96,15 +99,18 @@ jobs:
           -DCODE_COVERAGE=${{ matrix.id == 'ubuntu' && 'ON' || 'OFF' }}
 
       - name: Build
+        shell: bash
         run: cmake --build build --config Debug --parallel
 
       - name: Run Tests (ctest)
+        shell: bash
         if: matrix.id != 'emscripten'
         run: |
           cd build/internal/keel
           ctest -C Debug -V --timeout 60
 
       - name: Generate and Upload coverage
+        shell: bash
         if: matrix.id == 'ubuntu'
         run: |
           cd build
