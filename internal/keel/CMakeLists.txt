@@ -123,7 +123,6 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     -O0        # no optimization
     -g         # generate debug info
     --coverage # sets all required flags
-    -fprofile-update=atomic
   )
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
     target_link_options(coverage_config INTERFACE --coverage)
@@ -174,6 +173,8 @@ configure_file(
   @ONLY
 )
 
+find_package(Threads REQUIRED)
+
 target_include_directories(keel PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include")
 target_link_libraries(keel PUBLIC web-audio-cpp)
 target_link_libraries(keel PUBLIC SDL3::SDL3)
@@ -183,6 +184,7 @@ target_link_libraries(keel PUBLIC stb)
 target_link_libraries(keel PUBLIC fmt)
 target_link_libraries(keel PUBLIC intl-cpp)
 target_link_libraries(keel PUBLIC coverage_config)
+target_link_libraries(keel PUBLIC Threads::Threads)
 
 if(EMSCRIPTEN)
   target_compile_options(keel PRIVATE -fexceptions -g)

@@ -143,7 +143,6 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     -O0        # no optimization
     -g         # generate debug info
     --coverage # sets all required flags
-    -fprofile-update=atomic
   )
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
     target_link_options(web_audio_coverage_config INTERFACE --coverage)
@@ -152,7 +151,9 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   endif()
 endif(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 
-target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config)
+find_package(Threads REQUIRED)
+
+target_link_libraries(test_web_audio PRIVATE web_audio_coverage_config Threads::Threads)
 
 # Examples
 
