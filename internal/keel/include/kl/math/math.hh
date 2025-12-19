@@ -19,8 +19,14 @@ public:
     return radians * static_cast<T>(180) / std::numbers::pi_v<T>;
   }
 
-  // REF:
-  // https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Math.html#clamp(long,int,int)
+  /**
+   * @see https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Math.html#clamp(long,int,int)
+   * @tparam T 
+   * @param value 
+   * @param min 
+   * @param max 
+   * @return T 
+   */
   template <std::integral T> static T clamp(T value, T min, T max) {
     if (min > max) {
       throw std::invalid_argument("Illegal clamp arguments");
@@ -37,8 +43,14 @@ public:
     return value;
   }
 
-  // REF:
-  // https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Math.html#clamp(double,double,double)
+  /**
+   * @see https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Math.html#clamp(double,double,double)
+   * @tparam T 
+   * @param value 
+   * @param min 
+   * @param max 
+   * @return T 
+   */
   template <std::floating_point T> static T clamp(T value, T min, T max) {
     if (std::isnan(min) || std::isnan(max) || min > max ||
         (min == 0.0 && std::signbit(min) == 0 && max == 0.0 &&
@@ -61,24 +73,72 @@ public:
     return value;
   }
 
+  /**
+   * @see https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
+   * @tparam T 
+   * @param x 
+   * @param y 
+   * @param a 
+   * @return T 
+   */
   template <std::floating_point T> static T mix(T x, T y, T a) {
     return x * (static_cast<T>(1) - a) + y * a;
   }
 
+  /**
+   * @see https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
+   * 
+   * @tparam T 
+   * @param x 
+   * @param y 
+   * @param a 
+   * @return T 
+   */
   template <std::floating_point T> static T mix(T x, T y, bool a) {
     return a ? y : x;
   }
 
+  /**
+   * @see https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
+   * @tparam T 
+   * @param x 
+   * @param y 
+   * @param a 
+   * @return T 
+   */
   template <std::integral T> static T mix(T x, T y, bool a) {
     return a ? y : x;
   }
 
+  /**
+   * @see https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
+   * @param x 
+   * @param y 
+   * @param a 
+   * @return true 
+   * @return false 
+   */
   static bool mix(bool x, bool y, bool a) { return a ? y : x; }
 
+  /**
+   * @see https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
+   * @tparam T 
+   * @param edge 
+   * @param x 
+   * @return T 
+   */
   template <std::floating_point T> static T step(T edge, T x) {
     return x < edge ? static_cast<T>(0) : static_cast<T>(1);
   }
 
+  /**
+   * @see https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.pdf
+   * @tparam T 
+   * @param edge0 
+   * @param edge1 
+   * @param x 
+   * @return T 
+   */
   template <std::floating_point T> static T smoothstep(T edge0, T edge1, T x) {
     T t = clamp((x - edge0) / (edge1 - edge0), static_cast<T>(0),
                 static_cast<T>(1));
