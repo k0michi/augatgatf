@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <atomic>
+#include <chrono>
+#include <thread>
+#include <vector>
+
 #include "kl/common/intrusive_ptr.hh"
 
 using namespace kl::common;
@@ -116,4 +121,67 @@ TEST(IntrusivePtrTest, WeakPtr) {
   EXPECT_EQ(destructionNotifier, 42);
   IntrusivePtr<TestObject> lockedPtr = weakPtr.lock();
   EXPECT_EQ(lockedPtr.get(), nullptr);
+}
+
+TEST(IntrusivePtrTest, ThreadSafety) {
+  std::int32_t destructionNotifier = 0;
+  auto ptr = makeIntrusive<TestObject>(destructionNotifier);
+  WeakPtr<TestObject> weakPtr = ptr;
+
+  std::atomic<bool> start{false};
+  std::atomic<int> ready{0};
+  constexpr int numThreads = 8;
+  std::vector<std::thread> threads;
+
+  for (int i = 0; i < numThreads; ++i) {
+    threads.emplace_back([&] {
+      ++ready;
+      while (!start) {
+        std::this_thread::yield();
+      }
+      for (int j = 0; j < 10000; ++j) {
+        auto locked = weakPtr.lock();
+        if (locked) {
+          EXPECT_GE(locked->refCount(), 1u);
+        }
+      }
+    });
+  }
+
+  threads.emplace_back([&] {
+    ++ready;
+    while (!start) {
+      std::this_thread::yield();
+    }
+    for (int j = 0; j < 10000; ++j) {
+      IntrusivePtr<TestObject> local = ptr;
+      std::this_thread::yield();
+      local.reset();
+    }
+  });
+
+  threads.emplace_back([&] {
+    ++ready;
+    while (!start) {
+      std::this_thread::yield();
+    }
+    for (int j = 0; j < 10000; ++j) {
+      ptr->retain();
+    }
+    for (int j = 0; j < 10000; ++j) {
+      ptr->release();
+    }
+  });
+
+  while (ready < numThreads + 2) {
+    std::this_thread::yield();
+  }
+  start = true;
+
+  for (auto &t : threads)
+    t.join();
+
+  ptr.reset();
+  EXPECT_EQ(destructionNotifier, 42);
+  EXPECT_TRUE(weakPtr.isExpired());
 }
