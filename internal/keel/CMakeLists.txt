@@ -173,6 +173,7 @@ configure_file(
   @ONLY
 )
 
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 target_include_directories(keel PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include")
